@@ -2,6 +2,9 @@
 
 export(alleleSummary)
 export(ibdsim)
+export(karyo_diploid)
+export(karyo_haploid)
+import(ggplot2)
 import(paramlink)
 importFrom(Rcpp,evalCpp)
 importFrom(Rcpp,sourceCpp)
