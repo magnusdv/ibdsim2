@@ -1,0 +1,53 @@
+#' Realised relatedness
+#'
+#' Compute the realised values of various measures of pairwise relatedness, in
+#' simulated data.
+#'
+#' Consider two members A and B of a pedigree P. The \emph{kinship coefficient}
+#' between A and B is defined as the probability that a random allele sampled in
+#' A is identical by descent (IBD) with an allele sampled in B at the same
+#' autosomal locus. If this probability is taken conditional only on the
+#' pedigree P, the result is the traditional pedigre-based kinship coefficient.
+#'
+#' However, because of the discrete nature of meiotic recombination, the actual
+#' IBD distribution of individuals with the specified relationship is subject to
+#' variation. Hence we may also be interested in the \emph{realised} (or
+#' \emph{genomic}) kinship coefficient between A and B, which is the same
+#' probability as above, but conditional on the recombination events in the
+#' meioses between A and B in P. For example, if the recombition events between
+#' A and B happen to result in no segments of IBD sharing, the realised kinship
+#' is 0, whatever the pedigree-based kinship may be.
+#'
+#' The \emph{kappa coefficients}...and \emph{realised} kappa coefficients. TODO
+#'
+#' The \emph{condensed identity coefficients} of Jacquard ...and \emph{realised}
+#' identity coefficients. TODO
+#'
+#' @param sim A list of genome simulations, as output by \code{\link{ibdsim}}.
+#' @param id.pair A vector of length 2, with ID labels of the two individuals in question.
+#'
+#' @return TODO
+#' @export
+#'
+#' @examples
+#' x = paramlink::nuclearPed(2)
+#' s = ibdsim(x, sims=10)
+#' realised_kappa(s, id.pair=3:4)
+realised_kappa = function(sim, id.pair) {
+  L = attr(sim, 'total_map_length_Mb')
+  
+  segment_summary = vapply(sim, function(s) {
+    a = alleleSummary(s, ids=id.pair, ibd.status=T)
+    len = a[, 'length']
+    ibd = a[, 'ibd']
+    c(ibd0 = sum(len[ibd==0]), ibd1 = sum(len[ibd==1]), ibd2 = sum(len[ibd==2]), 
+      Nseg1 = sum(ibd==1), Nseg2 = sum(ibd==2), Nseg= sum(ibd>0))
+  }, numeric(6))
+  
+  kappa.realised=segment_summary[1:3,]/L
+  list(kappa.realised = kappa.realised, 
+       Nsegments = segment_summary[4:6,], 
+       kappa.hat= rowMeans(kappa.realised),
+       genomeLength = L)
+}
+
