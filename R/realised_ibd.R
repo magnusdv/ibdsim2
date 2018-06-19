@@ -27,13 +27,16 @@
 #' @param id.pair A vector of length 2, with ID labels of the two individuals in question.
 #'
 #' @return TODO
-#' @export
 #'
 #' @examples
 #' x = paramlink::nuclearPed(2)
 #' s = ibdsim(x, sims=10)
 #' realised_kappa(s, id.pair=3:4)
+#'
+#' @importFrom assertthat assert_that
+#' @export
 realised_kappa = function(sim, id.pair) {
+  assertthat::assert_that(length(id.pair) == 2)
   L = attr(sim, 'total_map_length_Mb')
   
   segment_summary = vapply(sim, function(s) {
@@ -50,4 +53,3 @@ realised_kappa = function(sim, id.pair) {
        kappa.hat= rowMeans(kappa.realised),
        genomeLength = L)
 }
-

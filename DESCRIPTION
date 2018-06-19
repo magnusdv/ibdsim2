@@ -18,8 +18,8 @@ Depends: R (>= 3.1.0)
 Imports:
     paramlink,
     Rcpp,
-    ggplot2
+    ggplot2,
+    assertthat
 RoxygenNote: 6.0.1
 LinkingTo: Rcpp
 Suggests: testthat
-    
