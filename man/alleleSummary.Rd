@@ -7,7 +7,7 @@
 alleleSummary(x, ids, ibd.status = FALSE)
 }
 \arguments{
-\item{x}{A single genome simulation, i.e. a list of simulated chromosomes. 
+\item{x}{An object of class \code{genomeSim}, i.e. a list of simulated chromosomes. 
 Each chromosome is a list, with one entry for each individual. Each of these 
 entries is a list of two matrices (one for each strand). The matrices have 2 
 columns (start position; allele) and one row for each segment unbroken by recombination.}

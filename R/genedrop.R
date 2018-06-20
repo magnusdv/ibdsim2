@@ -56,7 +56,7 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
   }
   attr(h, "chromosome") = chrom
   attr(h, "length_Mb") = attr(map, "length_Mb")
-  attr(h, 'pedigree') = x
+  #attr(h, 'pedigree') = x
   attr(h, "condition") = condition
   attr(h, "model") = model
   attr(h, "skipped") = skip.recomb
@@ -69,7 +69,7 @@ print.chromosomeSim = function(x, ...) {
   chrom = attr(x, 'chromosome')
   len = attr(x, 'length_Mb')
   model = attr(x, 'model')
-  pedsize = attr(x, 'pedigree')$NIND
+  pedsize = length(x)
   skipped = attr(x, 'skipped')
   skip_str = if(!length(skipped)) "None" else paste(skipped, collapse=",")
   cond_sap = attr(x, 'condition')

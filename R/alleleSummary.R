@@ -3,7 +3,7 @@
 #' This function facilitates downstream analysis of simulations produced by \code{\link{ibdsim}}.
 #' It summarises a single genome simulation by describing the allele flow through the pedigree.
 #' 
-#' @param x A single genome simulation, i.e. a list of simulated chromosomes. 
+#' @param x An object of class \code{genomeSim}, i.e. a list of simulated chromosomes. 
 #' Each chromosome is a list, with one entry for each individual. Each of these 
 #' entries is a list of two matrices (one for each strand). The matrices have 2 
 #' columns (start position; allele) and one row for each segment unbroken by recombination.
@@ -22,7 +22,6 @@
 #' while the latter 4 give the parental breakdown of this number. For instance,
 #' \code{ibd_pm} is 1 if the _p_aternal allele of the first individual is IBD 
 #' with the _m_aternal allele of the second individual, and 0 otherwise.
-#' @export
 #'
 #' @examples
 #' ### Sibling simulation (3 sims of chromosomes 1 and 2)
@@ -37,12 +36,21 @@
 #' # Being the first founder, his alleles are denoted 1 and 2.
 #' alleleSummary(sim[[1]], ids=1) 
 #' 
+#' @importFrom pedtools internalID
+#' @export
 alleleSummary = function(x, ids, ibd.status=FALSE) {
-  if (missing(ids)) ids = 1:length(x[[1]])
-  ids = as.numeric(ids) # ad hoc. TODO
+  assert_that(inherits(x, "genomeSim"))
+  
+  ped = attr(x, "pedigree")
+  if (missing(ids)) 
+    ids = ped$LABELS
+  ids = internalID(ped, ids) # ad hoc. TODO
+  
+  if(ibd.status && length(ids)!=2)
+    stop("Parameter 'ibd.status' is meaningful only if length(ids)==2.")
   
   allele.colnames = paste0(rep(ids, each = 2), c("p", "m"))
-
+print(ids)
   each.chrom = lapply(x, function(y) {
     haplos = unlist(y[ids], recursive = FALSE)
     breaks = unlist(lapply(haplos, function(m) m[-1, 1]))
@@ -58,7 +66,6 @@ alleleSummary = function(x, ids, ibd.status=FALSE) {
   })
   res = do.call(rbind, each.chrom)
   if (ibd.status) {
-    stopifnot(length(ids) == 2)
     ibd_pp = res[, 5] == res[, 7]
     ibd_pm = res[, 5] == res[, 8]
     ibd_mp = res[, 6] == res[, 7]

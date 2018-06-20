@@ -37,7 +37,7 @@
 #' @export
 realised_kappa = function(sim, id.pair) {
   assertthat::assert_that(length(id.pair) == 2)
-  L = attr(sim, 'total_map_length_Mb')
+  L = attr(sim, 'genome_length_Mb')
   
   segment_summary = vapply(sim, function(s) {
     a = alleleSummary(s, ids=id.pair, ibd.status=T)

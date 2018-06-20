@@ -142,25 +142,62 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
       message("Skipping recombination in:", paste(skip.recomb, collapse = ","))
   }
 
-  # The actual simulation, each chromosome in turn 
-  simdata = lapply(1:sims, function(i)
-    lapply(map, function(m) {
+  # The actual simulations: One sim at the time; each chromosome in turn 
+  genomeSimList = lapply(1:sims, function(i) {
+    genomeSim = lapply(map, function(m) {
       # TODO: should dischr[sims] below be dischr[s]?
       cond = if (dischr[sims] == attr(m, "chromosome")) oblig.saps[[i]] else NULL 
       genedrop(x, map = m, condition = cond, model = model, skip.recomb = skip.recomb)
-    }))
+    })
+    structure(genomeSim, 
+              genome_length_Mb = attr(map, "length_Mb"),
+              chromosomes = mapchrom,
+              model = model,
+              pedigree = x,
+              skipped = skip.recomb,
+              condition = condition,
+              class = "genomeSim")
+  })
   
+  
+  # Build output object of class genomeSimList
+  genomeSimList = structure(genomeSimList, 
+            genome_length_Mb = attr(map, "length_Mb"),
+            chromosomes = mapchrom,
+            model = model,
+            pedigree = x,
+            skipped = skip.recomb,
+            condition = condition,
+            class = "genomeSimList")
   if (verbose) {
     elapsed = (proc.time() - starttime)[["elapsed"]]
     message("Simulation finished in ", elapsed, " seconds.")
   }
   
-  attr(simdata, "total_map_length_Mb") = attr(map, "length_Mb")
-  
-  
-  simdata
+  genomeSimList
 }
 
+print.genomeSim = function(x, ...) {
+  attrs = attributes(x)
+  if(!length(attrs$skipped)) attrs$skipped = "None"
+  if(is.null(attrs$condition)) attrs$condition = "No"
+  model_str = switch(attrs$model, 
+                     chi = "Chi square renewal process",
+                     haldane = "Haldane's poisson process")  
+  print(glue::glue("
+  Total map length: {attrs$genome_length_Mb} Mb
+  Chromosomes: {paste(attrs$chromosomes, collapse=',')}
+  Recombination model: {model_str}
+  Pedigree members: {attrs$ped$NIND}
+  Skipped recombination in: {paste(attrs$skipped, collapse=',')}
+  Conditional: {attrs$condition}
+  "))
+}
+
+print.genomeSimList = function(x, ...) {
+  print(glue::glue("List of {length(x)} genome simulations."))
+  print(x[[1]])
+}
 
 sample.obligates = function(x, condition, sims) {
   obligate_ones = obligate.carriers(x, condition)
