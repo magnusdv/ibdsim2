@@ -7,7 +7,7 @@
 #' Each chromosome is a list, with one entry for each individual. Each of these 
 #' entries is a list of two matrices (one for each strand). The matrices have 2 
 #' columns (start position; allele) and one row for each segment unbroken by recombination.
-#' @param ids A vector of numerical IDs. If missing, all individuals are included.
+#' @param ids A vector of ID labels. If missing, all individuals are included.
 #' @param ibd.status TRUE or FALSES. This parameter is meaningful only if 
 #' \code{length(ids)==2}. If TRUE the IBD status (number of alleles shared IBD, either 
 #' 0, 1 or 2) of each segment is computed, as well as the breakdown of their parental origin.
@@ -50,7 +50,7 @@ alleleSummary = function(x, ids, ibd.status=FALSE) {
     stop("Parameter 'ibd.status' is meaningful only if length(ids)==2.")
   
   allele.colnames = paste0(rep(ids, each = 2), c("p", "m"))
-print(ids)
+
   each.chrom = lapply(x, function(y) {
     haplos = unlist(y[ids], recursive = FALSE)
     breaks = unlist(lapply(haplos, function(m) m[-1, 1]))

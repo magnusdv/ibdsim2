@@ -75,8 +75,10 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
                   model="chi", skip.recomb = "noninf_founders", seed=NULL, verbose=TRUE) {
   # Check input
   assert_that(is.ped(x), is.count(sims))
+  
   if(!model %in% c("chi", "haldane"))
     stop("Argument 'model' must be either 'chi' or 'haldane'.")
+  model_string = if(model=="chi") "Chi square renewal process" else "Haldane's poisson process"    
   
   # Ensure that parents preceede their children
   if (!pedtools::has_parents_before_children(x)) {
@@ -96,40 +98,32 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
   if (verbose) {
     cond_str = if (is.null(condition)) "unconditional" else "conditional"
     chroms = paste(mapchrom, collapse=",")
-    aut_vs_X = if(identical(mapchrom, 23)) "X chromosome" 
-      else if (23 %in% mapchrom) "Mix of autosomal and X"
-      else "Autosomal"
-    model_str = if(model=="chi") "Chi square renewal process" else "Haldane's poisson process"    
-
+    
     print(glue::glue("
     Performing {cond_str} simulation.
     Chromosomes: {chroms}
-    Mode: {aut_vs_X}
-    Recombination model: {model_str}
+    Recombination model: {model_string}
     Number of simulations: {sims}"))
   }
   
   # Seed for random sampling
   set.seed(seed)
   
-  # Special preparation if simulation is conditional 
+  # Setup for conditional simulation
+  dischr = numeric(sims)
   if (!is.null(condition)) {
     
     # Sample chromosome carrying the conditional locus
     if (length(map) == 1) 
-      dischr = rep.int(attr(map[[1]], "chromosome"), sims)
-    else 
-      dischr = sample(sapply(map, attr, "chromosome"), 
-                      size = sims, replace = T, 
-                      prob = sapply(map, attr, "length_Mb"))
-    
+      dischr[] = rep.int(mapchrom, sims) 
+    else {
+      chromlengths = sapply(map, attr, "length_Mb")
+      dischr[] = sample(mapchrom, size = sims, replace = T, prob = chromlengths)
+    }
     # Process condition SAP
     oblig.saps = sample.obligates(x, condition, sims)
   }
-  else {
-    dischr = rep.int(0, sims)
-  }
-
+  
   # Determine ped members where recombination should be skipped.
   if (!is.null(skip.recomb)) {
     if (skip.recomb == "noninf_founders") {
@@ -141,38 +135,34 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
     if (length(skip.recomb) > 0 && verbose) 
       message("Skipping recombination in:", paste(skip.recomb, collapse = ","))
   }
-
+  
   # The actual simulations: One sim at the time; each chromosome in turn 
   genomeSimList = lapply(1:sims, function(i) {
-    genomeSim = lapply(map, function(m) {
+    lapply(map, function(m) {
       # TODO: should dischr[sims] below be dischr[s]?
       cond = if (dischr[sims] == attr(m, "chromosome")) oblig.saps[[i]] else NULL 
       genedrop(x, map = m, condition = cond, model = model, skip.recomb = skip.recomb)
     })
-    structure(genomeSim, 
-              genome_length_Mb = attr(map, "length_Mb"),
-              chromosomes = mapchrom,
-              model = model,
-              pedigree = x,
-              skipped = skip.recomb,
-              condition = condition,
-              class = "genomeSim")
   })
   
-  
-  # Build output object of class genomeSimList
-  genomeSimList = structure(genomeSimList, 
-            genome_length_Mb = attr(map, "length_Mb"),
-            chromosomes = mapchrom,
-            model = model,
-            pedigree = x,
-            skipped = skip.recomb,
-            condition = condition,
-            class = "genomeSimList")
   if (verbose) {
     elapsed = (proc.time() - starttime)[["elapsed"]]
     message("Simulation finished in ", elapsed, " seconds.")
   }
+  
+  # Various attributes of the simulation call
+  attribs = list(pedigree = x, 
+                 skipped = skip.recomb,
+                 condition = condition,
+                 genome_length_Mb = attr(map, "length_Mb"),
+                 chromosomes = mapchrom,
+                 model = model_string)
+  
+  # Add attributes and class to each genomeSim
+  genomeSimList = lapply(genomeSimList, `attributes<-`, c(attribs, class="genomeSim"))
+  
+  # Add attributes and class to the entire list 
+  attributes(genomeSimList) = c(attribs, class = "genomeSimList")
   
   genomeSimList
 }
@@ -181,13 +171,11 @@ print.genomeSim = function(x, ...) {
   attrs = attributes(x)
   if(!length(attrs$skipped)) attrs$skipped = "None"
   if(is.null(attrs$condition)) attrs$condition = "No"
-  model_str = switch(attrs$model, 
-                     chi = "Chi square renewal process",
-                     haldane = "Haldane's poisson process")  
-  print(glue::glue("
+  
+print(glue::glue("
   Total map length: {attrs$genome_length_Mb} Mb
   Chromosomes: {paste(attrs$chromosomes, collapse=',')}
-  Recombination model: {model_str}
+  Recombination model: {attrs$model}
   Pedigree members: {attrs$ped$NIND}
   Skipped recombination in: {paste(attrs$skipped, collapse=',')}
   Conditional: {attrs$condition}
