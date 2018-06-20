@@ -99,15 +99,3 @@ sap.finder = function(x, sap) { # x a list of haplo-objects (i.e. each element i
 
 # cbind(chrom=chrom, start=starts, end=stops, length=stops-starts, alleles_matrix, ibd=ibd, ibd_pp=ibd_pp, ibd_pm=ibd_pm, ibd_mp=ibd_mp, ibd_mm=ibd_mm)
 # }
-
-.getAlleles = function(chromdata, posvec) {
-  posvec[posvec < 0] = 0
-  rbind(pos2allele(chromdata[[1]], posvec),
-    pos2allele(chromdata[[2]], posvec))
-}
-
-
-pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks - allele)
-  indices = findInterval(posvec, haplo[, 1])
-  haplo[indices, 2]
-}

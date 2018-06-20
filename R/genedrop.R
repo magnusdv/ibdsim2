@@ -98,7 +98,3 @@ distribute.founder.alleles = function(x, chrom="AUTOSOMAL") {
     return(co)
   }
 
-getLocus = function(x, h, locus) {
-  marker = t.default(sapply(h, .getAlleles, posvec = locus))
-  paramlink::setMarkers(x, marker)
-}

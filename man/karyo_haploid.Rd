@@ -44,4 +44,10 @@ karyo_haploid(segs, colorBy="IBD", color=c(cousin1="blue", cousin2="red"))
 # To see overlaps, reduce alpha:
 karyo_haploid(segs, colorBy="IBD", color=c(cousin1="blue", cousin2="red"), alpha=0.6)
 
+# Example showing simulated IBD segments of full siblings
+x = paramlink::nuclearPed(2)
+s = ibdsim(x, sims=1, verbose=FALSE)
+a = tibble::as_tibble(alleleSummary(s[[1]], 3:4, ibd.status=TRUE))
+karyo_haploid(subset(a,ibd==1), colorBy="ibd", color=c("1"="blue", "2"="red"), alpha=.3)
+
 }
