@@ -39,7 +39,7 @@
 #' allele' is always the one passed on.) For the other chromosomes, simulation
 #' is done unconditionally.
 #'
-#' @param x A pedigree in the form of a \code{\link{linkdat}} object.
+#' @param x A pedigree in the form of a \code{\link[pedtools]{ped}} object.
 #' @param sims A positive integer indicating the number of simulations.
 #' @param condition A single allele pattern (SAP), i.e., a list with
 #'   numerical entries named "0", "1", "2", "atleast1", "atmost1".
@@ -62,20 +62,23 @@
 #' @return The simulated genomes are invisibly returned.
 #'
 #' @examples
-#' # Half first cousins.
-#' # Two such cousins will on average share 1/8 = 12.5\% of the autosome.
 #'
-#' z = paramlink::halfCousinPed(1)
+#' z = pedtools::halfCousinsPed(0)
 #' plot(z)
 #' res = ibdsim(z, sims=1)
 #' res
 #'
 #' @export
-#' 
+#' @importFrom pedtools has_parents_before_children parents_before_children
+#'  
 ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
                   model="chi", skip.recomb = "noninf_founders", seed=NULL, verbose=TRUE) {
 
-  if (!all(x$orig.ids == 1:x$nInd)) stop("Individual ID's must be 1, 2, 3, ... . Please relabel (see e.g. ?prelabel).")
+  if (!pedtools::has_parents_before_children(x)) {
+    message("Reordering so that all parents preceede their children")
+    x = pedtools::parents_before_children(x)
+  }
+  
   starttime = proc.time()
 
   
@@ -103,12 +106,13 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
 
   if (!is.null(skip.recomb)) {
     if (skip.recomb == "noninf_founders") {
-      cafs = x$founders
+      cafs = x$FOUNDERS
       if (!is.null(condition)) 
         cafs = intersect(cafs, .CAFs(x, condition))
-      skip.recomb = setdiff(x$founders, cafs)
+      skip.recomb = setdiff(x$FOUNDERS, cafs)
     }
-    if (length(skip.recomb) > 0 && verbose) cat("Skipping recombination in the following individuals:", paste(skip.recomb, collapse = ", "), "\n")
+    if (length(skip.recomb) > 0 && verbose) 
+      message("Skipping recombination in:", paste(skip.recomb, collapse = ","))
   }
 
   simdata = lapply(1:sims, function(i)

@@ -9,7 +9,7 @@ ibdsim(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
   verbose = TRUE)
 }
 \arguments{
-\item{x}{A pedigree in the form of a \code{\link{linkdat}} object.}
+\item{x}{A pedigree in the form of a \code{\link[pedtools]{ped}} object.}
 
 \item{sims}{A positive integer indicating the number of simulations.}
 
@@ -82,10 +82,8 @@ allele' is always the one passed on.) For the other chromosomes, simulation
 is done unconditionally.
 }
 \examples{
-# Half first cousins.
-# Two such cousins will on average share 1/8 = 12.5\\\% of the autosome.
 
-z = paramlink::halfCousinPed(1)
+z = pedtools::halfCousinsPed(0)
 plot(z)
 res = ibdsim(z, sims=1)
 res

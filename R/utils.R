@@ -12,10 +12,10 @@ pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks -
 }
 
 # Unused at the moment
-locus2marker = function(x, h, locus) {
-  marker = t.default(sapply(h, .getAlleles, posvec = locus))
-  paramlink::setMarkers(x, marker)
-}
+#locus2marker = function(x, h, locus) {
+#  marker = t.default(sapply(h, .getAlleles, posvec = locus))
+#  paramlink::setMarkers(x, marker)
+#}
 
 .printSAP = function(sap) {
   if (!is.null(two <- sap[["2"]])) cat("  Two copies:", paste(two, collapse = ", "), "\n")

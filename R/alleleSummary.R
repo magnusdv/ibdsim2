@@ -26,7 +26,7 @@
 #'
 #' @examples
 #' ### Sibling simulation (3 sims of chromosomes 1 and 2)
-#' x = paramlink::nuclearPed(2)
+#' x = pedtools::nuclearPed(2)
 #' sim = ibdsim(x, sims=3, chromosomes=1:2)
 #' 
 #' alleleSummary(sim[[1]]) # First sim, summary of all individuals
@@ -39,6 +39,8 @@
 #' 
 alleleSummary = function(x, ids, ibd.status=FALSE) {
   if (missing(ids)) ids = 1:length(x[[1]])
+  ids = as.numeric(ids) # ad hoc. TODO
+  
   allele.colnames = paste0(rep(ids, each = 2), c("p", "m"))
 
   each.chrom = lapply(x, function(y) {

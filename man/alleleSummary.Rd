@@ -35,7 +35,7 @@ It summarises a single genome simulation by describing the allele flow through t
 }
 \examples{
 ### Sibling simulation (3 sims of chromosomes 1 and 2)
-x = paramlink::nuclearPed(2)
+x = pedtools::nuclearPed(2)
 sim = ibdsim(x, sims=3, chromosomes=1:2)
 
 alleleSummary(sim[[1]]) # First sim, summary of all individuals

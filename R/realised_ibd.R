@@ -29,7 +29,7 @@
 #' @return TODO
 #'
 #' @examples
-#' x = paramlink::nuclearPed(2)
+#' x = pedtools::nuclearPed(2)
 #' s = ibdsim(x, sims=10)
 #' realised_kappa(s, id.pair=3:4)
 #'

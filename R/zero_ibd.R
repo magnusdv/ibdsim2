@@ -26,8 +26,8 @@
 #' ###
 #' 
 #' # Define the pedigree
-#' x = paramlink::cousinsPed(4)
-#' cousins = paramlink::leaves(x)
+#' x = pedtools::cousinsPed(4)
+#' cousins = pedtools::leaves(x)
 #' 
 #' # Simulate (increase 'sims'!)
 #' s = ibdsim(x, sims = 7)
@@ -44,7 +44,6 @@
 #' @export
 zero_ibd = function(sim, id.pair, truncate=0) {
   assertthat::assert_that(length(id.pair) == 2, is.numeric(truncate))
-  
   ibd_count = vapply(sim, function(s) {
     a = alleleSummary(s, ids=id.pair, ibd.status=T)
     ibdstatus = a[, 'ibd']

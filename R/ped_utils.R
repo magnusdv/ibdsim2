@@ -1,15 +1,17 @@
-#' @import paramlink
+#' @importFrom pedtools inbreedingLoops descendants 
 .CAFs = function(x, sap, loops = NULL) {  # common ancestral founders
-  zeros = sap[["0"]]; ones = c(sap[["1"]], sap[["atleast1"]]); twos = sap[["2"]]
-  caf <- fou <- setdiff(x$founders, zeros)
+  zeros = sap[["0"]]
+  ones = c(sap[["1"]], sap[["atleast1"]])
+  twos = sap[["2"]]
+  caf <- fou <- setdiff(x$FOUNDERS, zeros)
   fou_one = intersect(fou, ones)
   if (length(fou_one) > 1 || any(twos %in% fou)) return(numeric()) # since founders always have different alleles (by definition)
 
-  fou_desc = lapply(fou, descendants, x = x, original.id = FALSE)
+  fou_desc = lapply(fou, descendants, x = x, internal=TRUE)
 
   if (length(twos) > 0) {
     .ancestral.founders = function(id) if (id %in% fou) return(id) else fou[sapply(fou_desc, function(ds) id %in% ds)]
-    if (is.null(loops)) loops = pedigreeLoops(x)
+    if (is.null(loops)) loops = inbreedingLoops(x)
     if (length(loops) == 0) return(numeric())  # NB: 1)pedigreeLoops uses original ids 2) very inefficient, but fast enough
     bottoms = sapply(loops, "[[", "bottom")
     tops = sapply(loops, "[[", "top")
@@ -25,16 +27,19 @@
 }
 
 
+# importFrom pedtools leaves children
 .pedPaths = function(x, from, to) {
   paths = list()
-  leaves = seq_len(x$nInd)[ -x$pedigree[, c("FID", "MID")] ]
+  lvs = pedtools::leaves(x, internal=TRUE)
 
   descend = function(x, from, to, path) {
     if (from == to) {
-      paths <<- c(paths, list(path)); return()
+      paths <<- c(paths, list(path))
+      return()
     }
+    
     if (from %in% leaves) return()
-    offs = paramlink::offspring(x, from, original.id = FALSE)
+    offs = pedtools::children(x, from, internal=TRUE)
     for (kid in offs) descend(x, from = kid, to = to, path = c(path, kid))
   }
   descend(x, from, to, path = from)
@@ -62,16 +67,19 @@ obligate.carriers = function(x, sap) {
           temp = c(temp, list(c(p1, p2)))
       }
       temp
-    }) # twoLoops for this CAF is a list of |two| elements: For each two-ID the list of possible loops from CAF to ID
+    }) # twoPaths for this CAF is a list of |two| elements: For each two-ID the list of possible loops from CAF to ID
     allcomb = expand.grid(c(twoPaths, onePaths)) # each row here consists of one of each
     lapply(1:nrow(allcomb), function(i) sort.default(unique(unlist(allcomb[i, ]))))
   })
   obligs = unique(unlist(cafPaths, recursive = F))
   obligs = lapply(obligs, setdiff, c(sap[["atleast1"]], sap[["2"]]))
   obligs = obligs[sapply(obligs, function(vec) !any(sap[["0"]] %in% vec))] # and paths containing 0-indivs
-  if (length(obligs) == 0) stop("Hmm, I can't find any possible sets of obligate carriers.")
+  if (length(obligs) == 0) 
+    stop("Hmm, I can't find any possible sets of obligate carriers.")
+  
   keep = lapply(seq_len(length(obligs)), function(i) {
-    for (other in obligs[-i]) if (all(other %in% obligs[[i]])) return(FALSE)
+    for (other in obligs[-i]) 
+      if (all(other %in% obligs[[i]])) return(FALSE)
     return(TRUE)
   })
   obligs[unlist(keep)]

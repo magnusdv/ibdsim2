@@ -37,8 +37,8 @@ Estimate the probability of no ibd sharing in a pairwise relationship.
 ###
 
 # Define the pedigree
-x = paramlink::cousinsPed(4)
-cousins = paramlink::leaves(x)
+x = pedtools::cousinsPed(4)
+cousins = pedtools::leaves(x)
 
 # Simulate (increase 'sims'!)
 s = ibdsim(x, sims = 7)

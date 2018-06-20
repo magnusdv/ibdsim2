@@ -2,7 +2,7 @@ Package: ibdsim2
 Type: Package
 Title: Simulation of Chromosomal Regions Shared by Family Members
 Version: 1.0.9000
-Date: 2018-05-06
+Date: 2018-20-06
 Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
                   role = c("aut", "cre"))
 Description: Simulation of segments shared identical-by-descent (IBD) by 
@@ -16,7 +16,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.1.0)
 Imports:
-    paramlink,
+    pedtools,
     Rcpp,
     ggplot2,
     assertthat
