@@ -63,7 +63,7 @@ prepare_segments = function(segments, colorBy=NA) {
 #' x = paramlink::nuclearPed(2)
 #' s = ibdsim(x, sims=1, verbose=FALSE)
 #' a = tibble::as_tibble(alleleSummary(s[[1]], 3:4, ibd.status=TRUE))
-#' karyo_haploid(subset(a,ibd==1), colorBy="ibd", color=c("1"="blue", "2"="red"), alpha=.3)
+#' karyo_haploid(subset(a,ibd>0), colorBy="ibd", color=c("1"="blue", "2"="red"), alpha=.3)
 #' 
 #' @export
 karyo_haploid = function(segments, colorBy=NA, color="black", alpha=1, bgcol="gray99", title=NULL) {
@@ -87,8 +87,7 @@ karyo_haploid = function(segments, colorBy=NA, color="black", alpha=1, bgcol="gr
     p = p + guides(fill="none")
   if(!is.null(title)) 
     p = p + ggtitle(title)
-  print(p)
-  invisible(p)
+  p
 }
 
 
@@ -151,6 +150,6 @@ karyo_diploid = function(paternal, maternal, colors=NA, alpha=1, bgcol="gray99",
     scale_fill_manual(values = colors, labels=labels)
   if(!is.null(title)) 
     p = p + ggtitle(title)
-  print(p)
+  p
 }
 
