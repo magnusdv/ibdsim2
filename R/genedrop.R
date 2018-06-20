@@ -2,14 +2,14 @@
 genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x= ped object
   FID = x$FID
   MID = x$MID
+  nonfounders = x$NONFOUNDERS
   chrom = attr(map, "chromosome")
   
   h = distribute.founder.alleles(x, chrom)
-  nonfounders.order = dropping.order(x)
-
+  
   if (is.null(condition)) {
     if (chrom < 23) {
-      for (i in nonfounders.order) {
+      for (i in nonfounders) {
         fa = FID[i]
         mo = MID[i]
         h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, skip.recomb = fa %in% skip.recomb),
@@ -18,11 +18,12 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
       }
     }
     else if (chrom == 23) {
-      for (i in nonfounders.order) {
-        father = FID[i]; mother = MID[i]
-        maternal.gamete = meiosis(h[[mother]], map = map$female, model = model, skip.recomb = mother %in% skip.recomb)
+      for (i in nonfounders) {
+        fa = FID[i]
+        mo = MID[i]
+        maternal.gamete = meiosis(h[[mo]], map = map$female, model = model, skip.recomb = mo %in% skip.recomb)
         h[[i]] = list(
-          if (x$SEX[i] == 1) maternal.gamete else h[[father]][[1]],
+          if (x$SEX[i] == 1) maternal.gamete else h[[fa]][[1]],
           maternal.gamete)
       }
     }
@@ -40,14 +41,16 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
     COND = list(c(locus = dis.locus, allele = dis.al, action = 1), 
                 c(locus = dis.locus, allele = dis.al, action = 2), NULL) # action: 1=force; 2=avoid
     if (chrom < 23)
-      for (i in nonfounders.order) {
+      for (i in nonfounders) {
         fa = FID[i]
         mo = MID[i]
         condits = COND[.decide_action(dis.al, dis.locus, h[c(fa, mo)], carry_code[[i]])] # returns list of 2 elements
         h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, skip.recomb = fa %in% skip.recomb, condition = condits[[1]]),
                       meiosis(h[[mo]], map = map$female, model = model, skip.recomb = mo %in% skip.recomb, condition = condits[[2]]))
       }
-    else stop("X-linked conditional genedrop is not implemented yet.")
+    else {
+      stop("X-linked conditional genedrop is not implemented yet.")
+    }
     attr(h, "dis.locus") = dis.locus
     attr(h, "dis.allele") = dis.al
   }
@@ -56,23 +59,6 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
   h
 }
 
-dropping.order = function(x) {
-  # output: vector of all nonfounders, ordered such that children always come after their parents.
-  # After transition to pedtoos: Remove this function entirely!
-  return(x$NONFOUNDERS)
-  taken = x$founders
-  remaining = x$nonfounders
-  while (length(remaining) > 0)
-    for (k in seq_along(remaining)) {
-      id = remaining[k]
-      if (all(paramlink::parents(x, id) %in% taken)) {
-        taken = c(taken, id)
-        remaining = remaining[-k]
-        break
-      }
-    }
-  setdiff(taken, x$founders)
-}
 
 distribute.founder.alleles = function(x, chrom="AUTOSOMAL") {
   h = vector("list", x$NIND)
@@ -95,7 +81,8 @@ distribute.founder.alleles = function(x, chrom="AUTOSOMAL") {
     }
     aux = cbind(rep.int(0, 2 * nfou), alleles, deparse.level = 0)
   }
-  h[fou] <- lapply(2 * seq_along(fou), function(i) list(aux[i - 1, , drop = F], aux[i, , drop = F]))
+  h[fou] = lapply(2 * seq_along(fou), function(i) 
+    list(aux[i - 1, , drop = F], aux[i, , drop = F]))
   h
 }
 
