@@ -69,41 +69,68 @@
 #' res
 #'
 #' @export
-#' @importFrom pedtools has_parents_before_children parents_before_children
-#'  
+#' @importFrom pedtools is.ped has_parents_before_children parents_before_children
+#' @importFrom assertthat assert_that is.count  
 ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
                   model="chi", skip.recomb = "noninf_founders", seed=NULL, verbose=TRUE) {
-
+  # Check input
+  assert_that(is.ped(x), is.count(sims))
+  if(!model %in% c("chi", "haldane"))
+    stop("Argument 'model' must be either 'chi' or 'haldane'.")
+  
+  # Ensure that parents preceede their children
   if (!pedtools::has_parents_before_children(x)) {
     message("Reordering so that all parents preceede their children")
     x = pedtools::parents_before_children(x)
   }
   
+  # Start timer
   starttime = proc.time()
 
-  
-  if (!is.null(seed)) set.seed(seed)
+  # Load map and extract chromosome names.
   map = loadMap(map, chrom = chromosomes)
-  if (verbose) {
-    cat("---------------\n")
-    cond = !is.null(condition)
-    cat("Performing", ifelse(cond, "conditional", "unconditional"), "simulation\n")
-    mapchrom = attr(map, "chromosome")
-    if (is.null(mapchrom)) mapchrom = sapply(map, attr, "chromosome")
-    cat("Mode:", ifelse(identical(mapchrom, 23), "X chromosome", ifelse(23 %in% mapchrom, "both", "autosomal")), "\n")
-    cat("Recombination model:", match.arg(model, c("haldane (poisson process)", "chi square renewal model")), "\n")
-    cat("Number of simulations:", sims, "\n")
-  }
+  mapchrom = attr(map, "chromosome") # is NULL if map contains several
+  if (is.null(mapchrom)) 
+    mapchrom = sapply(map, attr, "chromosome")
 
+  if (verbose) {
+    cond_str = if (is.null(condition)) "unconditional" else "conditional"
+    chroms = paste(mapchrom, collapse=",")
+    aut_vs_X = if(identical(mapchrom, 23)) "X chromosome" 
+      else if (23 %in% mapchrom) "Mix of autosomal and X"
+      else "Autosomal"
+    model_str = if(model=="chi") "Chi square renewal process" else "Haldane's poisson process"    
+
+    print(glue::glue("
+    Performing {cond_str} simulation.
+    Chromosomes: {chroms}
+    Mode: {aut_vs_X}
+    Recombination model: {model_str}
+    Number of simulations: {sims}"))
+  }
+  
+  # Seed for random sampling
+  set.seed(seed)
+  
+  # Special preparation if simulation is conditional 
   if (!is.null(condition)) {
-    if (length(map) == 1) dischr = rep.int(attr(map[[1]], "chromosome"), sims)
-    else dischr = sample(sapply(map, attr, "chromosome"), size = sims, replace = T, prob = sapply(map, attr, "length_Mb"))
+    
+    # Sample chromosome carrying the conditional locus
+    if (length(map) == 1) 
+      dischr = rep.int(attr(map[[1]], "chromosome"), sims)
+    else 
+      dischr = sample(sapply(map, attr, "chromosome"), 
+                      size = sims, replace = T, 
+                      prob = sapply(map, attr, "length_Mb"))
+    
+    # Process condition SAP
     oblig.saps = sample.obligates(x, condition, sims)
   }
   else {
     dischr = rep.int(0, sims)
   }
 
+  # Determine ped members where recombination should be skipped.
   if (!is.null(skip.recomb)) {
     if (skip.recomb == "noninf_founders") {
       cafs = x$FOUNDERS
@@ -115,16 +142,25 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
       message("Skipping recombination in:", paste(skip.recomb, collapse = ","))
   }
 
+  # The actual simulation, each chromosome in turn 
   simdata = lapply(1:sims, function(i)
     lapply(map, function(m) {
-      if (dischr[sims] == attr(m, "chromosome")) cond = oblig.saps[[i]] else cond = NULL
+      # TODO: should dischr[sims] below be dischr[s]?
+      cond = if (dischr[sims] == attr(m, "chromosome")) oblig.saps[[i]] else NULL 
       genedrop(x, map = m, condition = cond, model = model, skip.recomb = skip.recomb)
     }))
+  
+  if (verbose) {
+    elapsed = (proc.time() - starttime)[["elapsed"]]
+    message("Simulation finished in ", elapsed, " seconds.")
+  }
+  
   attr(simdata, "total_map_length_Mb") = attr(map, "length_Mb")
-  if (verbose) cat("Simulation finished. Time used:",
-      (proc.time() - starttime)[["elapsed"]], "seconds\n---------------\n")
+  
+  
   simdata
 }
+
 
 sample.obligates = function(x, condition, sims) {
   obligate_ones = obligate.carriers(x, condition)
