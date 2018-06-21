@@ -167,25 +167,6 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
   genomeSimList
 }
 
-print.genomeSim = function(x, ...) {
-  attrs = attributes(x)
-  if(!length(attrs$skipped)) attrs$skipped = "None"
-  if(is.null(attrs$condition)) attrs$condition = "No"
-  
-print(glue::glue("
-  Total map length: {attrs$genome_length_Mb} Mb
-  Chromosomes: {paste(attrs$chromosomes, collapse=',')}
-  Recombination model: {attrs$model}
-  Pedigree members: {attrs$ped$NIND}
-  Skipped recombination in: {paste(attrs$skipped, collapse=',')}
-  Conditional: {attrs$condition}
-  "))
-}
-
-print.genomeSimList = function(x, ...) {
-  print(glue::glue("List of {length(x)} genome simulations."))
-  print(x[[1]])
-}
 
 sample.obligates = function(x, condition, sims) {
   obligate_ones = obligate.carriers(x, condition)
