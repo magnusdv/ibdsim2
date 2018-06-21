@@ -32,7 +32,7 @@
 #' x = pedtools::nuclearPed(2)
 #' s = ibdsim(x, sims=10)
 #' realised_kappa(s, id.pair=3:4)
-#'
+#' 
 #' @importFrom assertthat assert_that
 #' @export
 realised_kappa = function(sim, id.pair) {
@@ -41,8 +41,21 @@ realised_kappa = function(sim, id.pair) {
   
   segment_summary = vapply(sim, function(s) {
     a = alleleSummary(s, ids=id.pair, ibd.status=T)
-    len = a[, 'length']
-    ibd = a[, 'ibd']
+    chrom = a[,'chrom']
+    ibd = a[,'ibd']  
+
+    # merge adjacent segments with equal IBD status (and equal chrom)
+    seg_starts_idx = which(c(T, diff(ibd) != 0 | diff(chrom) != 0))
+    seg_ends_idx = c(seg_starts_idx[-1] - 1, length(ibd))
+    
+    a_merged = a[seg_starts_idx, c('chrom', 'start', 'end', 'length', 'ibd')]
+    a_merged[, 'end'] = a[seg_ends_idx, 'end']
+    a_merged[, 'length'] = a_merged[, 'end'] - a_merged[, 'start'] 
+    # TODO: Possible speedup of the above: Modify 'end' and 'length' only when needed
+    
+    len = a_merged[, 'length']  
+    ibd = a_merged[, 'ibd']  
+      
     c(ibd0 = sum(len[ibd==0]), ibd1 = sum(len[ibd==1]), ibd2 = sum(len[ibd==2]), 
       Nseg1 = sum(ibd==1), Nseg2 = sum(ibd==2), Nseg= sum(ibd>0))
   }, numeric(6))
