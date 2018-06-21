@@ -1,5 +1,6 @@
 
-#' prepare input 'segments' for plotting (extract and rename relevant columns, merge adjacent segments)
+# Prepare input 'segments' for plotting (extract and rename relevant columns,
+# merge adjacent segments)
 prepare_segments = function(segments, colorBy=NA) {
   segments = as.data.frame(segments)
   df = segments[1:3]
@@ -16,7 +17,8 @@ prepare_segments = function(segments, colorBy=NA) {
   N = nrow(df)
   if(N > 1) {
     join = df$end[-N] == df$start[-1] & df$fill[-N] == df$fill[-1] & df$chr[-N] == df$chr[-1]
-    for(i in which(join)) df$start[i+1] = df$start[i]
+    for(i in which(join)) 
+      df$start[i+1] = df$start[i]
     df = df[!join, ]
   }
   
@@ -51,6 +53,8 @@ prepare_segments = function(segments, colorBy=NA) {
 #' @import ggplot2
 #'
 #' @examples
+#' 
+#' \dontrun{
 #' segs = data.frame(chrom = c(1,4,5,5,10,10), start=c(100,50,20,80,10,50), 
 #'                   end = c(120,100,25,100,70,120), IBD=c("cousin1","cousin2"))
 #' karyo_haploid(segs, color="cyan")
@@ -64,6 +68,7 @@ prepare_segments = function(segments, colorBy=NA) {
 #' s = ibdsim(x, sims=1)
 #' a = tibble::as_tibble(alleleSummary(s[[1]], 3:4, ibd.status=TRUE))
 #' karyo_haploid(subset(a,ibd>0), colorBy="ibd", color=c("1"="blue", "2"="red"), alpha=.3)
+#' }
 #' 
 #' @export
 karyo_haploid = function(segments, colorBy=NA, color="black", alpha=1, bgcol="gray99", title=NULL) {
@@ -79,8 +84,8 @@ karyo_haploid = function(segments, colorBy=NA, color="black", alpha=1, bgcol="gr
     color = 1:nlevels(segments$fill)
   
   p = ggplot() + theme_void() + theme(strip.text.y = element_text(angle = 180)) +
-    geom_rect(data = genome, aes(xmin=0, xmax=Mb, ymin=0, ymax=1), fill=bgcol, col="black") + 
-    geom_rect(data = segments, aes(xmin=start, xmax=end, ymin=0, ymax=1, fill=fill), col="black", alpha=alpha) +
+    geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0, ymax=1), fill=bgcol, col="black") + 
+    geom_rect(data = segments, aes_string(xmin="start", xmax="end", ymin=0, ymax=1, fill="fill"), col="black", alpha=alpha) +
     facet_grid(chr~., switch="y") + labs(fill=NULL) +labs(caption="Simulation by ibdsim2") +
     scale_fill_manual(values = color)
   if(is.na(colorBy)) 
@@ -112,12 +117,14 @@ karyo_haploid = function(segments, colorBy=NA, color="black", alpha=1, bgcol="gr
 #' @import ggplot2
 #'
 #' @examples
-#' pat = data.frame(chrom = c(1,4,5,5,10,10), start=c(100,50,20,80,10,50),
-#'                   end = c(120,100,25,100,70,120))
+#' 
+#' \dontrun{
+#' pat = data.frame(chrom = c(1,4,5,5,10,10), start=c(100,50,20,80,10,80),
+#'                  end = c(120,100,25,100,70,120))
 #' mat = data.frame(chrom = c(2,4,5,5,10), start=c(80,50,10,80,50),
-#'                   end = c(120,100,35,100,120))
-#' karyo_diploid(pat, mat, color=c(cousin1="lightblue", cousin2="orange"))
-#'
+#'                  end = c(120,100,35,100,120))
+#' karyo_diploid(pat, mat, color=c(paternal="lightblue", maternal="orange"), alpha=0.8)
+#' }
 #'
 #' @export
 karyo_diploid = function(paternal, maternal, colors=NA, alpha=1, bgcol="gray99", title=NULL) {
@@ -142,10 +149,10 @@ karyo_diploid = function(paternal, maternal, colors=NA, alpha=1, bgcol="gray99",
   
   p = ggplot() + theme_void() + theme(strip.text.y = element_text(angle = 180)) +
     theme(panel.spacing.y = unit(.2, "lines")) +
-    geom_rect(data = genome, aes(xmin=0, xmax=Mb, ymin=0, ymax=.43), fill=bgcol, col="black") + 
-    geom_rect(data = genome, aes(xmin=0, xmax=Mb, ymin=0.57, ymax=1), fill=bgcol, col="black") + 
-    geom_rect(data = paternal, aes(xmin=start, xmax=end, ymin=.57, ymax=1, fill=fill), col="black", alpha=alpha) +
-    geom_rect(data = maternal, aes(xmin=start, xmax=end, ymin=0, ymax=.43, fill=fill), col="black", alpha=alpha) +
+    geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0, ymax=.43), fill=bgcol, col="black") + 
+    geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0.57, ymax=1), fill=bgcol, col="black") + 
+    geom_rect(data = paternal, aes_string(xmin="start", xmax="end", ymin=.57, ymax=1, fill="fill"), col="black", alpha=alpha) +
+    geom_rect(data = maternal, aes_string(xmin="start", xmax="end", ymin=0, ymax=.43, fill="fill"), col="black", alpha=alpha) +
     facet_grid(chr~., switch="y") + labs(fill=NULL) +labs(caption="Simulation by ibdsim2") +
     scale_fill_manual(values = colors, labels=labels)
   if(!is.null(title)) 
