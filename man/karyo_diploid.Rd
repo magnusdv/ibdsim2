@@ -32,11 +32,13 @@ The plot object is returned invisibly, so that additional ggplot
 Show chromosomal segments in a diploid karyogram
 }
 \examples{
-pat = data.frame(chrom = c(1,4,5,5,10,10), start=c(100,50,20,80,10,50),
-                  end = c(120,100,25,100,70,120))
-mat = data.frame(chrom = c(2,4,5,5,10), start=c(80,50,10,80,50),
-                  end = c(120,100,35,100,120))
-karyo_diploid(pat, mat, color=c(cousin1="lightblue", cousin2="orange"))
 
+\dontrun{
+pat = data.frame(chrom = c(1,4,5,5,10,10), start=c(100,50,20,80,10,80),
+                 end = c(120,100,25,100,70,120))
+mat = data.frame(chrom = c(2,4,5,5,10), start=c(80,50,10,80,50),
+                 end = c(120,100,35,100,120))
+karyo_diploid(pat, mat, color=c(paternal="lightblue", maternal="orange"), alpha=0.8)
+}
 
 }

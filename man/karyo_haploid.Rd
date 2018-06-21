@@ -36,6 +36,8 @@ The plot object is returned invisibly, so that additional ggplot
 Show chromosomal segments in a haploid karyogram
 }
 \examples{
+
+\dontrun{
 segs = data.frame(chrom = c(1,4,5,5,10,10), start=c(100,50,20,80,10,50), 
                   end = c(120,100,25,100,70,120), IBD=c("cousin1","cousin2"))
 karyo_haploid(segs, color="cyan")
@@ -49,5 +51,6 @@ x = pedtools::nuclearPed(2)
 s = ibdsim(x, sims=1)
 a = tibble::as_tibble(alleleSummary(s[[1]], 3:4, ibd.status=TRUE))
 karyo_haploid(subset(a,ibd>0), colorBy="ibd", color=c("1"="blue", "2"="red"), alpha=.3)
+}
 
 }
