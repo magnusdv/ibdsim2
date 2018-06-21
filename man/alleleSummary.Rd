@@ -12,7 +12,7 @@ Each chromosome is a list, with one entry for each individual. Each of these
 entries is a list of two matrices (one for each strand). The matrices have 2 
 columns (start position; allele) and one row for each segment unbroken by recombination.}
 
-\item{ids}{A vector of numerical IDs. If missing, all individuals are included.}
+\item{ids}{A vector of ID labels. If missing, all individuals are included.}
 
 \item{ibd.status}{TRUE or FALSES. This parameter is meaningful only if 
 \code{length(ids)==2}. If TRUE the IBD status (number of alleles shared IBD, either 
