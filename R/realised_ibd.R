@@ -3,7 +3,7 @@
 #' Compute the realised values of various measures of pairwise relatedness, in
 #' simulated data.
 #'
-#' Consider two members A and B of a pedigree P. The \emph{kinship coefficient}
+#' Consider two members A and B of a pedigree P. The *kinship coefficient*
 #' between A and B is defined as the probability that a random allele sampled in
 #' A is identical by descent (IBD) with an allele sampled in B at the same
 #' autosomal locus. If this probability is taken conditional only on the
@@ -11,19 +11,19 @@
 #'
 #' However, because of the discrete nature of meiotic recombination, the actual
 #' IBD distribution of individuals with the specified relationship is subject to
-#' variation. Hence we may also be interested in the \emph{realised} (or
-#' \emph{genomic}) kinship coefficient between A and B, which is the same
+#' variation. Hence we may also be interested in the *realised* (or
+#' *genomic*) kinship coefficient between A and B, which is the same
 #' probability as above, but conditional on the recombination events in the
 #' meioses between A and B in P. For example, if the recombition events between
 #' A and B happen to result in no segments of IBD sharing, the realised kinship
 #' is 0, whatever the pedigree-based kinship may be.
 #'
-#' The \emph{kappa coefficients}...and \emph{realised} kappa coefficients. TODO
+#' The *kappa coefficients*...and *realised* kappa coefficients. TODO
 #'
-#' The \emph{condensed identity coefficients} of Jacquard ...and \emph{realised}
+#' The *condensed identity coefficients* of Jacquard ...and *realised*
 #' identity coefficients. TODO
 #'
-#' @param sim A list of genome simulations, as output by \code{\link{ibdsim}}.
+#' @param sim A list of genome simulations, as output by [ibdsim()].
 #' @param id.pair A vector of length 2, with ID labels of the two individuals in question.
 #'
 #' @return TODO

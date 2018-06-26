@@ -8,6 +8,7 @@
 #' provide summaries and further analysis of the simulated genomes.
 #' 
 #' @docType package
+#' @import pedtools
 #' @importFrom stats rpois runif
 #' 
 #' @name ibdsim2

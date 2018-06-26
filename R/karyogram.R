@@ -37,14 +37,14 @@ prepare_segments = function(segments, colorBy=NA) {
 #'   containing the segments to be shown on the karyogram. The first three
 #'   columns must contain chromosome (with or without "chr" prefix), start
 #'   position and stop position (in Mb). Any further columns are ignored, except
-#'   possibly a column indicated by \code{colorBy}.
-#' @param colorBy The name of a single column of \code{segments}, to be used for
+#'   possibly a column indicated by `colorBy`.
+#' @param colorBy The name of a single column of `segments`, to be used for
 #'   coloring. If NA (default), all segments will have the same color,
-#'   controlled by the \code{color} parameter.
-#' @param color A single fill color for all the segments, or (if \code{colorBy}
+#'   controlled by the `color` parameter.
+#' @param color A single fill color for all the segments, or (if `colorBy`
 #'   is not NA) a named vector of colors. In the latter case, the names should
-#'   include all entries in the \code{colorBy} column.
-#' @param alpha A single numeric in [0,1] indicating color transparency.
+#'   include all entries in the `colorBy` column.
+#' @param alpha A single numeric in `[0,1]` indicating color transparency.
 #' @param bgcol The background color of the chromosomes.
 #' @param title Plot title.
 #'
@@ -108,7 +108,7 @@ karyo_haploid = function(segments, colorBy=NA, color="black", alpha=1, bgcol="gr
 #' @param colors A vector of two colors (in any form recognisable by R). If only
 #'   one color is given it is recycled. If the vector is named, a color legend
 #'   is included in the plot, using the names as labels.
-#' @param alpha A single numeric in [0,1] indicating color transparency.
+#' @param alpha A single numeric in `[0,1]` indicating color transparency.
 #' @param bgcol The background color of the chromosomes.
 #' @param title Plot title.
 #'

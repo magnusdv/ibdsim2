@@ -1,26 +1,26 @@
 #' Allele sharing summary
 #'
-#' This function facilitates downstream analysis of simulations produced by \code{\link{ibdsim}}.
+#' This function facilitates downstream analysis of simulations produced by [ibdsim()].
 #' It summarises a single genome simulation by describing the allele flow through the pedigree.
 #' 
-#' @param x An object of class \code{genomeSim}, i.e. a list of simulated chromosomes. 
+#' @param x An object of class `genomeSim`, i.e. a list of simulated chromosomes. 
 #' Each chromosome is a list, with one entry for each individual. Each of these 
 #' entries is a list of two matrices (one for each strand). The matrices have 2 
 #' columns (start position; allele) and one row for each segment unbroken by recombination.
 #' @param ids A vector of ID labels. If missing, all individuals are included.
 #' @param ibd.status TRUE or FALSES. This parameter is meaningful only if 
-#' \code{length(ids)==2}. If TRUE the IBD status (number of alleles shared IBD, either 
+#' `length(ids)==2`. If TRUE the IBD status (number of alleles shared IBD, either 
 #' 0, 1 or 2) of each segment is computed, as well as the breakdown of their parental origin.
 
 #'
 #' @return A numerical matrix. Each row corresponds to a chromosomal segment. 
 #' The first 4 columns describe the segment (chromosome, start, end, length), 
 #' and are followed by two columns (paternal allele, maternal allele) for each 
-#' of the selected individuals. If \code{ibd.status=TRUE} five more columns are
-#' added: \code{ibd}, \code{ibd_pp}, \code{ibd_pm}, \code{ibd_mp} and \code{ibd_mm}. 
+#' of the selected individuals. If `ibd.status=TRUE` five more columns are
+#' added: `ibd`, `ibd_pp`, `ibd_pm`, `ibd_mp` and `ibd_mm`. 
 #' The first of these indicate the IBD status (0, 1 or 2) in the segment, 
 #' while the latter 4 give the parental breakdown of this number. For instance,
-#' \code{ibd_pm} is 1 if the _p_aternal allele of the first individual is IBD 
+#' `ibd_pm` is 1 if the _p_aternal allele of the first individual is IBD 
 #' with the _m_aternal allele of the second individual, and 0 otherwise.
 #'
 #' @examples

@@ -7,7 +7,7 @@
 realised_kappa(sim, id.pair)
 }
 \arguments{
-\item{sim}{A list of genome simulations, as output by \code{\link{ibdsim}}.}
+\item{sim}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
 
 \item{id.pair}{A vector of length 2, with ID labels of the two individuals in question.}
 }

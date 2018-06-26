@@ -2,11 +2,11 @@
 #'
 #' Estimate the probability of no ibd sharing in a pairwise relationship.
 #'
-#' @param sim A list of genome simulations, as output by \code{\link{ibdsim}}.
+#' @param sim A list of genome simulations, as output by [ibdsim()].
 #' @param id.pair A vector of length 2, with ID labels of the two individuals in
 #'   question.
 #' @param truncate A numeric vector. Only IBD segments longer than this are
-#'   included in the computation. If \code{truncate} has more than one
+#'   included in the computation. If `truncate` has more than one
 #'   element, a separate estimate is provided for each value. The default is to
 #'   include all segments.
 #'   

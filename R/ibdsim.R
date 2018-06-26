@@ -11,11 +11,11 @@
 #' Poisson model for recombination is also implemented.)
 #'
 #' Recombination rates are sex-dependent, and vary along each chromosome
-#' according to the recombination map specified by the \code{map} parameter. By
+#' according to the recombination map specified by the `map` parameter. By
 #' default, the complete Decode map of the human autosome is used (see
-#' References). If \code{map="uniform.sex.spec"}, the genetic chromosome
-#' \emph{lengths} are as in the Decode map, but the recombination rate is kept
-#' constant along each chromosome. If \code{map="uniform.sex.aver"}, sex
+#' References). If `map="uniform.sex.spec"`, the genetic chromosome
+#' *lengths* are as in the Decode map, but the recombination rate is kept
+#' constant along each chromosome. If `map="uniform.sex.aver"`, sex
 #' averaged genetic chromosome lengths are used (and constant recombination
 #' rates along each chromosome).
 #'
@@ -25,7 +25,7 @@
 #' (containing ID labels) named '0', '1', '2', 'atleast1' and 'atmost1' (some of
 #' these can be absent or NULL; see Examples).
 #'
-#' If a condition SAP is given (i.e. if \code{condition} is non-null),
+#' If a condition SAP is given (i.e. if `condition` is non-null),
 #' simulation of each complete chromosome set (all autosomes by default) is
 #' performed as follows: A 'disease chromosome' is sampled at random (using the
 #' physical chromosome lengths as weights), followed by a random 'disease locus'
@@ -39,7 +39,7 @@
 #' allele' is always the one passed on.) For the other chromosomes, simulation
 #' is done unconditionally.
 #'
-#' @param x A pedigree in the form of a \code{\link[pedtools]{ped}} object.
+#' @param x A pedigree in the form of a [pedtools::ped()] object.
 #' @param sims A positive integer indicating the number of simulations.
 #' @param condition A single allele pattern (SAP), i.e., a list with
 #'   numerical entries named "0", "1", "2", "atleast1", "atmost1".
@@ -55,8 +55,8 @@
 #'   simulated without recombination (i.e. a random strand is passed on to each
 #'   offspring). If NULL, nobody is skipped. The default value (the character
 #'   "noninf_founders") computes the set of pedigree founders that cannot be
-#'   carriers of the alleles described in the \code{condition} SAPs.
-#' @param seed An integer to be passed on to \code{\link{set.seed}}).
+#'   carriers of the alleles described in the `condition` SAPs.
+#' @param seed An integer to be passed on to [set.seed()]).
 #' @param verbose A logical.
 #'
 #' @return The simulated genomes are invisibly returned.

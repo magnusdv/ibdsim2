@@ -18,7 +18,7 @@ names are ignored, as well as any further columns.}
 one color is given it is recycled. If the vector is named, a color legend
 is included in the plot, using the names as labels.}
 
-\item{alpha}{A single numeric in [0,1] indicating color transparency.}
+\item{alpha}{A single numeric in \code{[0,1]} indicating color transparency.}
 
 \item{bgcol}{The background color of the chromosomes.}
 
@@ -26,7 +26,7 @@ is included in the plot, using the names as labels.}
 }
 \value{
 The plot object is returned invisibly, so that additional ggplot
-  layers may be added if needed.
+layers may be added if needed.
 }
 \description{
 Show chromosomal segments in a diploid karyogram

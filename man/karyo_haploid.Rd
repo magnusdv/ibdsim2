@@ -22,7 +22,7 @@ controlled by the \code{color} parameter.}
 is not NA) a named vector of colors. In the latter case, the names should
 include all entries in the \code{colorBy} column.}
 
-\item{alpha}{A single numeric in [0,1] indicating color transparency.}
+\item{alpha}{A single numeric in \code{[0,1]} indicating color transparency.}
 
 \item{bgcol}{The background color of the chromosomes.}
 
@@ -30,7 +30,7 @@ include all entries in the \code{colorBy} column.}
 }
 \value{
 The plot object is returned invisibly, so that additional ggplot
-  layers may be added if needed.
+layers may be added if needed.
 }
 \description{
 Show chromosomal segments in a haploid karyogram

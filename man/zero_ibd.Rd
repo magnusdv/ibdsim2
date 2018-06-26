@@ -7,7 +7,7 @@
 zero_ibd(sim, id.pair, truncate = 0)
 }
 \arguments{
-\item{sim}{A list of genome simulations, as output by \code{\link{ibdsim}}.}
+\item{sim}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
 
 \item{id.pair}{A vector of length 2, with ID labels of the two individuals in
 question.}
@@ -20,9 +20,9 @@ include all segments.}
 \value{
 A data.frame with tree numeric columns:
 \describe{
-  \item{truncate}{Same as input.}
-  \item{zeroprob}{The estimated probability of no IBD segments.}
-  \item{SE}{The standard error of the estimate.}
+\item{truncate}{Same as input.}
+\item{zeroprob}{The estimated probability of no IBD segments.}
+\item{SE}{The standard error of the estimate.}
 }
 }
 \description{

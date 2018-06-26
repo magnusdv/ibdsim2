@@ -4,8 +4,8 @@
 #' individuals.
 #'
 #' This function takes as input one or several complete outputs from the
-#' \code{\link{ibdsim}}. The underlying pedigree of each input is extracted, and
-#' \code{\link[pedtools]{leaves}} is used to identify the two individuals to be
+#' [ibdsim()]. The underlying pedigree of each input is extracted, and
+#' [pedtools::leaves()] is used to identify the two individuals to be
 #' examined. (Hence it is required that each pedigree has exactly two leaves.)
 #'
 #' For each simulation the number of IBD=1 segments is plotted against the
@@ -13,8 +13,8 @@
 #' corresponding to the theoretical (i.e., pedigree-based) value of
 #' \eqn{\kappa_1} for each input relationship.
 #'
-#' @param ... One or several objects of class \code{genomeSimList}, i.e. outputs
-#'   of \code{\link{ibdsim}}.
+#' @param ... One or several objects of class `genomeSimList`, i.e. outputs
+#'   of [ibdsim()].
 #' @param labels A character vector of the same length as above, containing
 #'   descriptive plotting labels for the inputs.
 #' @param alpha A transparency parameter for the scatter points.

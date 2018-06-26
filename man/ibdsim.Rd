@@ -9,7 +9,7 @@ ibdsim(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
   verbose = TRUE)
 }
 \arguments{
-\item{x}{A pedigree in the form of a \code{\link[pedtools]{ped}} object.}
+\item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped()}} object.}
 
 \item{sims}{A positive integer indicating the number of simulations.}
 
@@ -33,7 +33,7 @@ offspring). If NULL, nobody is skipped. The default value (the character
 "noninf_founders") computes the set of pedigree founders that cannot be
 carriers of the alleles described in the \code{condition} SAPs.}
 
-\item{seed}{An integer to be passed on to \code{\link{set.seed}}).}
+\item{seed}{An integer to be passed on to \code{\link[=set.seed]{set.seed()}}).}
 
 \item{verbose}{A logical.}
 }
