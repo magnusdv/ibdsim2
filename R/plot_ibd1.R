@@ -18,6 +18,8 @@
 #' @param labels A character vector of the same length as above, containing
 #'   descriptive plotting labels for the inputs.
 #' @param alpha A transparency parameter for the scatter points.
+#' @param ellipses A logical: Should confidence ellipses be added to the plot?
+#' @param legend_inside A logical indicating wether the legend should be placed inside (default) or outside the plot window.
 #'
 #' @return A ggplot2 plot object.
 #'
@@ -33,16 +35,16 @@
 #'
 #' # Simulate (increase 'sims'!)
 #' map = "uniform.sex.spec"
-#' s.pat = ibdsim(x.pat, sims = 10, map=map)
-#' s.mat = ibdsim(x.mat, sims = 10, map=map)
+#' sims = 10
+#' s.pat = ibdsim(x.pat, sims = sims, map=map)
+#' s.mat = ibdsim(x.mat, sims = sims, map=map)
 #'
 #' plot_ibd1(s.pat, s.mat, labels=c("HSpat", "HSmat"))
 #'
 #' @import ggplot2
 #' @importFrom kinship2 kinship
-#' @importFrom pedtools leaves as.kinship2_pedigree
 #' @export
-plot_ibd1 = function(..., labels, alpha=1) {
+plot_ibd1 = function(..., labels, alpha=1, ellipses=TRUE, legend_inside=TRUE) {
   sims = list(...)
   if(missing(labels)) labels = seq_along(sims)
   stopifnot(length(labels) == length(sims))
@@ -57,29 +59,38 @@ plot_ibd1 = function(..., labels, alpha=1) {
     count = real$Nsegments["Nseg1", ]
     averlen = ifelse(count == 0, 0, real$kappa.realised['ibd1', ] * real$genomeLength / count)
     kinship_coeff = kinship2::kinship(as.kinship2_pedigree(ped))[ids[1], ids[2]]
-    
-    data.frame(count = count, 
+  
+    data.frame(count = count,
                averlen = averlen, 
                genomeLength = real$genomeLength, 
                relation = labels[i], 
                ibd1_theory = kinship_coeff*4)
   })
+  
   plot_data = do.call(rbind, plot_data)
   plot_data$relation = factor(plot_data$relation)
   
-  range.x = range(plot_data$count)
   max.x = max(plot_data$count)
   max.y = max(plot_data$averlen)
   
-  g = ggplot(data=plot_data, aes_string("count", "averlen", col="relation")) + 
-    theme_bw(base_size=14) + 
+  g = ggplot(data=plot_data, aes_string(x="count", y="averlen", col="relation")) + 
+    geom_jitter(width=0.25, alpha=alpha) +
+    theme_bw(base_size=15) + 
     scale_color_manual(values = ggplotColors(nlevels(plot_data$relation))) +
-    geom_jitter(width=0.4, height=0.5, alpha=alpha) + 
-    stat_ellipse(size=1.3) + 
-    labs(x="Segment count", y = "Average length (cM)", title="Distribution of IBD segments")
+    labs(title = "Distribution of IBD segments", 
+         x = "Segment count", 
+         y = "Average length (cM)", 
+         col = "Relationship")
+    
+  if(ellipses) 
+    g = g + stat_ellipse(aes_string(x="count"), size=1.3)
+  
+  if(legend_inside) 
+    g = g + theme(legend.position = c(.95, .95), legend.justification = c("right", "top")) 
+  
   
   # Theoretical ibd1 curves
-  ibd1_vals = unique(plot_data$ibd1_theory)
+  ibd1_vals = sort(unique(plot_data$ibd1_theory))
   genomeLen = plot_data$genomeLength[1]
   
   pointlist = lapply(ibd1_vals, function(ibd1) {
@@ -91,12 +102,14 @@ plot_ibd1 = function(..., labels, alpha=1) {
   contour.data = do.call(rbind, pointlist)
   contour.data$IBD1 = as.factor(contour.data$IBD1)
   
+  # kappa curve labels
+  kappa_labels = paste("kappa[1] == ", round(ibd1_vals,3))
   ymin = sapply(pointlist, function(df) df$y[nrow(df)])
-  kappa_labels = paste("kappa[1] == ", ibd1_vals)
+  vj = rep_len(c(1.5, -0.5), length(ymin)) # vjust: alternating below/above
   
   g = g + 
     geom_line(data=contour.data, aes_string("x", "y", group="IBD1"), lty=2, lwd=1, inherit.aes = F) +
-    annotate("text", max.x + 1, ymin, label=kappa_labels, hjust="middle", vjust="top", parse=T)
+    annotate("text", max.x, ymin, label=kappa_labels, hjust="right", vjust=vj, parse=T, size=5)
   
   g
 }

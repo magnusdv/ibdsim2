@@ -4,7 +4,7 @@
 \alias{plot_ibd1}
 \title{Scatter plot of IBD=1 segment distributions}
 \usage{
-plot_ibd1(..., labels, alpha = 1)
+plot_ibd1(..., labels, alpha = 1, ellipses = TRUE, legend_inside = TRUE)
 }
 \arguments{
 \item{...}{One or several objects of class \code{genomeSimList}, i.e. outputs
@@ -14,6 +14,10 @@ of \code{\link[=ibdsim]{ibdsim()}}.}
 descriptive plotting labels for the inputs.}
 
 \item{alpha}{A transparency parameter for the scatter points.}
+
+\item{ellipses}{A logical: Should confidence ellipses be added to the plot?}
+
+\item{legend_inside}{A logical indicating wether the legend should be placed inside (default) or outside the plot window.}
 }
 \value{
 A ggplot2 plot object.
@@ -45,8 +49,9 @@ x.mat = pedtools::swapSex(x.pat, 1)
 
 # Simulate (increase 'sims'!)
 map = "uniform.sex.spec"
-s.pat = ibdsim(x.pat, sims = 10, map=map)
-s.mat = ibdsim(x.mat, sims = 10, map=map)
+sims = 10
+s.pat = ibdsim(x.pat, sims = sims, map=map)
+s.mat = ibdsim(x.mat, sims = sims, map=map)
 
 plot_ibd1(s.pat, s.mat, labels=c("HSpat", "HSmat"))
 
