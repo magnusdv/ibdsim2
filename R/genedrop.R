@@ -2,14 +2,15 @@
 genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x= ped object
   FID = x$FID
   MID = x$MID
-  nonfounders = x$NONFOUNDERS
+  FOU = founders(x, internal=T)
+  NONFOU = nonfounders(x, internal=T)
   chrom = attr(map, "chromosome")
   
   h = distribute.founder.alleles(x, chrom)
   
   if (is.null(condition)) {
     if (chrom < 23) {
-      for (i in nonfounders) {
+      for (i in NONFOU) {
         fa = FID[i]
         mo = MID[i]
         h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, skip.recomb = fa %in% skip.recomb),
@@ -18,7 +19,7 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
       }
     }
     else if (chrom == 23) {
-      for (i in nonfounders) {
+      for (i in NONFOU) {
         fa = FID[i]
         mo = MID[i]
         maternal.gamete = meiosis(h[[mo]], map = map$female, model = model, skip.recomb = mo %in% skip.recomb)
@@ -31,7 +32,7 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
   }
   else {
     zero = condition$"0"; one = condition$"1"; two = condition$"2"; atm1 = condition$"atmost1";
-    dis.fou = one[one %in% x$FOUNDERS]
+    dis.fou = one[one %in% FOU]
     if (length(dis.fou) != 1) 
       stop("Obligate carriers must include exactly 1 founder.")
     dis.al = h[[dis.fou]][[1]][[2]] # h[[dis.fou]][[1]] is matrix with 1 row.
@@ -41,7 +42,7 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
     COND = list(c(locus = dis.locus, allele = dis.al, action = 1), 
                 c(locus = dis.locus, allele = dis.al, action = 2), NULL) # action: 1=force; 2=avoid
     if (chrom < 23)
-      for (i in nonfounders) {
+      for (i in NONFOU) {
         fa = FID[i]
         mo = MID[i]
         condits = COND[.decide_action(dis.al, dis.locus, h[c(fa, mo)], carry_code[[i]])] # returns list of 2 elements
@@ -67,8 +68,8 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
 
 
 distribute.founder.alleles = function(x, chrom="AUTOSOMAL") {
-  h = vector("list", x$NIND)
-  fou = x$FOUNDERS
+  h = vector("list", pedsize(x))
+  fou = founders(x, internal=T)
   nfou = length(fou)
   
   if (is.null(chrom)) chrom = "AUTOSOMAL"

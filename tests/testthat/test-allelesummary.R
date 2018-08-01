@@ -9,7 +9,7 @@ test_that("allele summary properties of sibs", {
   expect_is(summar_all, "matrix")
   expect_is(summar_sibs, "matrix")
   
-  expect_equal(ncol(summar_all), 4 + 2*x$NIND)
+  expect_equal(ncol(summar_all), 4 + 2*pedsize(x))
   expect_equal(ncol(summar_sibs), 4 + 4 + 5)
   
   expect_true(all(summar_sibs[,'ibd'] == rowSums(summar_sibs[,10:13])))

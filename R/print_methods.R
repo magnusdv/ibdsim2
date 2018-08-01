@@ -6,7 +6,7 @@ print.chromosomeSim = function(x, ...) {
   model = attr(x, 'model')
   pedsize = length(x)
   skipped = attr(x, 'skipped')
-  skip_str = if(!length(skipped)) "None" else paste(skipped, collapse=",")
+  skip_str = if(!length(skipped)) "None" else toString(skipped)
   cond_sap = attr(x, 'condition')
   cond = if(is.null(cond_sap)) "No" else cond_sap
   
@@ -31,7 +31,7 @@ print.genomeSim = function(x, ...) {
   Total map length: {attrs$genome_length_Mb} Mb
   Chromosomes: {paste(attrs$chromosomes, collapse=',')}
   Recombination model: {attrs$model}
-  Pedigree members: {attrs$ped$NIND}
+  Pedigree members: {pedsize(attrs$ped)}
   Skipped recombination in: {paste(attrs$skipped, collapse=',')}
   Conditional: {attrs$condition}
   "))

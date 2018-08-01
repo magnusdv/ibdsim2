@@ -97,11 +97,10 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
 
   if (verbose) {
     cond_str = if (is.null(condition)) "unconditional" else "conditional"
-    chroms = paste(mapchrom, collapse=",")
     
     print(glue::glue("
     Performing {cond_str} simulation.
-    Chromosomes: {chroms}
+    Chromosomes: {toString(mapchrom)}
     Recombination model: {model_string}
     Number of simulations: {sims}"))
   }
@@ -127,10 +126,10 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
   # Determine ped members where recombination should be skipped.
   if (!is.null(skip.recomb)) {
     if (skip.recomb == "noninf_founders") {
-      cafs = x$FOUNDERS
+      cafs = FOU = founders(x, internal=T)
       if (!is.null(condition)) 
         cafs = intersect(cafs, .CAFs(x, condition))
-      skip.recomb = setdiff(x$FOUNDERS, cafs)
+      skip.recomb = setdiff(FOU, cafs)
     }
     if (length(skip.recomb) > 0 && verbose) 
       message("Skipping recombination in:", paste(skip.recomb, collapse = ","))

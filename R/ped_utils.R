@@ -3,9 +3,10 @@
   zeros = sap[["0"]]
   ones = c(sap[["1"]], sap[["atleast1"]])
   twos = sap[["2"]]
-  caf <- fou <- setdiff(x$FOUNDERS, zeros)
+  caf = fou = setdiff(founders(x, internal=T), zeros)
   fou_one = intersect(fou, ones)
-  if (length(fou_one) > 1 || any(twos %in% fou)) return(numeric()) # since founders always have different alleles (by definition)
+  if (length(fou_one) > 1 || any(twos %in% fou)) 
+    return(numeric()) # since founders always have different alleles (by definition)
 
   fou_desc = lapply(fou, descendants, x = x, internal=TRUE)
 
