@@ -80,9 +80,9 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
     stop("Argument 'model' must be either 'chi' or 'haldane'.")
   model_string = if(model=="chi") "Chi square renewal process" else "Haldane's poisson process"    
   
-  # Ensure that parents preceede their children
+  # Ensure that parents precede their children
   if (!pedtools::has_parents_before_children(x)) {
-    message("Reordering so that all parents preceede their children")
+    message("Reordering so that all parents precede their children")
     x = pedtools::parents_before_children(x)
   }
   

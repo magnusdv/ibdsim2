@@ -4,7 +4,8 @@
 \alias{plot_ibd1}
 \title{Scatter plot of IBD=1 segment distributions}
 \usage{
-plot_ibd1(..., labels, alpha = 1, ellipses = TRUE, legend_inside = TRUE)
+plot_ibd1(..., labels, alpha = 1, ellipses = TRUE,
+  legend_inside = TRUE)
 }
 \arguments{
 \item{...}{One or several objects of class \code{genomeSimList}, i.e. outputs
