@@ -44,15 +44,16 @@ alleleSummary = function(x, ids, ibd.status=FALSE) {
   ped = attr(x, "pedigree")
   if (missing(ids)) 
     ids = ped$LABELS
-  ids = internalID(ped, ids) # ad hoc. TODO
   
   if(ibd.status && length(ids)!=2)
     stop("Parameter 'ibd.status' is meaningful only if length(ids)==2.")
   
   allele.colnames = paste0(rep(ids, each = 2), c("p", "m"))
 
+  ids_int = internalID(ped, ids) 
+  
   each.chrom = lapply(x, function(y) {
-    haplos = unlist(y[ids], recursive = FALSE)
+    haplos = unlist(y[ids_int], recursive = FALSE)
     breaks = unlist(lapply(haplos, function(m) m[-1, 1]))
     breaks = c(0, .sortDouble(breaks[!duplicated(breaks)]))
     alleles = vapply(haplos, pos2allele, posvec = breaks, FUN.VALUE = breaks)
