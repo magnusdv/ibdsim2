@@ -43,7 +43,7 @@ alleleSummary = function(x, ids, ibd.status=FALSE) {
   
   ped = attr(x, "pedigree")
   if (missing(ids)) 
-    ids = ped$LABELS
+    ids = labels(ped)
   
   if(ibd.status && length(ids)!=2)
     stop("Parameter 'ibd.status' is meaningful only if length(ids)==2.")
