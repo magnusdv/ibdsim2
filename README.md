@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-ibdsim2
-=======
+ibdsim2 <img src="man/figures/logo.png" align="right" height=140/>
+==================================================================
 
 Introduction
 ------------
