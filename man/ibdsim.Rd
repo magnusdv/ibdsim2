@@ -63,8 +63,8 @@ rates along each chromosome).
 
 IBD patterns are described as combinations of Single Allele Patterns (SAPs).
 A SAP is a specification for a given allele of the number of copies carried
-by various individuals, and must be given as a list of numerical vectors
-(containing ID labels) named '0', '1', '2', 'atleast1' and 'atmost1' (some of
+by various individuals, and must be given as a list of vectors containing ID
+labels, named '0', '1', '2', 'atleast1' and 'atmost1' (some of
 these can be absent or NULL; see Examples).
 
 If a condition SAP is given (i.e. if \code{condition} is non-null),

@@ -58,7 +58,7 @@ plot_ibd1 = function(..., labels, alpha=1, ellipses=TRUE, legend_inside=TRUE) {
        message("Warning: Simulation list ", i, " includes IBD=2 segments. Expected kappa1 line will be wrong!")
     count = real$Nsegments["Nseg1", ]
     averlen = ifelse(count == 0, 0, real$kappa.realised['ibd1', ] * real$genomeLength / count)
-    kinship_coeff = kinship2::kinship(as_kinship2_pedigree(ped))[ids[1], ids[2]]
+    kinship_coeff = kinship2::kinship(as_kinship2_pedigree(ped))[ids[1], ids[2]] #TODO use ribd instead
   
     data.frame(count = count,
                averlen = averlen, 
