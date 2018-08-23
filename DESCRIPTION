@@ -23,6 +23,6 @@ Imports:
     glue,
     kinship2
 Suggests: testthat
-RoxygenNote: 6.1.0
 LinkingTo: Rcpp
+RoxygenNote: 6.1.0
 Roxygen: list(markdown = TRUE)
