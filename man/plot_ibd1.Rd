@@ -43,10 +43,10 @@ corresponding to the theoretical (i.e., pedigree-based) value of
 # Compare the distribution of IBD=1 segments
 # between paternal and maternal half siblings.
 ###
-
+library(pedtools)
 # Define the pedigrees
-x.pat = pedtools::halfCousinsPed(0)
-x.mat = pedtools::swapSex(x.pat, 1)
+x.pat = halfSibPed()
+x.mat = swapSex(x.pat, 1)
 
 # Simulate (increase 'sims'!)
 map = "uniform.sex.spec"
@@ -54,6 +54,6 @@ sims = 10
 s.pat = ibdsim(x.pat, sims = sims, map=map)
 s.mat = ibdsim(x.mat, sims = sims, map=map)
 
-plot_ibd1(s.pat, s.mat, labels=c("HSpat", "HSmat"))
+plot_ibd1(s.pat, s.mat, labels = c("HSpat", "HSmat"))
 
 }

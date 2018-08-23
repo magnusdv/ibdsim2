@@ -83,7 +83,7 @@ is done unconditionally.
 }
 \examples{
 
-z = pedtools::halfCousinsPed(0)
+z = pedtools::halfSibPed()
 plot(z)
 res = ibdsim(z, sims=1)
 res
