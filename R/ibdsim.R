@@ -74,10 +74,15 @@
 ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
                   model="chi", skip.recomb = "noninf_founders", seed=NULL, verbose=TRUE) {
   # Check input
-  assert_that(is.ped(x), is.count(sims))
-  
+  if(!is.ped(x))
+    stop2("The first argument must be a `ped` object")
+  if(!is_count(sims))
+    stop2("`sims` must be a positive integer")
   if(!model %in% c("chi", "haldane"))
-    stop("Argument 'model' must be either 'chi' or 'haldane'.")
+    stop2('Argument `model`` must be either "chi" or "haldane"')
+  if(!all(founder_inbreeding(x) %in% c(0,1)))
+    stop2("Founder inbreeding coefficients other than 0 and 1 are not allowed")
+  
   model_string = if(model=="chi") "Chi square renewal process" else "Haldane's poisson process"    
   
   # Ensure that parents precede their children
@@ -138,8 +143,7 @@ ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
   # The actual simulations: One sim at the time; each chromosome in turn 
   genomeSimList = lapply(1:sims, function(i) {
     lapply(map, function(m) {
-      # TODO: should dischr[sims] below be dischr[s]?
-      cond = if (dischr[sims] == attr(m, "chromosome")) oblig.saps[[i]] else NULL 
+      cond = if (dischr[i] == attr(m, "chromosome")) oblig.saps[[i]] else NULL 
       genedrop(x, map = m, condition = cond, model = model, skip.recomb = skip.recomb)
     })
   })
