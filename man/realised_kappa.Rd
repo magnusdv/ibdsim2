@@ -11,14 +11,12 @@ realised_kappa(sim, id.pair)
 
 \item{id.pair}{A vector of length 2, with ID labels of the two individuals in question.}
 }
-\value{
-TODO
-}
 \description{
 Compute the realised values of various measures of pairwise relatedness, in
-simulated data.
+simulated data. For now, only the realised IBD ("kappa") coefficients are implemented.
 }
 \details{
+DRAFT:
 Consider two members A and B of a pedigree P. The \emph{kinship coefficient}
 between A and B is defined as the probability that a random allele sampled in
 A is identical by descent (IBD) with an allele sampled in B at the same
@@ -33,11 +31,6 @@ probability as above, but conditional on the recombination events in the
 meioses between A and B in P. For example, if the recombition events between
 A and B happen to result in no segments of IBD sharing, the realised kinship
 is 0, whatever the pedigree-based kinship may be.
-
-The \emph{kappa coefficients}...and \emph{realised} kappa coefficients. TODO
-
-The \emph{condensed identity coefficients} of Jacquard ...and \emph{realised}
-identity coefficients. TODO
 }
 \examples{
 x = pedtools::nuclearPed(2)

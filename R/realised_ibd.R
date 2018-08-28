@@ -1,8 +1,9 @@
 #' Realised relatedness
 #'
 #' Compute the realised values of various measures of pairwise relatedness, in
-#' simulated data.
+#' simulated data. For now, only the realised IBD ("kappa") coefficients are implemented.
 #'
+#' DRAFT:  
 #' Consider two members A and B of a pedigree P. The *kinship coefficient*
 #' between A and B is defined as the probability that a random allele sampled in
 #' A is identical by descent (IBD) with an allele sampled in B at the same
@@ -18,25 +19,20 @@
 #' A and B happen to result in no segments of IBD sharing, the realised kinship
 #' is 0, whatever the pedigree-based kinship may be.
 #'
-#' The *kappa coefficients*...and *realised* kappa coefficients. TODO
-#'
-#' The *condensed identity coefficients* of Jacquard ...and *realised*
-#' identity coefficients. TODO
-#'
+#' 
 #' @param sim A list of genome simulations, as output by [ibdsim()].
 #' @param id.pair A vector of length 2, with ID labels of the two individuals in question.
-#'
-#' @return TODO
 #'
 #' @examples
 #' x = pedtools::nuclearPed(2)
 #' s = ibdsim(x, sims=10)
 #' realised_kappa(s, id.pair=3:4)
 #' 
-#' @importFrom assertthat assert_that
 #' @export
 realised_kappa = function(sim, id.pair) {
-  assertthat::assert_that(length(id.pair) == 2)
+  if(length(id.pair) != 2) 
+    stop2("`id.pair` must be a vector of length 2")
+  
   L = attr(sim, 'genome_length_Mb')
   
   segment_summary = vapply(sim, function(s) {
@@ -60,9 +56,9 @@ realised_kappa = function(sim, id.pair) {
       Nseg1 = sum(ibd==1), Nseg2 = sum(ibd==2), Nseg= sum(ibd>0))
   }, numeric(6))
   
-  kappa.realised=segment_summary[1:3,]/L
+  kappa.realised = segment_summary[1:3, , drop = FALSE]/L
   list(kappa.realised = kappa.realised, 
-       Nsegments = segment_summary[4:6,], 
+       Nsegments = segment_summary[4:6, , drop = FALSE], 
        kappa.hat= rowMeans(kappa.realised),
        genomeLength = L)
 }
