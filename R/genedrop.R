@@ -46,8 +46,10 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
         fa = FIDX[i]
         mo = MIDX[i]
         condits = COND[.decide_action(dis.al, dis.locus, h[c(fa, mo)], carry_code[[i]])] # returns list of 2 elements
-        h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, skip.recomb = fa %in% skip.recomb, condition = condits[[1]]),
-                      meiosis(h[[mo]], map = map$female, model = model, skip.recomb = mo %in% skip.recomb, condition = condits[[2]]))
+        h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, 
+                              skip.recomb = fa %in% skip.recomb, condition = condits[[1]]),
+                      meiosis(h[[mo]], map = map$female, model = model, 
+                              skip.recomb = mo %in% skip.recomb, condition = condits[[2]]))
       }
     else {
       stop("X-linked conditional genedrop is not implemented yet.")
@@ -75,8 +77,17 @@ distribute.founder.alleles = function(x, chrom="AUTOSOMAL") {
   if (is.null(chrom)) chrom = "AUTOSOMAL"
   if (is.numeric(chrom)) chrom = ifelse(chrom < 23, "AUTOSOMAL", "X")
 
-  if (chrom == "AUTOSOMAL")
+  if (chrom == "AUTOSOMAL") {
     aux = cbind(rep.int(0, 2 * nfou), seq_len(2 * nfou))
+    
+    # For 100% inbred founders; make alleles identical
+    FOU_INB = founder_inbreeding(x)
+    stopifnot(all(FOU_INB %in% c(0,1)))
+    inb1 = which(FOU_INB == 1)
+    if(length(inb1) > 0)
+      aux[2 * inb1, ] = aux[2 * inb1 - 1, ]
+  }
+  
   else {
     SEX = x$SEX
     alleles = numeric(nfou)
@@ -88,6 +99,7 @@ distribute.founder.alleles = function(x, chrom="AUTOSOMAL") {
     }
     aux = cbind(rep.int(0, 2 * nfou), alleles, deparse.level = 0)
   }
+  
   h[fou] = lapply(2 * seq_along(fou), function(i) 
     list(aux[i - 1, , drop = F], aux[i, , drop = F]))
   h
