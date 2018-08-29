@@ -5,9 +5,9 @@
 #' @param sim A list of genome simulations, as output by [ibdsim()].
 #' @param id.pair A vector of length 2, with ID labels of the two individuals in
 #'   question.
-#' @param truncate A numeric vector. Only IBD segments longer than this are
+#' @param truncate A vector of positive real numbers. Only IBD segments longer than this are
 #'   included in the computation. If `truncate` has more than one
-#'   element, a separate estimate is provided for each value. The default is to
+#'   element, a separate estimate is provided for each value. The default (`truncate = 0`) is to
 #'   include all segments.
 #'   
 #' @return A data.frame with tree numeric columns:
@@ -43,7 +43,11 @@
 #' 
 #' @export
 zero_ibd = function(sim, id.pair, truncate=0) {
-  assertthat::assert_that(length(id.pair) == 2, is.numeric(truncate))
+  if(length(id.pair) != 2)
+    stop2("`id.pair` must be a vector of length 2")
+  if(!is.numeric(truncate) || length(truncate) == 0 || any(truncate < 0))
+    stop2("`truncate` must be vector of positive numbers"))
+  
   ibd_count = vapply(sim, function(s) {
     a = alleleSummary(s, ids=id.pair, ibd.status=T)
     ibdstatus = a[, 'ibd']

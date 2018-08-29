@@ -68,11 +68,11 @@
 #' res = ibdsim(z, sims=1)
 #' res
 #'
-#' @export
 #' @importFrom pedtools is.ped has_parents_before_children parents_before_children
-#' @importFrom assertthat assert_that is.count  
-ibdsim = function(x, sims, condition=NULL, map="decode", chromosomes=NULL,
-                  model="chi", skip.recomb = "noninf_founders", seed=NULL, verbose=TRUE) {
+#' @export
+ibdsim = function(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
+                  model = "chi", skip.recomb = "noninf_founders", seed = NULL, 
+                  verbose = TRUE) {
   # Check input
   if(!is.ped(x))
     stop2("The first argument must be a `ped` object")

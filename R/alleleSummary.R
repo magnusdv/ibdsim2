@@ -38,15 +38,16 @@
 #' 
 #' @importFrom pedtools internalID
 #' @export
-alleleSummary = function(x, ids, ibd.status=FALSE) {
-  assert_that(inherits(x, "genomeSim"))
+alleleSummary = function(x, ids, ibd.status = FALSE) {
+  if(!inherits(x, "genomeSim")) 
+    stop2("The first argument is not a `genomeSim` object")
   
   ped = attr(x, "pedigree")
   if (missing(ids)) 
     ids = labels(ped)
   
   if(ibd.status && length(ids)!=2)
-    stop("Parameter 'ibd.status' is meaningful only if length(ids)==2.")
+    stop2("The parameter `ibd.status` is meaningful only when `ids` has length 2")
   
   allele.colnames = paste0(rep(ids, each = 2), c("p", "m"))
 
