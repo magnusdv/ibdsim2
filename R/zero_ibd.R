@@ -46,7 +46,7 @@ zero_ibd = function(sim, id.pair, truncate=0) {
   if(length(id.pair) != 2)
     stop2("`id.pair` must be a vector of length 2")
   if(!is.numeric(truncate) || length(truncate) == 0 || any(truncate < 0))
-    stop2("`truncate` must be vector of positive numbers"))
+    stop2("`truncate` must be vector of positive numbers")
   
   ibd_count = vapply(sim, function(s) {
     a = alleleSummary(s, ids=id.pair, ibd.status=T)

@@ -76,7 +76,7 @@ obligate.carriers = function(x, sap) {
   obligs = lapply(obligs, setdiff, c(sap[["atleast1"]], sap[["2"]]))
   obligs = obligs[sapply(obligs, function(vec) !any(sap[["0"]] %in% vec))] # and paths containing 0-indivs
   if (length(obligs) == 0) 
-    stop("Hmm, I can't find any possible sets of obligate carriers.")
+    stop2("Cannot find any possible sets of obligate carriers")
   
   keep = lapply(seq_len(length(obligs)), function(i) {
     for (other in obligs[-i]) 

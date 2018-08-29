@@ -28,13 +28,12 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
           maternal.gamete)
       }
     }
-    else stop("Chromosome is neither NULL, 'AUTOSOMAL' or 'X'.")
   }
   else {
     zero = condition$"0"; one = condition$"1"; two = condition$"2"; atm1 = condition$"atmost1";
     dis.fou = one[one %in% FOU]
     if (length(dis.fou) != 1) 
-      stop("Obligate carriers must include exactly 1 founder.")
+      stop2("Obligate carriers must include exactly 1 founder")
     dis.al = h[[dis.fou]][[1]][[2]] # h[[dis.fou]][[1]] is matrix with 1 row.
     dis.locus = runif(1, min = 0, max = attr(map, "length_Mb"))
 
@@ -52,14 +51,13 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
                               skip.recomb = mo %in% skip.recomb, condition = condits[[2]]))
       }
     else {
-      stop("X-linked conditional genedrop is not implemented yet.")
+      stop2("X-linked conditional genedrop is not implemented yet")
     }
     attr(h, "dis.locus") = dis.locus
     attr(h, "dis.allele") = dis.al
   }
   attr(h, "chromosome") = chrom
   attr(h, "length_Mb") = attr(map, "length_Mb")
-  #attr(h, 'pedigree') = x
   attr(h, "condition") = condition
   attr(h, "model") = model
   attr(h, "skipped") = skip.recomb

@@ -1,5 +1,8 @@
 # Not exported
-meiosis = function(parent, map, model="chi", condition=NULL, skip.recomb=FALSE) { # skip=TRUE returns random strand with no recombination; condition should be NULL or a vector with elements 'locus'(Mb), 'allele' and 'action' (1=force,2=avoid).
+meiosis = function(parent, map, model="chi", condition=NULL, skip.recomb=FALSE) { 
+  # skip=TRUE returns random strand with no recombination; 
+  # condition should be NULL or a vector with elements 'locus'(Mb), 'allele' and 'action' (1=force,2=avoid).
+  
   if (condit <- !is.null(condition)) {
     whichStrand = which(condition[["allele"]] == .getAlleles(parent, locus <- condition[["locus"]]))
     startStrand = switch(condition[["action"]],
