@@ -29,12 +29,20 @@ meiosis = function(parent, map, model="chi", condition=NULL, skip.recomb=FALSE) 
       Cx.bundle = C_events[!as.logical((seq_len(nC) + sample.int(m + 1, 1)) %% (m + 1))]    # Cx events on 4 strand bundle: every (m+1)th
       Cx = Cx.bundle[as.logical(sample.int(2, length(Cx.bundle), replace = T) %% 2)]    # thinning. Each survive with prob=1/2
   })
+  
   cpos = cm2phys(cM_locus = Cx, mapmat = map) # crossover positions
+  
+  # Switch start strand if sum(cpos < locus) is odd
   if (condit)
-    startStrand = 2 - (startStrand + sum(cpos < locus)) %% 2  # switches start strand iff sum(cpos < locus) is odd
+    startStrand = 2 - (startStrand + sum(cpos < locus)) %% 2
 
-  recombine(parent[[startStrand]], parent[[3 - startStrand]], cpos)
+  # Recombine!
+  child = recombine(parent[[startStrand]], parent[[3 - startStrand]], cpos)
+  
+  # Merge consecutive rows with the same allele
+  als = child[, 2]
+  if(any(als[-1] == als[-length(als)]))
+    child = mergeConsecutiveRows(child, mergeBy = 2)
+  
+  child
 }
-
-
-.sortDouble = function(x) x[order(x)] #

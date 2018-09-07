@@ -11,6 +11,27 @@ is_count = function(x, minimum = 1) {
            x >= minimum)
 }
 
+mergeConsecutiveRows = function(df, mergeBy, segStart=NULL, segEnd=NULL, segLength=NULL) {
+  if(nrow(df) < 2) return(df)
+  if(length(mergeBy) == 1) 
+    mergeBy = df[, mergeBy]
+  stopifnot(length(mergeBy) == nrow(df))
+      
+  runs = rle(mergeBy)
+  ends = cumsum(runs$lengths)
+  starts = ends - runs$lengths + 1
+  
+  newdf = df[starts, , drop = FALSE]
+  
+  if(!is.null(segEnd)) {
+    newdf[, segEnd] = df[ends, segEnd]
+    if(!is.null(segLength)) {
+      newdf[, segLength] = newdf[, segEnd] - newdf[, segStart] 
+    }
+  }
+  newdf
+}
+
 .getAlleles = function(chromdata, posvec) {
   posvec[posvec < 0] = 0
   rbind(pos2allele(chromdata[[1]], posvec),
@@ -36,4 +57,8 @@ pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks -
   if (!is.null(atm1 <- sap[["atmost1"]])) cat("  At most one copy:", paste(atm1, collapse = ", "), "\n")
   if (!is.null(zero <- sap[["0"]])) cat("  Zero copies:", paste(zero, collapse = ", "), "\n")
   cat("\n")
+}
+
+.sortDouble = function(x) {
+  x[order(x, method="shell")]
 }
