@@ -20,7 +20,7 @@ Imports:
     Rcpp,
     ggplot2,
     glue,
-    kinship2
+    ribd
 Suggests: testthat
 LinkingTo: Rcpp
 RoxygenNote: 6.1.0
