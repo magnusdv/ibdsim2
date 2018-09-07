@@ -62,3 +62,11 @@ pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks -
 .sortDouble = function(x) {
   x[order(x, method="shell")]
 }
+
+.comb2 = function(n) {
+  if (n < 2) return(matrix(nrow = 0, ncol = 2))
+  v1 = rep.int(seq_len(n - 1), (n - 1):1)
+  v2 = NULL
+  for (i in 2:n) v2 = c(v2, i:n)
+  cbind(v1, v2, deparse.level = 0)
+}
