@@ -1,44 +1,49 @@
 #' Allele sharing summary
 #'
-#' This function facilitates downstream analysis of simulations produced by [ibdsim()].
-#' It summarises a single genome simulation by describing the allele flow through the pedigree.
-#' 
-#' @param x An object of class `genomeSim`, i.e. a list of simulated chromosomes. 
-#' Each chromosome is a list, with one entry for each individual. Each of these 
-#' entries is a list of two matrices (one for each strand). The matrices have 2 
-#' columns (start position; allele) and one row for each segment unbroken by recombination.
-#' @param ids A vector of ID labels. If missing, all individuals are included.
-#' @param ibd.status TRUE or FALSES. This parameter is meaningful only if 
-#' `length(ids)==2`. If TRUE the IBD status (number of alleles shared IBD, either 
-#' 0, 1 or 2) of each segment is computed, as well as the breakdown of their parental origin.
-
+#' This function facilitates downstream analysis of simulations produced by
+#' [ibdsim()]. It summarises a single genome simulation by describing the allele
+#' flow through the pedigree.
 #'
-#' @return A numerical matrix. Each row corresponds to a chromosomal segment. 
-#' The first 4 columns describe the segment (chromosome, start, end, length), 
-#' and are followed by two columns (paternal allele, maternal allele) for each 
-#' of the selected individuals. If `ibd.status=TRUE` five more columns are
-#' added: `ibd`, `ibd_pp`, `ibd_pm`, `ibd_mp` and `ibd_mm`. 
-#' The first of these indicate the IBD status (0, 1 or 2) in the segment, 
-#' while the latter 4 give the parental breakdown of this number. For instance,
-#' `ibd_pm` is 1 if the _p_aternal allele of the first individual is IBD 
-#' with the _m_aternal allele of the second individual, and 0 otherwise.
+#' @param x An object of class `genomeSim`, i.e. a list of simulated
+#'   chromosomes. Each chromosome is a list, with one entry for each individual.
+#'   Each of these entries is a list of two matrices (one for each strand). The
+#'   matrices have 2 columns (start position; allele) and one row for each
+#'   segment unbroken by recombination.
+#' @param ids A vector of ID labels. If missing, all individuals are included.
+#' @param ibd.status TRUE or FALSES. This parameter is meaningful only if
+#'   `length(ids)==2`. If TRUE the IBD status (number of alleles shared IBD,
+#'   either 0, 1 or 2) of each segment is computed, as well as the breakdown of
+#'   their parental origin.
+#' @param jacquard.state If TRUE, then the condensed identity ("Jacquard") state
+#'   of the alleles is computed for each segment, as an integer 1-9. Ignored unless
+#'   `length(ids) == 2`.
+#'
+#' @return A numerical matrix. Each row corresponds to a chromosomal segment.
+#'   The first 4 columns describe the segment (chromosome, start, end, length),
+#'   and are followed by two columns (paternal allele, maternal allele) for each
+#'   of the selected individuals. If `ibd.status=TRUE` five more columns are
+#'   added: `ibd`, `ibd_pp`, `ibd_pm`, `ibd_mp` and `ibd_mm`. The first of these
+#'   indicate the IBD status (0, 1 or 2) in the segment, while the latter 4 give
+#'   the parental breakdown of this number. For instance, `ibd_pm` is 1 if the
+#'   _p_aternal allele of the first individual is IBD with the _m_aternal allele
+#'   of the second individual, and 0 otherwise.
 #'
 #' @examples
 #' ### Sibling simulation (3 sims of chromosomes 1 and 2)
 #' x = pedtools::nuclearPed(2)
 #' sim = ibdsim(x, sims=3, chromosomes=1:2)
-#' 
+#'
 #' alleleSummary(sim[[1]]) # First sim, summary of all individuals
 #' alleleSummary(sim[[1]], ids=3:4) # Summary of the siblings
 #' alleleSummary(sim[[1]], ids=3:4, ibd.status=TRUE) # IBD breakdown of the siblings
-#' 
+#'
 #' # Trivial example: Summary of the father.
 #' # Being the first founder, his alleles are denoted 1 and 2.
-#' alleleSummary(sim[[1]], ids=1) 
-#' 
+#' alleleSummary(sim[[1]], ids=1)
+#'
 #' @importFrom pedtools internalID
 #' @export
-alleleSummary = function(x, ids, ibd.status = FALSE) {
+alleleSummary = function(x, ids, ibd.status = FALSE, jacquard.state = TRUE) {
   if(!inherits(x, "genomeSim")) 
     stop2("The first argument is not a `genomeSim` object")
   
@@ -76,5 +81,39 @@ alleleSummary = function(x, ids, ibd.status = FALSE) {
 
     res = cbind(res, ibd = ibd, ibd_pp = ibd_pp, ibd_pm = ibd_pm, ibd_mp = ibd_mp, ibd_mm = ibd_mm)
   }
+  if(length(ids)==2 && jacquard.state)
+    res = cbind(res, Sigma = jacquardState(a1 = res[, 5], a2 = res[, 6], b1 = res[, 7], b2 = res[, 8]))
   res
 }
+
+
+# Return the condensed identity ("jacquard") state given 4 alleles:
+# a1 and a2 from individual 1; b1 and b2 from individual 2
+jacquardState = function(a1, a2, b1, b2) { 
+  inb1 = a1 == a2
+  inb2 = b1 == b2
+  pa = a1 == b1
+  ma = a2 == b2
+  d1 = a1 == b2
+  d2 = a2 == b1
+  
+  horiz = inb1 + inb2
+  verts = pa + ma + d1 + d2
+  
+  res = integer(length(a1))
+  
+  res[horiz == 2 & pa] = 1
+  res[horiz == 2 & !pa] = 2
+  
+  res[inb1 & !inb2 & (pa | ma)] = 3
+  res[inb1 & !inb2 & verts == 0] = 4
+  
+  res[!inb1 & inb2 & (pa | ma)] = 5
+  res[!inb1 & inb2 & verts == 0] = 6
+  
+  res[horiz == 0 & verts == 2] = 7
+  res[verts == 1] = 8
+  res[horiz + verts == 0] = 9
+  res
+}
+
