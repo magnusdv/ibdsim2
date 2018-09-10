@@ -5,7 +5,8 @@
 \title{Scatter plot of IBD=1 segment distributions}
 \usage{
 plot_ibd1(..., labels, alpha = 1, ellipses = TRUE,
-  legend_inside = TRUE)
+  legend_inside = FALSE, title = "Distribution of IBD segments",
+  xlab = "Segment count", ylab = "Average segment length (cM)")
 }
 \arguments{
 \item{...}{One or several objects of class \code{genomeSimList}, i.e. outputs
@@ -19,6 +20,8 @@ descriptive plotting labels for the inputs.}
 \item{ellipses}{A logical: Should confidence ellipses be added to the plot?}
 
 \item{legend_inside}{A logical indicating wether the legend should be placed inside (default) or outside the plot window.}
+
+\item{title, xlab, ylab}{Title and axis labels. Set to \code{NULL} to remove.}
 }
 \value{
 A ggplot2 plot object.
