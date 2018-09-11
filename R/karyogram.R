@@ -3,28 +3,27 @@
 # merge adjacent segments)
 prepare_segments = function(segments, colorBy=NA) {
   segments = as.data.frame(segments)
+  
+  stopifnot(ncol(segments) >= 3, 
+            is.na(colorBy) || colorBy %in% names(segments))
+  
+  N = nrow(segments)
   df = segments[1:3]
   names(df) = c("chr", "start", "end")
   
-  # fill colors
-  if(!is.na(colorBy)) {
-    stopifnot(colorBy %in% names(segments))
-    df$fill = as.factor(segments[[colorBy]])
-  }
-  else df$fill = factor(1)
+  # Fill colors
+  df$fill = factor(if(!is.na(colorBy)) segments[[colorBy]] else rep_len(1, N))
   
-  # merge overlapping segments with the same color
-  N = nrow(df)
-  if(N > 1) {
-    join = df$end[-N] == df$start[-1] & df$fill[-N] == df$fill[-1] & df$chr[-N] == df$chr[-1]
-    for(i in which(join)) 
-      df$start[i+1] = df$start[i]
-    df = df[!join, ]
-  }
+  # Early return if empty
+  if(N == 0) 
+    return(df)
   
-  # add 'chr' if neccessary
+  # Add 'chr' if neccessary
   if(df$chr[1] %in% 1:22) 
     df$chr = paste0("chr", df$chr)
+  
+  # Merge overlapping segments with the same color
+  df = mergeConsecutiveSegments(df, mergeBy = c("chr", "fill"), segLength="length")
   df
 }
 

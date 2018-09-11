@@ -11,7 +11,7 @@ is_count = function(x, minimum = 1) {
            x >= minimum)
 }
 
-mergeConsecutiveRows = function(df, mergeBy, segStart=NULL, segEnd=NULL, segLength=NULL) {
+mergeConsecutiveRows = function(df, mergeBy) {
   if(nrow(df) < 2) return(df)
   if(length(mergeBy) == 1) 
     mergeBy = df[, mergeBy]
@@ -21,14 +21,37 @@ mergeConsecutiveRows = function(df, mergeBy, segStart=NULL, segEnd=NULL, segLeng
   ends = cumsum(runs$lengths)
   starts = ends - runs$lengths + 1
   
+  df[starts, , drop = FALSE]
+}
+
+mergeConsecutiveSegments = function(df, mergeBy, segStart = "start", 
+                                    segEnd = "end", segLength = "length") {
+  N = nrow(df)
+  if(N < 2) return(df)
+  
+  if(length(mergeBy) == 1)
+    mergeBy = df[, mergeBy]
+  else if(length(mergeBy) != N)
+    mergeBy = apply(df[, mergeBy], 1, paste, collapse = ":")
+  
+  newSeg = c(T, df[-N, segEnd] != df[-1, segStart])
+  mergeBy = paste(mergeBy, cumsum(newSeg), sep = "_chunk")
+  
+  # Runs of consecutive segs; row numbers of start/end
+  runs = rle(mergeBy)
+  ends = cumsum(runs$lengths)
+  starts = ends - runs$lengths + 1
+  
+  # Keep only rows starting a new segment
   newdf = df[starts, , drop = FALSE]
   
-  if(!is.null(segEnd)) {
-    newdf[, segEnd] = df[ends, segEnd]
-    if(!is.null(segLength)) {
-      newdf[, segLength] = newdf[, segEnd] - newdf[, segStart] 
-    }
-  }
+  # Fix endpoints
+  newdf[, segEnd] = df[ends, segEnd]
+  
+  # Fix lengths if present
+  if(!is.null(segLength) && segLength %in% names(df))
+    newdf[, segLength] = newdf[, segEnd] - newdf[, segStart] 
+  
   newdf
 }
 
@@ -69,4 +92,9 @@ pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks -
   v2 = NULL
   for (i in 2:n) v2 = c(v2, i:n)
   cbind(v1, v2, deparse.level = 0)
+}
+
+`%||%` = function(x, y) {
+  if (is.null(x)) y
+  else x
 }
