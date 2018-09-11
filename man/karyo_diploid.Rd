@@ -4,8 +4,9 @@
 \alias{karyo_diploid}
 \title{Diploid karyogram}
 \usage{
-karyo_diploid(paternal, maternal, colors = NA, alpha = 1,
-  bgcol = "gray99", title = NULL)
+karyo_diploid(paternal, maternal, chromosomes = 1:22,
+  colors = c(paternal = "lightblue", maternal = "orange"), alpha = 1,
+  bgcol = "gray99", title = NULL, noCaption = FALSE)
 }
 \arguments{
 \item{paternal, maternal}{data.frames (or objects coercible to data.frames)
@@ -13,6 +14,9 @@ containing the segments to be shown on the paternal and maternal strands of
 the karyogram. The first three columns must contain chromosome (with or
 without "chr" prefix), start position and stop position (in Mb). Column
 names are ignored, as well as any further columns.}
+
+\item{chromosomes}{The (autosomal) chromosomes to be included in the plot,
+given as a subset of the integers 1, 2,..., 22.}
 
 \item{colors}{A vector of two colors (in any form recognisable by R). If only
 one color is given it is recycled. If the vector is named, a color legend
@@ -23,6 +27,9 @@ is included in the plot, using the names as labels.}
 \item{bgcol}{The background color of the chromosomes.}
 
 \item{title}{Plot title.}
+
+\item{noCaption}{Logical: If TRUE, the default caption "Simulation by ibdsim2"
+is removed.}
 }
 \value{
 The plot object is returned invisibly, so that additional ggplot
@@ -34,11 +41,11 @@ Show chromosomal segments in a diploid karyogram
 \examples{
 
 \dontrun{
-pat = data.frame(chrom = c(1,4,5,5,10,10), start=c(100,50,20,80,10,80),
+pat = data.frame(chrom = c(1,4,5,5,10,10), start = c(100,50,20,80,10,80),
                  end = c(120,100,25,100,70,120))
-mat = data.frame(chrom = c(2,4,5,5,10), start=c(80,50,10,80,50),
+mat = data.frame(chrom = c(2,4,5,5,10), start = c(80,50,10,80,50),
                  end = c(120,100,35,100,120))
-karyo_diploid(pat, mat, color=c(paternal="lightblue", maternal="orange"), alpha=0.8)
+karyo_diploid(pat, mat)
 }
 
 }

@@ -104,58 +104,75 @@ karyo_haploid = function(segments, colorBy=NA, color="black", alpha=1, bgcol="gr
 #'   the karyogram. The first three columns must contain chromosome (with or
 #'   without "chr" prefix), start position and stop position (in Mb). Column
 #'   names are ignored, as well as any further columns.
+#' @param chromosomes The (autosomal) chromosomes to be included in the plot,
+#'   given as a subset of the integers 1, 2,..., 22.
 #' @param colors A vector of two colors (in any form recognisable by R). If only
 #'   one color is given it is recycled. If the vector is named, a color legend
 #'   is included in the plot, using the names as labels.
 #' @param alpha A single numeric in `[0,1]` indicating color transparency.
 #' @param bgcol The background color of the chromosomes.
 #' @param title Plot title.
+#' @param noCaption Logical: If TRUE, the default caption "Simulation by ibdsim2"
+#'   is removed.
 #'
 #' @return The plot object is returned invisibly, so that additional ggplot
 #'   layers may be added if needed.
 #' @import ggplot2
 #'
 #' @examples
-#' 
+#'
 #' \dontrun{
-#' pat = data.frame(chrom = c(1,4,5,5,10,10), start=c(100,50,20,80,10,80),
+#' pat = data.frame(chrom = c(1,4,5,5,10,10), start = c(100,50,20,80,10,80),
 #'                  end = c(120,100,25,100,70,120))
-#' mat = data.frame(chrom = c(2,4,5,5,10), start=c(80,50,10,80,50),
+#' mat = data.frame(chrom = c(2,4,5,5,10), start = c(80,50,10,80,50),
 #'                  end = c(120,100,35,100,120))
-#' karyo_diploid(pat, mat, color=c(paternal="lightblue", maternal="orange"), alpha=0.8)
+#' karyo_diploid(pat, mat)
 #' }
 #'
 #' @export
-karyo_diploid = function(paternal, maternal, colors=NA, alpha=1, bgcol="gray99", title=NULL) {
+karyo_diploid = function(paternal, maternal, chromosomes = 1:22, 
+                         colors = c(paternal = "lightblue", maternal = "orange"),  
+                         alpha = 1, bgcol = "gray99", title = NULL, noCaption = FALSE) {
   
-  decode = loadMap("Decode", chrom=1:22)
+  decode = loadMap("Decode", chrom = chromosomes)
   chrlen = sapply(decode, attr, 'length')
-  seqnames = paste0("chr", 1:22)
-  genome = data.frame(chr=factor(seqnames, levels=seqnames), Mb=chrlen)
+  seqnames = paste0("chr", chromosomes)
+  genome = data.frame(chr = factor(seqnames, levels = seqnames), Mb = chrlen)
   
   paternal = prepare_segments(paternal, colorBy=NA)
   maternal = prepare_segments(maternal, colorBy=NA)
   
-  paternal$chr = factor(paternal$chr, levels=levels(genome$chr))
-  maternal$chr = factor(maternal$chr, levels=levels(genome$chr))
+  paternal$chr = factor(paternal$chr, levels = levels(genome$chr))
+  maternal$chr = factor(maternal$chr, levels = levels(genome$chr))
   
+  Np = nrow(paternal)
+  Nm = nrow(maternal)
+   
   # colors
-  colors = rep(colors, length=2)
-  labels = names(colors)
-  names(colors) = 1:2
-  paternal$fill = factor(1, levels=1:2)
-  maternal$fill = factor(2, levels=1:2)
+  colorlabels = names(colors) %||% c("paternal", "maternal")
+  colorlabels = factor(colorlabels, levels = colorlabels)
   
-  p = ggplot() + theme_void() + theme(strip.text.y = element_text(angle = 180)) +
-    theme(panel.spacing.y = unit(.2, "lines")) +
+  paternal$fill = rep_len(colorlabels[1], Np)
+  maternal$fill = rep_len(colorlabels[2], Nm)
+  
+  p = ggplot() + 
+    theme_void(base_size = 15) + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 5.5), "pt")) +  
+    ggtitle(title) +
     geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0, ymax=.43), fill=bgcol, col="black") + 
-    geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0.57, ymax=1), fill=bgcol, col="black") + 
-    geom_rect(data = paternal, aes_string(xmin="start", xmax="end", ymin=.57, ymax=1, fill="fill"), col="black", alpha=alpha) +
-    geom_rect(data = maternal, aes_string(xmin="start", xmax="end", ymin=0, ymax=.43, fill="fill"), col="black", alpha=alpha) +
-    facet_grid(chr~., switch="y") + labs(fill=NULL) +labs(caption="Simulation by ibdsim2") +
-    scale_fill_manual(values = colors, labels=labels)
-  if(!is.null(title)) 
-    p = p + ggtitle(title)
+    geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0.57, ymax=1), fill=bgcol, col="black") +
+    facet_grid(chr ~ ., switch = "y") + 
+    theme(strip.text.y = element_text(angle = 180),
+          panel.spacing.y = unit(.2, "lines"))
+  
+  if(Np > 0)
+    p = p + geom_rect(data = paternal, aes_string(xmin="start", xmax="end", ymin=0.57, ymax=1, fill="fill"), col="black", alpha=alpha)
+  if(Nm > 0)
+    p = p +  geom_rect(data = maternal, aes_string(xmin="start", xmax="end", ymin=0, ymax=.43, fill="fill"), col="black", alpha=alpha)
+  
+  p = p + 
+    scale_fill_manual(values = colors, drop = F) +
+    labs(fill = NULL, caption = if(noCaption) NULL else "Simulation by ibdsim2")
+      
   p
 }
 
