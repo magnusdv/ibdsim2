@@ -49,14 +49,14 @@ zero_ibd = function(sim, id.pair, truncate=0) {
     stop2("`truncate` must be vector of positive numbers")
   
   ibd_count = vapply(sim, function(s) {
-    a = alleleSummary(s, ids=id.pair, ibd.status=T)
-    ibdstatus = a[, 'ibd']
+    a = alleleSummary(s, ids=id.pair)
+    ibdstatus = a[, 'IBD']
     len = a[, 'length']
     
     # Count IBD segments (ibd = 1 or 2) longer than each "truncate"
-    segs = vapply(truncate, function(trunc) sum(ibdstatus > 0 & len >= trunc), FUN.VALUE=1)
-    
-  }, FUN.VALUE=numeric(length(truncate)))
+    segs = vapply(truncate, function(trunc) sum(ibdstatus > 0 & len >= trunc), 1)
+  }, 
+  FUN.VALUE = numeric(length(truncate)))
   
   # Fix vapply output inconsistency.
   if(length(truncate) == 1) dim(ibd_count) = c(1, length(ibd_count))

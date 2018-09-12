@@ -1,16 +1,28 @@
 context("allele_summary")
 
+library(pedtools)
+
 test_that("allele summary properties of sibs", {
-  x = pedtools::nuclearPed(2)
-  sim1 = ibdsim(x, sims=1, chromosomes=1:2, verbose=F)[[1]]
-  summar_all = alleleSummary(sim1)
-  summar_sibs = alleleSummary(sim1, ids=3:4, ibd=T, jacquard=T)
+  x = nuclearPed(2)
+  sim = ibdsim(x, sims=1, chromosomes=1:2, verbose=F)[[1]]
+  summar_all = alleleSummary(sim)
+  summar_sibs = alleleSummary(sim, ids=3:4)
   
   expect_is(summar_all, "matrix")
   expect_is(summar_sibs, "matrix")
   
   expect_equal(ncol(summar_all), 4 + 2*pedsize(x))
-  expect_equal(ncol(summar_sibs), 4 + 4 + 5 + 1)
+  expect_equal(ncol(summar_sibs), 4 + 4 + 2)
   
-  expect_true(all(summar_sibs[,'ibd'] == rowSums(summar_sibs[,10:13])))
+  # parents
+  a = alleleSummary(sim, 1:2)
+  expect_identical(a[, "IBD"], c(0,0))
+  expect_identical(a[, "Sigma"], c(9,9))
+})
+
+test_that("allele summary of FSM", {
+  x = fullSibMating(1)
+  sim = ibdsim(x, sims=1, chromosomes=1:2, verbose=F, seed=17)[[1]]
+  a = alleleSummary(sim, 5:6)
+  expect_setequal(a[, 'Sigma'], 1:9)
 })

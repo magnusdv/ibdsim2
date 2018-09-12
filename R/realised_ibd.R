@@ -36,24 +36,24 @@ realised_kappa = function(sim, id.pair) {
   L = attr(sim, 'genome_length_Mb')
   
   segment_summary = vapply(sim, function(s) {
-    a = alleleSummary(s, ids=id.pair, ibd.status=T)
+    a = alleleSummary(s, ids=id.pair)
     chrom = a[,'chrom']
-    ibd = a[,'ibd']  
+    ibd = a[,'IBD']  
 
     # merge adjacent segments with equal IBD status (and equal chrom)
     seg_starts_idx = which(c(T, diff(ibd) != 0 | diff(chrom) != 0))
     seg_ends_idx = c(seg_starts_idx[-1] - 1, length(ibd))
     
-    a_merged = a[seg_starts_idx, c('chrom', 'start', 'end', 'length', 'ibd')]
+    a_merged = a[seg_starts_idx, c('chrom', 'start', 'end', 'length', 'IBD')]
     a_merged[, 'end'] = a[seg_ends_idx, 'end']
     a_merged[, 'length'] = a_merged[, 'end'] - a_merged[, 'start'] 
     # TODO: Possible speedup of the above: Modify 'end' and 'length' only when needed
     
     len = a_merged[, 'length']  
-    ibd = a_merged[, 'ibd']  
+    ibd = a_merged[, 'IBD']  
       
     c(ibd0 = sum(len[ibd==0]), ibd1 = sum(len[ibd==1]), ibd2 = sum(len[ibd==2]), 
-      Nseg1 = sum(ibd==1), Nseg2 = sum(ibd==2), Nseg= sum(ibd>0))
+      Nseg1 = sum(ibd==1), Nseg2 = sum(ibd==2), Nseg = sum(ibd>0))
   }, numeric(6))
   
   kappa.realised = segment_summary[1:3, , drop = FALSE]/L

@@ -4,7 +4,7 @@
 \alias{alleleSummary}
 \title{Allele sharing summary}
 \usage{
-alleleSummary(x, ids, ibd.status = FALSE, jacquard.state = TRUE)
+alleleSummary(x, ids)
 }
 \arguments{
 \item{x}{An object of class \code{genomeSim}, i.e. a list of simulated
@@ -14,26 +14,26 @@ matrices have 2 columns (start position; allele) and one row for each
 segment unbroken by recombination.}
 
 \item{ids}{A vector of ID labels. If missing, all individuals are included.}
-
-\item{ibd.status}{TRUE or FALSES. This parameter is meaningful only if
-\code{length(ids)==2}. If TRUE the IBD status (number of alleles shared IBD,
-either 0, 1 or 2) of each segment is computed, as well as the breakdown of
-their parental origin.}
-
-\item{jacquard.state}{If TRUE, then the condensed identity ("Jacquard") state
-of the alleles is computed for each segment, as an integer 1-9. Ignored unless
-\code{length(ids) == 2}.}
 }
 \value{
 A numerical matrix. Each row corresponds to a chromosomal segment.
 The first 4 columns describe the segment (chromosome, start, end, length),
 and are followed by two columns (paternal allele, maternal allele) for each
-of the selected individuals. If \code{ibd.status=TRUE} five more columns are
-added: \code{ibd}, \code{ibd_pp}, \code{ibd_pm}, \code{ibd_mp} and \code{ibd_mm}. The first of these
-indicate the IBD status (0, 1 or 2) in the segment, while the latter 4 give
-the parental breakdown of this number. For instance, \code{ibd_pm} is 1 if the
-_p_aternal allele of the first individual is IBD with the _m_aternal allele
-of the second individual, and 0 otherwise.
+of the selected individuals. If \code{length(ids) == 2} two additional columns
+are added:
+\itemize{
+\item \code{IBD} : The IBD status of each segment (= number of alleles shared
+identical by descent). For a given segment, the IBD status is either 0, 1,
+2 or NA. If either individual is inbred, they may be autozygous in a
+segment, in which case the IBD status is reported as NA. With inbred
+individuals the \code{Sigma} column (see below) is more informative than the
+\code{IBD} column.
+\item \code{Sigma} : The condensed identity ("Jacquard") state of each segment,
+given as an integer in the range 1-9. The numbers correspond to the
+standard ordering of the condensed states. In particular, for non-inbred
+individuals the states 9, 8, 7 correspond to IBD status 0, 1, 2
+respectively.
+}
 }
 \description{
 This function facilitates downstream analysis of simulations produced by
@@ -47,10 +47,16 @@ sim = ibdsim(x, sims=3, chromosomes=1:2)
 
 alleleSummary(sim[[1]]) # First sim, summary of all individuals
 alleleSummary(sim[[1]], ids=3:4) # Summary of the siblings
-alleleSummary(sim[[1]], ids=3:4, ibd.status=TRUE) # IBD breakdown of the siblings
 
 # Trivial example: Summary of the father.
 # Being the first founder, his alleles are denoted 1 and 2.
 alleleSummary(sim[[1]], ids=1)
+
+# Full sib mating: all 9 sigma states are possible
+y = pedtools::fullSibMating(1)
+sim = ibdsim(y, sims=1, chromosomes=1, seed=16)
+a = alleleSummary(sim[[1]], ids=5:6)
+
+stopifnot(setequal(a[, 'Sigma'], 1:9))
 
 }

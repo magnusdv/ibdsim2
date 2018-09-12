@@ -65,8 +65,8 @@ prepare_segments = function(segments, colorBy=NA) {
 #' # Example showing simulated IBD segments of full siblings
 #' x = pedtools::nuclearPed(2)
 #' s = ibdsim(x, sims=1)
-#' a = tibble::as_tibble(alleleSummary(s[[1]], 3:4, ibd.status=TRUE))
-#' karyo_haploid(subset(a,ibd>0), colorBy="ibd", color=c("1"="blue", "2"="red"), alpha=.3)
+#' a = tibble::as_tibble(alleleSummary(s[[1]], 3:4))
+#' karyo_haploid(subset(a,ibd>0), colorBy="IBD", color=c("1"="blue", "2"="red"))
 #' }
 #' 
 #' @export

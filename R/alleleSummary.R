@@ -10,23 +10,25 @@
 #'   matrices have 2 columns (start position; allele) and one row for each
 #'   segment unbroken by recombination.
 #' @param ids A vector of ID labels. If missing, all individuals are included.
-#' @param ibd.status TRUE or FALSES. This parameter is meaningful only if
-#'   `length(ids)==2`. If TRUE the IBD status (number of alleles shared IBD,
-#'   either 0, 1 or 2) of each segment is computed, as well as the breakdown of
-#'   their parental origin.
-#' @param jacquard.state If TRUE, then the condensed identity ("Jacquard") state
-#'   of the alleles is computed for each segment, as an integer 1-9. Ignored unless
-#'   `length(ids) == 2`.
 #'
 #' @return A numerical matrix. Each row corresponds to a chromosomal segment.
 #'   The first 4 columns describe the segment (chromosome, start, end, length),
 #'   and are followed by two columns (paternal allele, maternal allele) for each
-#'   of the selected individuals. If `ibd.status=TRUE` five more columns are
-#'   added: `ibd`, `ibd_pp`, `ibd_pm`, `ibd_mp` and `ibd_mm`. The first of these
-#'   indicate the IBD status (0, 1 or 2) in the segment, while the latter 4 give
-#'   the parental breakdown of this number. For instance, `ibd_pm` is 1 if the
-#'   _p_aternal allele of the first individual is IBD with the _m_aternal allele
-#'   of the second individual, and 0 otherwise.
+#'   of the selected individuals. If `length(ids) == 2` two additional columns
+#'   are added:
+#'
+#'   * `IBD` : The IBD status of each segment (= number of alleles shared
+#'   identical by descent). For a given segment, the IBD status is either 0, 1,
+#'   2 or NA. If either individual is inbred, they may be autozygous in a
+#'   segment, in which case the IBD status is reported as NA. With inbred
+#'   individuals the `Sigma` column (see below) is more informative than the
+#'   `IBD` column.
+#'
+#'   * `Sigma` : The condensed identity ("Jacquard") state of each segment,
+#'   given as an integer in the range 1-9. The numbers correspond to the
+#'   standard ordering of the condensed states. In particular, for non-inbred
+#'   individuals the states 9, 8, 7 correspond to IBD status 0, 1, 2
+#'   respectively.
 #'
 #' @examples
 #' ### Sibling simulation (3 sims of chromosomes 1 and 2)
@@ -35,15 +37,21 @@
 #'
 #' alleleSummary(sim[[1]]) # First sim, summary of all individuals
 #' alleleSummary(sim[[1]], ids=3:4) # Summary of the siblings
-#' alleleSummary(sim[[1]], ids=3:4, ibd.status=TRUE) # IBD breakdown of the siblings
-#'
+#' 
 #' # Trivial example: Summary of the father.
 #' # Being the first founder, his alleles are denoted 1 and 2.
 #' alleleSummary(sim[[1]], ids=1)
 #'
+#' # Full sib mating: all 9 sigma states are possible
+#' y = pedtools::fullSibMating(1)
+#' sim = ibdsim(y, sims=1, chromosomes=1, seed=16)
+#' a = alleleSummary(sim[[1]], ids=5:6)
+#' 
+#' stopifnot(setequal(a[, 'Sigma'], 1:9))
+#' 
 #' @importFrom pedtools internalID
 #' @export
-alleleSummary = function(x, ids, ibd.status = FALSE, jacquard.state = TRUE) {
+alleleSummary = function(x, ids) {
   if(!inherits(x, "genomeSim")) 
     stop2("The first argument is not a `genomeSim` object")
   
@@ -51,10 +59,7 @@ alleleSummary = function(x, ids, ibd.status = FALSE, jacquard.state = TRUE) {
   if (missing(ids)) 
     ids = labels(ped)
   
-  if(ibd.status && length(ids)!=2)
-    stop2("The parameter `ibd.status` is meaningful only when `ids` has length 2")
-  
-  allele.colnames = paste0(rep(ids, each = 2), c("p", "m"))
+  allele.colnames = paste0(c("p:", "m:"), rep(ids, each = 2))
 
   ids_int = internalID(ped, ids) 
   
@@ -71,18 +76,21 @@ alleleSummary = function(x, ids, ibd.status = FALSE, jacquard.state = TRUE) {
     chrom = rep.int(attr(y, "chromosome"), length(breaks))
     cbind(chrom = chrom, start = breaks, end = stops, length = stops - breaks, alleles)
   })
+  
   res = do.call(rbind, each.chrom)
-  if (ibd.status) {
-    ibd_pp = res[, 5] == res[, 7]
-    ibd_pm = res[, 5] == res[, 8]
-    ibd_mp = res[, 6] == res[, 7]
-    ibd_mm = res[, 6] == res[, 8]
-    ibd = (ibd_pp | ibd_pm) + (ibd_mp | ibd_mm)
-
-    res = cbind(res, ibd = ibd, ibd_pp = ibd_pp, ibd_pm = ibd_pm, ibd_mp = ibd_mp, ibd_mm = ibd_mm)
+  
+  # Extra columns when "ids" is a pair
+  if(length(ids) == 2) {
+    # Jacquard state
+    Sigma = jacquardState(a1 = res[, 5], a2 = res[, 6], b1 = res[, 7], b2 = res[, 8])
+    
+    # IBD state (0 <-> 9; 1 <-> 8; 2 <-> 7; otherwise NA)
+    IBD = 9 - Sigma
+    IBD[IBD > 2] = NA
+    
+    res = cbind(res, IBD = IBD, Sigma = Sigma)
   }
-  if(length(ids)==2 && jacquard.state)
-    res = cbind(res, Sigma = jacquardState(a1 = res[, 5], a2 = res[, 6], b1 = res[, 7], b2 = res[, 8]))
+  
   res
 }
 
