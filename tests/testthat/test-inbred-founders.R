@@ -10,7 +10,7 @@ test_that("100% inbred founders are accounted for", {
   founder_inbreeding(x, 1:2) = 1
   sim = quickSim(x)
   as = alleleSummary(sim[[1]])
-  expect_true(all(as[,"p:3"] == 1) && all(as[,"m:3"] == 3))
+  expect_true(all(as[,"3:p"] == 1) && all(as[,"3:m"] == 3))
 })
 
 test_that("intermediate inbred founders raise errors", {

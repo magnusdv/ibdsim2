@@ -58,7 +58,7 @@ alleleSummary = function(x, ids) {
   if (missing(ids)) 
     ids = labels(ped)
   
-  allele.colnames = paste0(c("p:", "m:"), rep(ids, each = 2))
+  allele.colnames = paste0(rep(ids, each = 2), c(":p", ":m"))
 
   ids_int = internalID(ped, ids) 
   
