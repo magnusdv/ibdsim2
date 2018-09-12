@@ -22,7 +22,7 @@ test_that("allele summary properties of sibs", {
 
 test_that("allele summary of FSM", {
   x = fullSibMating(1)
-  sim = ibdsim(x, sims=1, chromosomes=1:2, verbose=F, seed=17)[[1]]
+  sim = ibdsim(x, sims=1, chromosomes=1, verbose=F, seed=36)[[1]]
   a = alleleSummary(sim, 5:6)
   expect_setequal(a[, 'Sigma'], 1:9)
 })
