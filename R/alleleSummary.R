@@ -33,19 +33,18 @@
 #' @examples
 #' ### Sibling simulation (3 sims of chromosomes 1 and 2)
 #' x = pedtools::nuclearPed(2)
-#' sim = ibdsim(x, sims=3, chromosomes=1:2)
-#'
-#' alleleSummary(sim[[1]]) # First sim, summary of all individuals
-#' alleleSummary(sim[[1]], ids=3:4) # Summary of the siblings
+#' sim = ibdsim(x, sims = 3, chromosomes = 1:2)
 #' 
-#' # Trivial example: Summary of the father.
-#' # Being the first founder, his alleles are denoted 1 and 2.
-#' alleleSummary(sim[[1]], ids=1)
+#' sim1 = sim[[1]] # the first simulation
 #'
-#' # Full sib mating: all 9 sigma states are possible
+#' alleleSummary(sim1) # Summary of all individuals
+#' alleleSummary(sim1, ids = 3:4) # Summary of the siblings
+#' alleleSummary(sim1, ids = 1) # Summary of father. Trivial!
+#' 
+#' # Full sib mating: all 9 states are possible
 #' y = pedtools::fullSibMating(1)
-#' sim = ibdsim(y, sims=1, chromosomes=1, seed=16)
-#' a = alleleSummary(sim[[1]], ids=5:6)
+#' sim = ibdsim(y, sims = 1, chrom = 1, seed = 36)[[1]]
+#' a = alleleSummary(sim, ids = 5:6)
 #' 
 #' stopifnot(setequal(a[, 'Sigma'], 1:9))
 #' 
