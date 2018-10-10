@@ -4,22 +4,30 @@
 \alias{plot_ibd1}
 \title{Scatter plot of IBD=1 segment distributions}
 \usage{
-plot_ibd1(..., labels, alpha = 1, ellipses = TRUE,
+plot_ibd1(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
   legend_inside = FALSE, title = "Distribution of IBD segments",
   xlab = "Segment count", ylab = "Average segment length (cM)")
 }
 \arguments{
-\item{...}{One or several objects of class \code{genomeSimList}, i.e. outputs
-of \code{\link[=ibdsim]{ibdsim()}}.}
+\item{...}{One or several objects of class \code{genomeSimList}, i.e. outputs of
+\code{\link[=ibdsim]{ibdsim()}}.}
 
-\item{labels}{A character vector of the same length as above, containing
+\item{labels}{A character vector of the same length as \code{...}, containing
 descriptive plotting labels for the inputs.}
+
+\item{pairs}{A list of the same length as \code{...}, containing a pair of ID labels for
+each input pedigree. The list names must equal (as a set) the \code{labels}
+argument. Two shortcuts are possible: If \code{pairs} is a vector of two ID
+labels, these will be used for all pedigrees. Finally, if \code{pairs} is the word
+"leaves", then \code{pedtools::leaves()} is used to extract the ID labels of
+each pedigree (they must all have exactly two leaves for this to work).}
 
 \item{alpha}{A transparency parameter for the scatter points.}
 
 \item{ellipses}{A logical: Should confidence ellipses be added to the plot?}
 
-\item{legend_inside}{A logical indicating wether the legend should be placed inside (default) or outside the plot window.}
+\item{legend_inside}{A logical indicating wether the legend should be placed
+inside (default) or outside the plot window.}
 
 \item{title, xlab, ylab}{Title and axis labels. Set to \code{NULL} to remove.}
 }
@@ -32,9 +40,9 @@ individuals.
 }
 \details{
 This function takes as input one or several complete outputs from the
-\code{\link[=ibdsim]{ibdsim()}}. The underlying pedigree of each input is extracted, and
-\code{\link[pedtools:leaves]{pedtools::leaves()}} is used to identify the two individuals to be
-examined. (Hence it is required that each pedigree has exactly two leaves.)
+\code{\link[=ibdsim]{ibdsim()}}, and investigates the IBD sharing of two indicated individuals
+from each. (See the \code{ids} entry in the parameter list for how the individuals
+are indicated.)
 
 For each simulation the number of IBD=1 segments is plotted against the
 average segment length. Finally, contour curves are added to plot,
@@ -43,10 +51,10 @@ corresponding to the theoretical (i.e., pedigree-based) value of
 }
 \examples{
 ###
-# Compare the distribution of IBD=1 segments
+# Example 1: Comparison of IBD segment distributions
 # between paternal and maternal half siblings.
 ###
-library(pedtools)
+
 # Define the pedigrees
 x.pat = halfSibPed()
 x.mat = swapSex(x.pat, 1)
@@ -57,6 +65,23 @@ sims = 10
 s.pat = ibdsim(x.pat, sims = sims, map=map)
 s.mat = ibdsim(x.mat, sims = sims, map=map)
 
+# By default, the IBD segments of the "leaves" are computed and plotted
 plot_ibd1(s.pat, s.mat, labels = c("HSpat", "HSmat"))
+
+
+###
+# Example 2: Half siblings vs grandparent/grandchild
+###
+
+# Only one pedigree needed here
+y = addSon(x.pat, 5)
+
+# Simulate 
+s = ibdsim(y, sims = sims, map=map)
+
+# Indicate the pairs explicitly this time.
+# List names are used as labels in the plot
+plot_ibd1(s, pairs = list(HS = 4:5, GR = c(1,7)))
+
 
 }
