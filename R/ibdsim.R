@@ -80,7 +80,7 @@ ibdsim = function(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
     stop2("`sims` must be a positive integer")
   if(!model %in% c("chi", "haldane"))
     stop2('Argument `model`` must be either "chi" or "haldane"')
-  if(!all(founder_inbreeding(x) %in% c(0,1)))
+  if(!all(founderInbreeding(x) %in% c(0,1)))
     stop2("Founder inbreeding coefficients other than 0 and 1 are not allowed")
   
   model_string = if(model=="chi") "Chi square renewal process" else "Haldane's poisson process"    

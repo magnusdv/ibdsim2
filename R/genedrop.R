@@ -79,7 +79,7 @@ distribute.founder.alleles = function(x, chrom="AUTOSOMAL") {
     aux = cbind(rep.int(0, 2 * nfou), seq_len(2 * nfou))
     
     # For 100% inbred founders; make alleles identical
-    FOU_INB = founder_inbreeding(x)
+    FOU_INB = founderInbreeding(x)
     stopifnot(all(FOU_INB %in% c(0,1)))
     inb1 = which(FOU_INB == 1)
     if(length(inb1) > 0)
