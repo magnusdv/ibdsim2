@@ -65,7 +65,7 @@ alleleSummary = function(x, ids) {
   each.chrom = lapply(x, function(y) {
     haplos = unlist(y[ids_int], recursive = FALSE)
     breaks = unlist(lapply(haplos, function(m) m[-1, 1]))
-    breaks = c(0, .sortDouble(breaks[!duplicated(breaks)]))
+    breaks = c(0, .sortDouble(breaks[!duplicated.default(breaks)]))
     alleles = vapply(haplos, pos2allele, posvec = breaks, FUN.VALUE = breaks)
     if (length(breaks) == 1) # Ad hoc fix, since vapply simplifies if FUN.VALUE has length 1
       dim(alleles) = c(1, length(allele.colnames))

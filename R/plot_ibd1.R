@@ -82,7 +82,7 @@ plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
   
   # Check labels vs names(pairs)
   if(!missing(labels) && !is.null(names(pairs)))
-    stopifnot(length(labels) == N, !anyDuplicated(labels), 
+    stopifnot(length(labels) == N, !anyDuplicated.default(labels), 
               length(names(pairs)) == N, setequal(labels, names(pairs)))
   
   # Missing "labels" argument?
