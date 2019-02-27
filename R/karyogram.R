@@ -54,8 +54,11 @@ prepare_segments = function(segments, colorBy=NA) {
 #' @examples
 #' 
 #' \dontrun{
-#' segs = data.frame(chrom = c(1,4,5,5,10,10), start=c(100,50,20,80,10,50), 
-#'                   end = c(120,100,25,100,70,120), IBD=c("cousin1","cousin2"))
+#' segs = data.frame(chrom = c(1,4,5,5,10,10), 
+#'                   start=c(100,50,20,80,10,50), 
+#'                   end = c(120,100,25,100,70,120),
+#'                   IBD=c("cousin1","cousin2"))
+#'                   
 #' karyo_haploid(segs, color="cyan")
 #' karyo_haploid(segs, colorBy="IBD", color=c(cousin1="blue", cousin2="red"))
 #' 
@@ -63,10 +66,16 @@ prepare_segments = function(segments, colorBy=NA) {
 #' karyo_haploid(segs, colorBy="IBD", color=c(cousin1="blue", cousin2="red"), alpha=0.6)
 #'
 #' # Example showing simulated IBD segments of full siblings
-#' x = pedtools::nuclearPed(2)
-#' s = ibdsim(x, sims=1)
-#' a = tibble::as_tibble(alleleSummary(s[[1]], 3:4))
-#' karyo_haploid(subset(a,ibd>0), colorBy="IBD", color=c("1"="blue", "2"="red"))
+#' x = nuclearPed(2)
+#' s = ibdsim(x, sims=1)[[1]]
+#' a = as.data.frame(alleleSummary(s, 3:4))
+#' a$status = "No IBD"
+#' a$status[a$IBD == 1 & a$`3:p` == a$`4:p`] = "Paternal"
+#' a$status[a$IBD == 1 & a$`3:m` == a$`4:m`] = "Maternal"
+#' a$status[a$IBD == 2] = "Pat & mat"
+#' a$status = as.factor(a$status)
+#'  
+#' karyo_haploid(a, colorBy="status", color=c("1"="blue", "2"="red"))
 #' }
 #' 
 #' @export
