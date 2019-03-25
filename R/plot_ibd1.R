@@ -66,7 +66,7 @@
 #' 
 #' 
 #' @import ggplot2
-#' @importFrom ribd ibd_kinship
+#' @importFrom ribd kinship
 #' @export
 plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE, 
                      legend_inside = FALSE, title = "Distribution of IBD segments", 
@@ -123,7 +123,7 @@ plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
        message("Warning: Simulation list ", i, " includes IBD=2 segments. Expected kappa1 line will be wrong!")
     count = real$Nsegments["Nseg1", ]
     averlen = ifelse(count == 0, 0, real$kappa.realised['ibd1', ] * real$genomeLength / count)
-    kinship_coeff = ibd_kinship(ped)[ids[1], ids[2]]
+    kinship_coeff = kinship(ped)[ids[1], ids[2]]
   
     data.frame(count = count,
                averlen = averlen, 
