@@ -51,31 +51,41 @@ prepare_segments = function(segments, colorBy=NA) {
 #' @param colorBy The name of a single column of `segments`, to be used for
 #'   coloring. If NA (default), all segments will have the same color,
 #'   controlled by the `color` parameter.
-#' @param color A single fill color for all the segments, or (if `colorBy`
-#'   is not NA) a named vector of colors. In the latter case, the names should
+#' @param color A single fill color for all the segments, or (if `colorBy` is
+#'   not NA) a named vector of colors. In the latter case, the names should
 #'   include all entries in the `colorBy` column.
+#' @param separate A logical; relevant only if the `colorBy` colomn has more
+#'   than one level. If FALSE, all segments are drawn in full height. This may
+#'   not be optimal if segments of different colors overlap. If TRUE the levels
+#'   are drawn in separate bands on the chromosomes.
 #' @param alpha A single numeric in `[0,1]` indicating color transparency.
 #' @param bgcol The background color of the chromosomes.
 #' @param title Plot title.
+#' @param noCaption A logical; set this to FALSE to suppress the "Created by
+#'   ibdsim2" caption.
 #'
 #' @return The plot object is returned invisibly, so that additional ggplot
 #'   layers may be added if needed.
 #' @import ggplot2
 #'
 #' @examples
-#' 
-#' \dontrun{
-#' segs = data.frame(chrom = c(1,4,5,5,10,10), 
-#'                   start=c(100,50,20,80,10,50), 
-#'                   end = c(120,100,25,100,70,120),
-#'                   IBD=c("cousin1","cousin2"))
-#'                   
-#' karyo_haploid(segs, color="cyan")
-#' karyo_haploid(segs, colorBy="IBD", color=c(cousin1="blue", cousin2="red"))
-#' 
-#' # To see overlaps, reduce alpha:
-#' karyo_haploid(segs, colorBy="IBD", color=c(cousin1="blue", cousin2="red"), alpha=0.6)
 #'
+#' \dontrun{
+#' segs = data.frame(chrom = c(1,4,5,5,10,10),
+#'                   start = c(100,50,20,80,10,50),
+#'                   end = c(120,100,25,100,70,120),
+#'                   IBD = c("cousin1","cousin2"))
+#' cols = c(cousin1 = "blue", cousin2 = "red")
+#' 
+#' karyo_haploid(segs, color = "cyan")
+#' karyo_haploid(segs, colorBy = "IBD", color = cols)
+#' 
+#' # Note difference if `separate = FALSE`
+#' karyo_haploid(segs, colorBy = "IBD", color = cols, separate = FALSE)
+#' 
+#' # To see the overlap now, you can reduce alpha:
+#' karyo_haploid(segs, colorBy = "IBD", color = cols, separate = FALSE, alpha = 0.7)
+#'               
 #' # Example showing simulated IBD segments of full siblings
 #' x = nuclearPed(2)
 #' s = ibdsim(x, sims=1)[[1]]
@@ -85,32 +95,62 @@ prepare_segments = function(segments, colorBy=NA) {
 #' a$status[a$IBD == 1 & a$`3:m` == a$`4:m`] = "Maternal"
 #' a$status[a$IBD == 2] = "Pat & mat"
 #' a$status = as.factor(a$status)
-#'  
-#' karyo_haploid(a, colorBy="status", color=c("1"="blue", "2"="red"))
+#'
+#' karyo_haploid(a, colorBy = "status", separate = FALSE)
 #' }
-#' 
+#'
 #' @export
-karyo_haploid = function(segments, colorBy=NA, color="black", alpha=1, bgcol="gray99", title=NULL) {
+karyo_haploid = function(segments, colorBy=NA, color="black", separate = T, alpha=1, bgcol="gray98", title=NULL, noCaption = F) {
   
   decode = loadMap("Decode", chrom=1:22)
   chrlen = sapply(decode, attr, 'length')
   seqnames = paste0("chr", 1:22)
-  genome = data.frame(chr=factor(seqnames, levels=seqnames), Mb=chrlen)
+  genome = data.frame(chr = factor(seqnames, levels = seqnames), 
+                      Mb = chrlen)
   
   segments = prepare_segments(segments, colorBy)
-  segments$chr = factor(segments$chr, levels=levels(genome$chr))
-  if(!is.na(colorBy) && length(color) != nlevels(segments$fill)) 
-    color = 1:nlevels(segments$fill)
+  segments$chr = factor(segments$chr, levels = levels(genome$chr))
   
-  p = ggplot() + theme_void() + theme(strip.text.y = element_text(angle = 180)) +
-    geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0, ymax=1), fill=bgcol, col="black") + 
-    geom_rect(data = segments, aes_string(xmin="start", xmax="end", ymin=0, ymax=1, fill="fill"), col="black", alpha=alpha) +
-    facet_grid(chr~., switch="y") + labs(fill=NULL) +labs(caption="Simulation by ibdsim2") +
-    scale_fill_manual(values = color)
+  levN = nlevels(segments$fill)
+  if(!is.na(colorBy) && length(color) != levN) 
+    color = 1:levN
+  
+  # segments y positions
+  if(separate) {
+    heig = levN + 1 - as.integer(segments$fill)
+    segments$ymin = (heig - 1)/levN
+    segments$ymax = heig/levN
+  }
+  else {
+    segments$ymin = 0
+    segments$ymax = 1
+  }
+  
+  # Build plot object
+  p = ggplot() + 
+    geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0, ymax=1), 
+              fill = bgcol, col = "black") + 
+    geom_rect(data = segments, aes_string(xmin="start", xmax="end", ymin="ymin", ymax="ymax", fill="fill"), 
+              col = "black", alpha = alpha) +
+    facet_grid(chr ~ ., switch = "y") + 
+    scale_x_continuous(expand = c(0.01, 0.01)) +
+    scale_fill_manual(values = color) + 
+    theme_void() + 
+    theme(plot.margin = margin(4, 4, 4, 4),
+          plot.title = element_text(size = 16, 
+                                    margin = margin(b = 10, unit = "pt")),
+          strip.text.y = element_text(angle = 180, hjust = 1),
+          legend.position = c(1, 0.4),
+          legend.justification = c(1, 0),
+          legend.text = element_text(size = 14)) +
+    labs(fill = NULL, title = title)
+  
+  if(!noCaption) 
+    p = p +labs(caption = "Created by ibdsim2")
+
   if(is.na(colorBy)) 
-    p = p + guides(fill="none")
-  if(!is.null(title)) 
-    p = p + ggtitle(title)
+    p = p + guides(fill = "none")
+  
   p
 }
 

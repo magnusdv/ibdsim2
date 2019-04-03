@@ -4,8 +4,8 @@
 \alias{karyo_haploid}
 \title{Haploid karyogram}
 \usage{
-karyo_haploid(segments, colorBy = NA, color = "black", alpha = 1,
-  bgcol = "gray99", title = NULL)
+karyo_haploid(segments, colorBy = NA, color = "black", separate = T,
+  alpha = 1, bgcol = "gray98", title = NULL, noCaption = F)
 }
 \arguments{
 \item{segments}{A data.frame (or an object coercible to data.frame)
@@ -18,15 +18,23 @@ possibly a column indicated by \code{colorBy}.}
 coloring. If NA (default), all segments will have the same color,
 controlled by the \code{color} parameter.}
 
-\item{color}{A single fill color for all the segments, or (if \code{colorBy}
-is not NA) a named vector of colors. In the latter case, the names should
+\item{color}{A single fill color for all the segments, or (if \code{colorBy} is
+not NA) a named vector of colors. In the latter case, the names should
 include all entries in the \code{colorBy} column.}
+
+\item{separate}{A logical; relevant only if the \code{colorBy} colomn has more
+than one level. If FALSE, all segments are drawn in full height. This may
+not be optimal if segments of different colors overlap. If TRUE the levels
+are drawn in separate bands on the chromosomes.}
 
 \item{alpha}{A single numeric in \code{[0,1]} indicating color transparency.}
 
 \item{bgcol}{The background color of the chromosomes.}
 
 \item{title}{Plot title.}
+
+\item{noCaption}{A logical; set this to FALSE to suppress the "Created by
+ibdsim2" caption.}
 }
 \value{
 The plot object is returned invisibly, so that additional ggplot
@@ -38,17 +46,21 @@ Show chromosomal segments in a haploid karyogram
 \examples{
 
 \dontrun{
-segs = data.frame(chrom = c(1,4,5,5,10,10), 
-                  start=c(100,50,20,80,10,50), 
+segs = data.frame(chrom = c(1,4,5,5,10,10),
+                  start = c(100,50,20,80,10,50),
                   end = c(120,100,25,100,70,120),
-                  IBD=c("cousin1","cousin2"))
-                  
-karyo_haploid(segs, color="cyan")
-karyo_haploid(segs, colorBy="IBD", color=c(cousin1="blue", cousin2="red"))
+                  IBD = c("cousin1","cousin2"))
+cols = c(cousin1 = "blue", cousin2 = "red")
 
-# To see overlaps, reduce alpha:
-karyo_haploid(segs, colorBy="IBD", color=c(cousin1="blue", cousin2="red"), alpha=0.6)
+karyo_haploid(segs, color = "cyan")
+karyo_haploid(segs, colorBy = "IBD", color = cols)
 
+# Note difference if `separate = FALSE`
+karyo_haploid(segs, colorBy = "IBD", color = cols, separate = FALSE)
+
+# To see the overlap now, you can reduce alpha:
+karyo_haploid(segs, colorBy = "IBD", color = cols, separate = FALSE, alpha = 0.7)
+              
 # Example showing simulated IBD segments of full siblings
 x = nuclearPed(2)
 s = ibdsim(x, sims=1)[[1]]
@@ -58,8 +70,8 @@ a$status[a$IBD == 1 & a$`3:p` == a$`4:p`] = "Paternal"
 a$status[a$IBD == 1 & a$`3:m` == a$`4:m`] = "Maternal"
 a$status[a$IBD == 2] = "Pat & mat"
 a$status = as.factor(a$status)
- 
-karyo_haploid(a, colorBy="status", color=c("1"="blue", "2"="red"))
+
+karyo_haploid(a, colorBy = "status", separate = FALSE)
 }
 
 }
