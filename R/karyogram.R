@@ -22,6 +22,17 @@ prepare_segments = function(segments, colorBy=NA) {
   if(df$chr[1] %in% 1:22) 
     df$chr = paste0("chr", df$chr)
   
+  if(max(df$end) > 250e3) {
+    df$start = df$start/1e6
+    df$end = df$end/1e6
+    message("Converting positions to Mb by diving by 1e6")
+  }
+  else if(max(df$end) > 250) {
+    df$start = df$start/1e3
+    df$end = df$end/1e3
+    message("Converting positions to Mb by diving by 1000")
+  }
+  
   # Merge overlapping segments with the same color
   df = mergeConsecutiveSegments(df, mergeBy = c("chr", "fill"), segLength="length")
   df
