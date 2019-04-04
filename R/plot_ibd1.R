@@ -49,8 +49,7 @@
 #' # By default, the IBD segments of the "leaves" are computed and plotted
 #' plot_ibd1(s.pat, s.mat, labels = c("HSpat", "HSmat"))
 #'
-#'
-#'###
+#' ###
 #' # Example 2: Half siblings vs grandparent/grandchild
 #' ###
 #'
@@ -69,7 +68,7 @@
 #' @importFrom ribd kinship
 #' @export
 plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE, 
-                     legend_inside = FALSE, title = "Distribution of IBD segments", 
+                     legend_inside = TRUE, title = "Distribution of IBD segments", 
                      xlab = "Segment count", ylab = "Average segment length (cM)") {
   sims = list(...)
   N = length(sims)

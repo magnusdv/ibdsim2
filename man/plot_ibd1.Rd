@@ -5,7 +5,7 @@
 \title{Scatter plot of IBD=1 segment distributions}
 \usage{
 plot_ibd1(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
-  legend_inside = FALSE, title = "Distribution of IBD segments",
+  legend_inside = TRUE, title = "Distribution of IBD segments",
   xlab = "Segment count", ylab = "Average segment length (cM)")
 }
 \arguments{
@@ -67,7 +67,6 @@ s.mat = ibdsim(x.mat, sims = sims, map=map)
 
 # By default, the IBD segments of the "leaves" are computed and plotted
 plot_ibd1(s.pat, s.mat, labels = c("HSpat", "HSmat"))
-
 
 ###
 # Example 2: Half siblings vs grandparent/grandchild
