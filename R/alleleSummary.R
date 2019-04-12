@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' ### Sibling simulation (3 sims of chromosomes 1 and 2)
-#' x = pedtools::nuclearPed(2)
+#' x = nuclearPed(2)
 #' sim = ibdsim(x, sims = 3, chromosomes = 1:2)
 #' 
 #' sim1 = sim[[1]] # the first simulation
@@ -42,13 +42,12 @@
 #' alleleSummary(sim1, ids = 1) # Summary of father. Trivial!
 #' 
 #' # Full sib mating: all 9 states are possible
-#' y = pedtools::fullSibMating(1)
+#' y = fullSibMating(1)
 #' sim = ibdsim(y, sims = 1, chrom = 1, seed = 36)[[1]]
 #' a = alleleSummary(sim, ids = 5:6)
 #' 
 #' stopifnot(setequal(a[, 'Sigma'], 1:9))
 #' 
-#' @importFrom pedtools internalID
 #' @export
 alleleSummary = function(x, ids) {
   if(!inherits(x, "genomeSim")) 
