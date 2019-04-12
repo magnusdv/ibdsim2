@@ -29,16 +29,18 @@ identical by descent). For a given segment, the IBD status is either 0, 1,
 segment, in which case the IBD status is reported as NA. With inbred
 individuals the \code{Sigma} column (see below) is more informative than the
 \code{IBD} column.
-\item \code{Psi} : The X-chromosomal condensed identity state of each
-segment, given as an integer in the range 1-9. The state corresponding to
-each number depends on the genders of the two individuals.
+\item \code{Sigma} : The condensed identity state of each segment, given as an
+integer in the range 1-9. The numbers refer to the \emph{autosomal} states in
+the usual ordering; for details about this, and how how they relate to
+identity states on X, please see the explanation at the \code{ribd} homepage
+\link{https://github.com/magnusdv/ribd}.
 }
 }
 \description{
 This is the X-chromosomal version of \code{\link[=alleleSummary]{alleleSummary()}}.
 }
 \examples{
-x = pedtools::fullSibMating(1)
+x = fullSibMating(1)
 s = ibdsim(x, sims = 1, chrom = 23)[[1]]
 
 # Complete summary.

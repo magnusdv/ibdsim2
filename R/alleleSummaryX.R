@@ -23,55 +23,52 @@
 #'   individuals the `Sigma` column (see below) is more informative than the
 #'   `IBD` column.
 #'
-#'   * `Psi` : The X-chromosomal condensed identity state of each
-#'   segment, given as an integer in the range 1-9. The state corresponding to
-#'   each number depends on the genders of the two individuals.
+#'   * `Sigma` : The condensed identity state of each segment, given as an
+#'   integer in the range 1-9. The numbers refer to the _autosomal_ states in
+#'   the usual ordering; for details about this, and how how they relate to
+#'   identity states on X, please see the explanation at the `ribd` homepage
+#'   [https://github.com/magnusdv/ribd].
 #'
 #' @examples
-#' x = pedtools::fullSibMating(1)
+#' x = fullSibMating(1)
 #' s = ibdsim(x, sims = 1, chrom = 23)[[1]]
-#' 
+#'
 #' # Complete summary.
 #' # Note only one allele column for males
 #' alleleSummaryX(s)
-#' 
+#'
 #' # Outbred brother/sister
 #' alleleSummaryX(s, ids = 3:4)
-#' 
+#'
 #' # Inbred brother/sister
 #' alleleSummaryX(s, ids = 5:6)
-#' 
-#' @importFrom pedtools internalID
+#'
 #' @export
 alleleSummaryX = function(x, ids) {
   
   ped = attr(x, "pedigree")
   if (missing(ids)) 
     ids = labels(ped)
+  sex = getSex(ped, ids) 
   
   # First make the autosomal summary
   res = alleleSummary(x, ids)
   
-  sex = getSex(ped, ids) 
-  ids_int = internalID(ped, ids) 
+  # Remove paternal columns of males
+  male_pat = colnames(res) %in% paste0(ids[sex == 1], ":p")
+  res = res[, !male_pat, drop = F]
   
-  res = res[, !colnames(res) %in% paste0(ids[sex == 1], ":p")]
-  
-  if(length(ids) == 2) {
-    sigmaCol = which(colnames(res) == "Sigma")
-    Psi = Sigma = res[, sigmaCol]
-    if(sum(sex) == 2) {
-      IBD = as.numeric(Psi == 1)
-    }
-    else if(sum(sex) == 3) {
-      Psi[Sigma == 5] = 3
-      Psi[Sigma == 6] = 4
-      IBD = ifelse(Psi > 2, as.numeric(Psi == 3), NA_real_)
-    }
-    else
-      IBD = res[, 'IBD']
+  # Recalculate IBD column
+  if(length(ids) == 2 && sum(sex) < 4) {
+    sigma = res[, "Sigma"]
+    if(sex[1] == 1 && sex[2] == 1)
+      IBD = 2 - sigma   # always either 1 or 2
+    else if(sex[1] == 1 && sex[2] == 2)
+      IBD = ifelse(sigma == 4, 0L, ifelse(sigma == 3, 1L, NA_integer_))
+    else if(sex[1] == 2 && sex[2] == 1)
+      IBD = ifelse(sigma == 6, 0L, ifelse(sigma == 5, 1L, NA_integer_))
     
-    res = cbind(res[, 1:(sigmaCol - 2)], IBD = IBD, Psi = Psi)
+    res[, 'IBD'] = IBD
   }
   res
 }
