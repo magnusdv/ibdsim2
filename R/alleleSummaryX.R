@@ -13,7 +13,7 @@
 #'   The first 4 columns describe the segment (chromosome, start, end, length).,
 #'   and are followed by one or two columns for each of the selected
 #'   individuals: One column (maternal allele) for males and two columns
-#'   (paternal allele, maternal allele) for females. If `length(ids) == 2` three
+#'   (paternal allele, maternal allele) for females. If `length(ids) == 2` two
 #'   additional columns are added:
 #'
 #'   * `IBD` : The IBD status of each segment (= number of alleles shared
@@ -26,8 +26,8 @@
 #'   * `Sigma` : The condensed identity state of each segment, given as an
 #'   integer in the range 1-9. The numbers refer to the _autosomal_ states in
 #'   the usual ordering; for details about this, and how how they relate to
-#'   identity states on X, please see the explanation at the `ribd` homepage
-#'   [https://github.com/magnusdv/ribd].
+#'   identity states on X, please see the explanation at the `ribd` homepage:
+#'   <https://github.com/magnusdv/ribd>.
 #'
 #' @examples
 #' x = fullSibMating(1)

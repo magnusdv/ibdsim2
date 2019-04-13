@@ -20,7 +20,7 @@ A numerical matrix. Each row corresponds to a chromosomal segment.
 The first 4 columns describe the segment (chromosome, start, end, length).,
 and are followed by one or two columns for each of the selected
 individuals: One column (maternal allele) for males and two columns
-(paternal allele, maternal allele) for females. If \code{length(ids) == 2} three
+(paternal allele, maternal allele) for females. If \code{length(ids) == 2} two
 additional columns are added:
 \itemize{
 \item \code{IBD} : The IBD status of each segment (= number of alleles shared
@@ -32,8 +32,8 @@ individuals the \code{Sigma} column (see below) is more informative than the
 \item \code{Sigma} : The condensed identity state of each segment, given as an
 integer in the range 1-9. The numbers refer to the \emph{autosomal} states in
 the usual ordering; for details about this, and how how they relate to
-identity states on X, please see the explanation at the \code{ribd} homepage
-\link{https://github.com/magnusdv/ribd}.
+identity states on X, please see the explanation at the \code{ribd} homepage:
+\url{https://github.com/magnusdv/ribd}.
 }
 }
 \description{
