@@ -2,25 +2,13 @@
 #'
 #' Estimate by simulation the 9 (condensed) identity coefficients of a pair
 #' pedigree members, and also the 9*9 matrix of _two-locus_ identity
-#' coefficients at a given recombination rate.
+#' coefficients at a given recombination rate. (For a description of the
+#' identity states, see here: <https://github.com/magnusdv/ribd>.
 #'
-#' @param x A pedigree in the form of a [pedtools::ped()] object.
-#' @param ids A character (or coercible to character) of length 2.
-#' @param rho A scalar in the interval `[0, 0.5]`: the recombination fraction
-#'   between the two loci, converted to centiMorgan using Haldanes map function:
-#'   cM = -50 * log(1 - 2*rho). Either `rho` or `cM` (but not both) must be
-#'   non-NULL.
-#' @param cM A non-negative number: the genetic distance between the two loci,
-#'   given in centiMorgans. Either `rho` or `cM` (but not both) must be
-#'   non-NULL.
-#' @param Nsim The number of simulations.
-#' @param Xchrom A logical indicating if the loci are X-linked (if TRUE) or
-#'   autosomal (FALSE).
-#' @param verbose A logical.
-#' @param ... Further arguments passed on to [ibdsim()], e.g. `seed`.
+#' @inheritParams estimateIBD
 #'
-#' @return `estimateOneLocusIdentity()` returns a numeric vector of length 9, with
-#'   the estimated coefficients.
+#' @return `estimateOneLocusIdentity()` returns a numeric vector of length 9,
+#'   with the estimated coefficients.
 #'
 #'   `estimateTwoLocusIBD()` returns symmetric, numerical 9*9 matrix, with the
 #'   estimated two-locus coefficients.
@@ -34,6 +22,7 @@
 #'
 #' @name estimateIdentity
 NULL
+
 
 #' @rdname estimateIdentity
 #' @export
@@ -56,8 +45,8 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
   
   if (cM == Inf) {
     if (verbose) cat("Analysing unlinked loci.\n")
-    m1 = estimateOneLocusIdentity(x, ids, Nsim = Nsim, verbose = verbose, ...)
-    m2 = estimateOneLocusIdentity(x, ids, Nsim = Nsim, ...) # dont repeat verbose output
+    m1 = estimateOneLocusIdentity(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
+    m2 = estimateOneLocusIdentity(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = F) # dont repeat verbose output
     res = outer(m1, m2)
     return(res)
   }
@@ -87,6 +76,17 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
   # table -> matrix
   res = unclass(res) 
   names(dimnames(res)) = NULL
+  
+  # If X & male(s)
+  if (Xchrom) {
+    sex = getSex(x, ids)
+    if(sex[1] == 1 && sex[2] == 1)
+      res[3:9, ] = res[, 3:9] = NA
+    else if(sex[1] == 1 && sex[2] == 2)
+      res[5:9, ] = res[, 5:9] = NA
+    else if(sex[1] == 2 && sex[2] == 1)
+      res[c(3:4, 7:9), ] = res[, c(3:4, 7:9)] = NA  
+  }
   
   if (verbose) 
     cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")
@@ -119,7 +119,15 @@ estimateOneLocusIdentity = function(x, ids, Nsim, Xchrom = F, verbose = F, ...) 
   res = structure(as.vector(res), names = names(res))
   
   # If X & male(s)
-  # TODO!
+  if (Xchrom) {
+    sex = getSex(x, ids)
+    if(sex[1] == 1 && sex[2] == 1)
+      res[3:9] = NA
+    else if(sex[1] == 1 && sex[2] == 2)
+      res[5:9] = NA
+    else if(sex[1] == 2 && sex[2] == 1)
+      res[c(3:4, 7:9)] = NA  
+  }
   
   if (verbose) 
     cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")

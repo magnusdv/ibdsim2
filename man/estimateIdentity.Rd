@@ -35,8 +35,8 @@ autosomal (FALSE).}
 \item{...}{Further arguments passed on to \code{\link[=ibdsim]{ibdsim()}}, e.g. \code{seed}.}
 }
 \value{
-\code{estimateOneLocusIdentity()} returns a numeric vector of length 9, with
-the estimated coefficients.
+\code{estimateOneLocusIdentity()} returns a numeric vector of length 9,
+with the estimated coefficients.
 
 \code{estimateTwoLocusIBD()} returns symmetric, numerical 9*9 matrix, with the
 estimated two-locus coefficients.
@@ -44,7 +44,8 @@ estimated two-locus coefficients.
 \description{
 Estimate by simulation the 9 (condensed) identity coefficients of a pair
 pedigree members, and also the 9*9 matrix of \emph{two-locus} identity
-coefficients at a given recombination rate.
+coefficients at a given recombination rate. (For a description of the
+identity states, see here: \url{https://github.com/magnusdv/ribd}.
 }
 \examples{
 x = fullSibMating(1)
