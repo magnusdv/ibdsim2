@@ -68,7 +68,7 @@
 #' res = ibdsim(z, sims=1)
 #' res
 #'
-#' @importFrom pedtools is.ped has_parents_before_children parents_before_children
+#' @importFrom pedtools is.ped hasParentsBeforeChildren parentsBeforeChildren
 #' @export
 ibdsim = function(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
                   model = "chi", skip.recomb = "noninf_founders", seed = NULL, 
@@ -86,9 +86,9 @@ ibdsim = function(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
   model_string = if(model=="chi") "Chi square renewal process" else "Haldane's poisson process"    
   
   # Ensure that parents precede their children
-  if (!pedtools::has_parents_before_children(x)) {
+  if (!pedtools::hasParentsBeforeChildren(x)) {
     message("Reordering so that all parents precede their children")
-    x = pedtools::parents_before_children(x)
+    x = pedtools::parentsBeforeChildren(x)
   }
   
   # Start timer
