@@ -80,7 +80,7 @@ realisedAutozygosity = function(sims, id = NULL) {
 #' plotPedList(peds, newdev = TRUE)
 #' 
 #' # Simulations (increase 'sims'!))
-#' s = lapply(peds, ibdsim, sims = 10, map = "uniform.sex.spec")
+#' s = lapply(peds, ibdsim, sims = 1000, map = "uniform.sex.spec")
 #' 
 #' # Summarise autozygous regions
 #' segs = lapply(s, realisedAutozygosity)
@@ -137,11 +137,11 @@ plotSegDist = function(segDist, labels = NULL, alpha = 1, ellipses = TRUE,
   if(length(expected) > 0) {
     curveData = do.call(rbind, lapply(expected, function(v) {
       xmin = if(max.y > 0) genomeLen * v / max.y else 0
-      xvec = seq(xmin, max.x, length = 10)
+      xvec = seq(xmin, max.x, length = 50)
       data.frame(x = xvec, y = genomeLen * v / xvec, 
                  coeff = as.character(round(v, 3)))
     }))
-    
+    print(curveData)
     g = g + 
       geom_line(data = curveData, aes_string("x", "y", linetype = "coeff"), 
                 lwd = 1, inherit.aes = F) + 
