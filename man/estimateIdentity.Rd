@@ -6,8 +6,16 @@
 \alias{estimateOneLocusIdentity}
 \title{Estimate one-locus and two-locus identity coefficients}
 \usage{
-estimateTwoLocusIdentity(x, ids, rho = NULL, cM = NULL, Nsim,
-  Xchrom = F, verbose = F, ...)
+estimateTwoLocusIdentity(
+  x,
+  ids,
+  rho = NULL,
+  cM = NULL,
+  Nsim,
+  Xchrom = F,
+  verbose = F,
+  ...
+)
 
 estimateOneLocusIdentity(x, ids, Nsim, Xchrom = F, verbose = F, ...)
 }
@@ -16,7 +24,7 @@ estimateOneLocusIdentity(x, ids, Nsim, Xchrom = F, verbose = F, ...)
 
 \item{ids}{A character (or coercible to character) of length 2.}
 
-\item{rho}{A scalar in the interval \code{[0, 0.5]}: the recombination fraction
+\item{rho}{A scalar in the interval \verb{[0, 0.5]}: the recombination fraction
 between the two loci, converted to centiMorgan using Haldanes map function:
 cM = -50 * log(1 - 2*rho). Either \code{rho} or \code{cM} (but not both) must be
 non-NULL.}

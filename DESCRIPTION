@@ -2,9 +2,8 @@ Package: ibdsim2
 Type: Package
 Title: Simulation of Chromosomal Regions Shared by Family Members
 Version: 1.0.9000
-Date: 2018-20-06
 Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
-                  role = c("aut", "cre"))
+                  role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9134-4962"))
 Description: Simulation of segments shared identical-by-descent (IBD) by 
     pedigree members. Using sex specific recombination rates along the human
     genome (Kong et. al (2010) <doi:10.1038/nature09525>), phased chromosomes
@@ -12,9 +11,10 @@ Description: Simulation of segments shared identical-by-descent (IBD) by
     dropping or conditional on a specified IBD pattern. Additional functions 
     provide summaries and further analysis of the simulated genomes.
 License: GPL-3
+URL: https://github.com/magnusdv/ibdsim2
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 3.1.0),
+Depends: R (>= 3.5.0),
     pedtools
 Imports:
     Rcpp,
@@ -23,5 +23,5 @@ Imports:
     ribd
 Suggests: testthat
 LinkingTo: Rcpp
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE)

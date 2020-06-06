@@ -107,7 +107,8 @@ plotSegDist = function(segDist, labels = NULL, alpha = 1, ellipses = TRUE,
     stop2("Only some of the elements of `segDist` are named")
   
   plotData = do.call(rbind, segDistList)
-  plotData$label = factor(rep(labels, sapply(segDistList, nrow)), levels=labels)
+  plotData$label = factor(rep(labels, sapply(segDistList, nrow)), 
+                          levels = labels)
   nLabs = nlevels(plotData$label)
   
   max.x = max(plotData$segCount)
@@ -121,7 +122,7 @@ plotSegDist = function(segDist, labels = NULL, alpha = 1, ellipses = TRUE,
     labs(title = title, x = xlab, y = ylab, color = "Relationship")
   
   if(ellipses) 
-    g = g + stat_ellipse(aes_string(x = "segCount"), size=1.3)
+    g = g + stat_ellipse(aes_string(x = "segCount"), size = 1.3)
   
   # Theoretical expectation curves
   expected = sort(unique(plotData$expected))
@@ -141,7 +142,7 @@ plotSegDist = function(segDist, labels = NULL, alpha = 1, ellipses = TRUE,
       data.frame(x = xvec, y = genomeLen * v / xvec, 
                  coeff = as.character(round(v, 3)))
     }))
-    print(curveData)
+    
     g = g + 
       geom_line(data = curveData, aes_string("x", "y", linetype = "coeff"), 
                 lwd = 1, inherit.aes = F) + 

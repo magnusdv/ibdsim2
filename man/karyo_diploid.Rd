@@ -4,9 +4,16 @@
 \alias{karyo_diploid}
 \title{Diploid karyogram}
 \usage{
-karyo_diploid(paternal, maternal, chromosomes = 1:22,
-  colors = c(paternal = "lightblue", maternal = "orange"), alpha = 1,
-  bgcol = "gray99", title = NULL, noCaption = FALSE)
+karyo_diploid(
+  paternal,
+  maternal,
+  chromosomes = 1:22,
+  colors = c(paternal = "lightblue", maternal = "orange"),
+  alpha = 1,
+  bgcol = "gray99",
+  title = NULL,
+  noCaption = FALSE
+)
 }
 \arguments{
 \item{paternal, maternal}{data.frames (or objects coercible to data.frames)
@@ -22,7 +29,7 @@ given as a subset of the integers 1, 2,..., 22.}
 one color is given it is recycled. If the vector is named, a color legend
 is included in the plot, using the names as labels.}
 
-\item{alpha}{A single numeric in \code{[0,1]} indicating color transparency.}
+\item{alpha}{A single numeric in \verb{[0,1]} indicating color transparency.}
 
 \item{bgcol}{The background color of the chromosomes.}
 

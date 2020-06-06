@@ -35,7 +35,7 @@
 
   descend = function(x, from, to, path) {
     if (from == to) {
-      paths <<- c(paths, list(path))
+      paths <- c(paths, list(path))
       return()
     }
     

@@ -4,9 +4,16 @@
 \alias{plotSegDist}
 \title{Segment distribution plot}
 \usage{
-plotSegDist(segDist, labels = NULL, alpha = 1, ellipses = TRUE,
-  legend_inside = TRUE, title = NULL, xlab = "Segment count",
-  ylab = "Average segment length (cM)")
+plotSegDist(
+  segDist,
+  labels = NULL,
+  alpha = 1,
+  ellipses = TRUE,
+  legend_inside = TRUE,
+  title = NULL,
+  xlab = "Segment count",
+  ylab = "Average segment length (cM)"
+)
 }
 \arguments{
 \item{segDist}{A data frame or a list of data frames}

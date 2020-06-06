@@ -4,9 +4,17 @@
 \alias{ibdsim}
 \title{IBD simulation}
 \usage{
-ibdsim(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
-  model = "chi", skip.recomb = "noninf_founders", seed = NULL,
-  verbose = TRUE)
+ibdsim(
+  x,
+  sims,
+  condition = NULL,
+  map = "decode",
+  chromosomes = NULL,
+  model = "chi",
+  skip.recomb = "noninf_founders",
+  seed = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped()}} object.}

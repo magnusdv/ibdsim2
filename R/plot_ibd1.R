@@ -119,7 +119,7 @@ plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
     ids = pairs[[i]]
     real = realised_kappa(s, id.pair=ids)
     if(any(real$Nsegments['Nseg2', ] > 0)) 
-       message("Warning: Simulation list ", i, " includes IBD=2 segments. Expected kappa1 line will be wrong!")
+       message("Warning: Simulation list ", i, " includes IBD = 2 segments. Expected 'kappa_1 curve' will be wrong!")
     count = real$Nsegments["Nseg1", ]
     averlen = ifelse(count == 0, 0, real$kappa.realised['ibd1', ] * real$genomeLength / count)
     kinship_coeff = kinship(ped)[ids[1], ids[2]]

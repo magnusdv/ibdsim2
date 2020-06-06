@@ -6,15 +6,23 @@
 \alias{estimateOneLocusInbreeding}
 \title{Estimate one-locus and two-locus inbreeding coefficients}
 \usage{
-estimateTwoLocusInbreeding(x, id, rho = NULL, cM = NULL, Nsim,
-  Xchrom = F, verbose = F, ...)
+estimateTwoLocusInbreeding(
+  x,
+  id,
+  rho = NULL,
+  cM = NULL,
+  Nsim,
+  Xchrom = F,
+  verbose = F,
+  ...
+)
 
 estimateOneLocusInbreeding(x, id, Nsim, Xchrom = F, verbose = F, ...)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped()}} object.}
 
-\item{rho}{A scalar in the interval \code{[0, 0.5]}: the recombination fraction
+\item{rho}{A scalar in the interval \verb{[0, 0.5]}: the recombination fraction
 between the two loci, converted to centiMorgan using Haldanes map function:
 cM = -50 * log(1 - 2*rho). Either \code{rho} or \code{cM} (but not both) must be
 non-NULL.}

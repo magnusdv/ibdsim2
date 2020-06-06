@@ -18,7 +18,7 @@ prepare_segments = function(segments, colorBy=NA) {
   if(N == 0) 
     return(df)
   
-  # Add 'chr' if neccessary
+  # Add 'chr' if necessary
   if(df$chr[1] %in% 1:22) 
     df$chr = paste0("chr", df$chr)
   

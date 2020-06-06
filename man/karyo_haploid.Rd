@@ -4,8 +4,16 @@
 \alias{karyo_haploid}
 \title{Haploid karyogram}
 \usage{
-karyo_haploid(segments, colorBy = NA, color = "black", separate = T,
-  alpha = 1, bgcol = "gray98", title = NULL, noCaption = F)
+karyo_haploid(
+  segments,
+  colorBy = NA,
+  color = "black",
+  separate = T,
+  alpha = 1,
+  bgcol = "gray98",
+  title = NULL,
+  noCaption = F
+)
 }
 \arguments{
 \item{segments}{A data.frame (or an object coercible to data.frame)
@@ -27,7 +35,7 @@ than one level. If FALSE, all segments are drawn in full height. This may
 not be optimal if segments of different colors overlap. If TRUE the levels
 are drawn in separate bands on the chromosomes.}
 
-\item{alpha}{A single numeric in \code{[0,1]} indicating color transparency.}
+\item{alpha}{A single numeric in \verb{[0,1]} indicating color transparency.}
 
 \item{bgcol}{The background color of the chromosomes.}
 

@@ -3,7 +3,6 @@
 \docType{package}
 \name{ibdsim2}
 \alias{ibdsim2}
-\alias{ibdsim2-package}
 \title{ibdsim2: Simulation of chromosomal regions shared by family members}
 \description{
 Simulation of segments shared identical-by-descent (IBD) by

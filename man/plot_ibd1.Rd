@@ -4,9 +4,17 @@
 \alias{plot_ibd1}
 \title{Scatter plot of IBD=1 segment distributions}
 \usage{
-plot_ibd1(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
-  legend_inside = TRUE, title = "Distribution of IBD segments",
-  xlab = "Segment count", ylab = "Average segment length (cM)")
+plot_ibd1(
+  ...,
+  labels,
+  pairs = "leaves",
+  alpha = 1,
+  ellipses = TRUE,
+  legend_inside = TRUE,
+  title = "Distribution of IBD segments",
+  xlab = "Segment count",
+  ylab = "Average segment length (cM)"
+)
 }
 \arguments{
 \item{...}{One or several objects of class \code{genomeSimList}, i.e. outputs of
