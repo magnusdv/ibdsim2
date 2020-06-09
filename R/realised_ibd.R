@@ -21,22 +21,22 @@
 #'
 #' 
 #' @param sim A list of genome simulations, as output by [ibdsim()].
-#' @param id.pair A vector of length 2, with ID labels of the two individuals in question.
+#' @param ids A vector of length 2, with ID labels of the two individuals in question.
 #'
 #' @examples
-#' x = pedtools::nuclearPed(2)
+#' x = nuclearPed(2)
 #' s = ibdsim(x, sims=10)
-#' realised_kappa(s, id.pair=3:4)
+#' realised_kappa(s, ids=3:4)
 #' 
 #' @export
-realised_kappa = function(sim, id.pair) {
-  if(length(id.pair) != 2) 
-    stop2("`id.pair` must be a vector of length 2")
+realised_kappa = function(sim, ids) {
+  if(length(ids) != 2) 
+    stop2("`ids` must be a vector of length 2")
   
   L = attr(sim, 'genome_length_Mb')
   
   segment_summary = vapply(sim, function(s) {
-    a = alleleSummary(s, ids = id.pair)
+    a = alleleSummary(s, ids = ids)
     chrom = a[, 'chrom']
     ibd = a[, 'IBD']  
 

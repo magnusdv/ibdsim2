@@ -4,12 +4,12 @@
 \alias{realised_kappa}
 \title{Realised relatedness}
 \usage{
-realised_kappa(sim, id.pair)
+realised_kappa(sim, ids)
 }
 \arguments{
 \item{sim}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
 
-\item{id.pair}{A vector of length 2, with ID labels of the two individuals in question.}
+\item{ids}{A vector of length 2, with ID labels of the two individuals in question.}
 }
 \description{
 Compute the realised values of various measures of pairwise relatedness, in
@@ -33,8 +33,8 @@ A and B happen to result in no segments of IBD sharing, the realised kinship
 is 0, whatever the pedigree-based kinship may be.
 }
 \examples{
-x = pedtools::nuclearPed(2)
+x = nuclearPed(2)
 s = ibdsim(x, sims=10)
-realised_kappa(s, id.pair=3:4)
+realised_kappa(s, ids=3:4)
 
 }

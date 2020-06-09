@@ -3,7 +3,7 @@
 #' Estimate the probability of no ibd sharing in a pairwise relationship.
 #'
 #' @param sim A list of genome simulations, as output by [ibdsim()].
-#' @param id.pair A vector of length 2, with ID labels of the two individuals in
+#' @param ids A vector of length 2, with ID labels of the two individuals in
 #'   question.
 #' @param truncate A vector of positive real numbers. Only IBD segments longer than this are
 #'   included in the computation. If `truncate` has more than one
@@ -33,23 +33,23 @@
 #' s = ibdsim(x, sims = 7)
 #' 
 #' # Probability of zero ibd segments. (By default all segs are used)
-#' zero_ibd(s, id.pair = cousins)
+#' zero_ibd(s, ids = cousins)
 #' 
 #' # Re-compute the probability with several truncation levels
 #' truncate = 0:50
-#' zp = zero_ibd(s, id.pair = cousins, truncate = truncate)
+#' zp = zero_ibd(s, ids = cousins, truncate = truncate)
 #' 
 #' plot(truncate, zp$zeroprob)
 #' 
 #' @export
-zero_ibd = function(sim, id.pair, truncate=0) {
-  if(length(id.pair) != 2)
-    stop2("`id.pair` must be a vector of length 2")
+zero_ibd = function(sim, ids, truncate=0) {
+  if(length(ids) != 2)
+    stop2("`ids` must be a vector of length 2")
   if(!is.numeric(truncate) || length(truncate) == 0 || any(truncate < 0))
     stop2("`truncate` must be vector of positive numbers")
   
   ibd_count = vapply(sim, function(s) {
-    a = alleleSummary(s, ids=id.pair)
+    a = alleleSummary(s, ids=ids)
     ibdstatus = a[, 'IBD']
     len = a[, 'length']
     

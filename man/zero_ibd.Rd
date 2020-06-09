@@ -4,12 +4,12 @@
 \alias{zero_ibd}
 \title{Probability of zero ibd}
 \usage{
-zero_ibd(sim, id.pair, truncate = 0)
+zero_ibd(sim, ids, truncate = 0)
 }
 \arguments{
 \item{sim}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
 
-\item{id.pair}{A vector of length 2, with ID labels of the two individuals in
+\item{ids}{A vector of length 2, with ID labels of the two individuals in
 question.}
 
 \item{truncate}{A vector of positive real numbers. Only IBD segments longer than this are
@@ -44,11 +44,11 @@ cousins = pedtools::leaves(x)
 s = ibdsim(x, sims = 7)
 
 # Probability of zero ibd segments. (By default all segs are used)
-zero_ibd(s, id.pair = cousins)
+zero_ibd(s, ids = cousins)
 
 # Re-compute the probability with several truncation levels
 truncate = 0:50
-zp = zero_ibd(s, id.pair = cousins, truncate = truncate)
+zp = zero_ibd(s, ids = cousins, truncate = truncate)
 
 plot(truncate, zp$zeroprob)
 
