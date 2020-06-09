@@ -30,34 +30,31 @@
 #' 
 #' @export
 profileSimIBD = function(x, ibdpattern, markers = NULL) {
+
+  if(class(ibdpattern) == "genomeSimList")
+    return(lapply(ibdpattern, function(patt) profileSimIBD(x, patt, markers = markers)))
   
   if(!is.null(markers))
     x = selectMarkers(x, markers)
-  
-  nMark = nMarkers(x)
-  mnames = name(x, 1:nMark)
-  chroms = chrom(x, 1:nMark)
-  cm = posCm(x, 1:nMark)
-  
-  if(length(unique.default(chroms)) > 1) stop2("Something wrong related to chromosomes")
-  if(any(is.na(cm)))
-    stop2("All markers must have defined cM positions")
-  
-  if(class(ibdpattern) == "genomeSimList") {
-    if(length(ibdpattern) == 1)
-      ibdpattern = ibdpattern[[1]]
-    else
-      stop2("`ibdpattern` must be a single simulation, not a list of several.")
-  }
-  if(length(ibdpattern) > 1)
-    stop2("`ibdpattern` must be for one chromosome only, for now...")
-  
-  #-----------------------------
-  
+
   a = alleleSummary(ibdpattern)
   
+  nMark = nMarkers(x)
+  mname = name(x, 1:nMark)
+  mchr  = chrom(x, 1:nMark)
+  mpos  = posCm(x, 1:nMark)
+  
+  if(any(is.na(mpos) | is.na(mchr)))
+    stop2("All markers must have defined chromosome and position attributes")
+
+  if(!all(mchr %in% a[, 'chrom']))
+    stop2("Chromosome missing from `ibdpattern`: ", setdiff(mchr, a[, 'chrom']))
+    
   # Pick rows (indices) in `a` corresponding to marker positions
-  arows = findInterval(cm, a[,'start'])
+  arows = vapply(seq_len(nMark), function(i) {
+    chrrows = which(a[, 'chrom'] == mchr[i])
+    chrrows[findInterval(mpos[i], a[chrrows, 'start'])]
+  }, FUN.VALUE = 1L)
   
   # Allele columns
   acols = paste(rep(labels(x), each = 2), c('p','m'), sep = ":")
@@ -70,16 +67,13 @@ profileSimIBD = function(x, ibdpattern, markers = NULL) {
   
   # Fill in allele matrix one marker at a time
   for(i in seq_len(nMark)) {
-    m = mnames[i]
-    freqs = afreq(x, m)
-    als = names(freqs)
-    frq = as.numeric(freqs)
-    
     # IBD pattern for this marker
     ibdpatt = a[arows[i], acols]
     
     # Sample founder allele labels
-    founderAlleles = sample(als, size = nA, replace = TRUE, prob = frq)
+    frqvec = afreq(x, i)
+    als = names(frqvec)
+    founderAlleles = sample(als, size = nA, replace = TRUE, prob = frqvec)
     
     # Distribute alleles according to IBD pattern
     allAlleles = founderAlleles[ibdpatt]
