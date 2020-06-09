@@ -1,9 +1,10 @@
 .Rproj.user
 .Rhistory
 .RData
-.Ruserdata
+CRAN-RELEASE
+cran-comments.md
+notes-private
 Rprof.out
 src/*.o
 src/*.so
 src/*.dll
-notinuse/*.*
