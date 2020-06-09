@@ -1,4 +1,23 @@
-uniformMap = function(Mb=NULL, cM=NULL, M=NULL, cm.per.mb=1, chromosome=1) { # genL numeric of length 1 or 2: genetic length male & female
+#' Uniform recombination maps
+#'
+#' Create a uniform recombination map of a given length.
+#'
+#' @param Mb Map length in megabases.
+#' @param cM Map length in centiMorgan
+#' @param M Map length in Morgan
+#' @param cm.per.mb A positive number; the cM/Mb ratio
+#' @param chromosome A chromosome label.
+#'
+#' @return An object of class "chromosomeMap", which is a list of two matrices,
+#'   named "male" and "female".
+#'
+#' @examples
+#' uniformMap(M = 1)
+#'
+#' @export
+uniformMap = function(Mb = NULL, cM = NULL, 
+                      M = NULL, cm.per.mb = 1, 
+                      chromosome = 1) { # genL numeric of length 1 or 2: genetic length male & female
     if (!is.null(cM) && !is.null(M)) 
       stop2("Either `cM` or `M` must be NULL")
     stopifnot(!is.null(cM) || !is.null(M) || !is.null(Mb))
