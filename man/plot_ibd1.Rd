@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_ibd1.R
 \name{plot_ibd1}
 \alias{plot_ibd1}
-\title{Scatter plot of IBD=1 segment distributions}
+\title{Scatter plot of segments with IBD = 1}
 \usage{
 plot_ibd1(
   ...,
@@ -43,7 +43,7 @@ inside (default) or outside the plot window.}
 A ggplot2 plot object.
 }
 \description{
-Visualise and compare distributions of segments with IBD=1 between two
+Visualise and compare distributions of segments with \code{IBD = 1} between two
 individuals.
 }
 \details{
@@ -70,8 +70,8 @@ x.mat = swapSex(x.pat, 1)
 # Simulate (increase 'sims'!)
 map = "uniform.sex.spec"
 sims = 10
-s.pat = ibdsim(x.pat, sims = sims, map=map)
-s.mat = ibdsim(x.mat, sims = sims, map=map)
+s.pat = ibdsim(x.pat, sims = sims, map = map)
+s.mat = ibdsim(x.mat, sims = sims, map = map)
 
 # By default, the IBD segments of the "leaves" are computed and plotted
 plot_ibd1(s.pat, s.mat, labels = c("HSpat", "HSmat"))
@@ -84,7 +84,7 @@ plot_ibd1(s.pat, s.mat, labels = c("HSpat", "HSmat"))
 y = addSon(x.pat, 5)
 
 # Simulate 
-s = ibdsim(y, sims = sims, map=map)
+s = ibdsim(y, sims = sims, map = map)
 
 # Indicate the pairs explicitly this time.
 # List names are used as labels in the plot

@@ -12,12 +12,12 @@ estimateTwoLocusIBD(
   rho = NULL,
   cM = NULL,
   Nsim,
-  Xchrom = F,
-  verbose = F,
+  Xchrom = FALSE,
+  verbose = FALSE,
   ...
 )
 
-estimateOneLocusIBD(x, ids, Nsim, Xchrom = F, verbose = F, ...)
+estimateOneLocusIBD(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped()}} object.}
@@ -97,7 +97,7 @@ stopifnot(identical(diag(k2.linked), k.hat))
 
 # Completely unlinked, autosomal
 rho = 0.5
-k2.unlinked = estimateTwoLocusIBD(x, ids = 3:4, rho=rho, 
+k2.unlinked = estimateTwoLocusIBD(x, ids = 3:4, rho = rho, 
                                   Nsim = Nsim, seed = 123)
 stopifnot(identical(k2.unlinked, outer(k.hat, k.hat)))
 
@@ -121,7 +121,7 @@ stopifnot(identical(diag(k2.linked.X), k.hat.X))
 
 # Completely unlinked
 rho = 0.5
-k2.unlinked.X = estimateTwoLocusIBD(x, ids = 3:4, rho = rho, Xchrom=TRUE, 
+k2.unlinked.X = estimateTwoLocusIBD(x, ids = 3:4, rho = rho, Xchrom = TRUE, 
                                     Nsim = Nsim, seed = 123)
 stopifnot(identical(k2.unlinked.X, outer(k.hat.X, k.hat.X)))
 
@@ -165,6 +165,6 @@ Nsim = 10
 estimateTwoLocusIBD(y, c(1,5), rho = rho, Nsim = Nsim, Xchrom = TRUE)
 
 # Exact
-matrix(c(1-rho, rho, rho, 1-rho)/2, ncol=2)
+matrix(c(1-rho, rho, rho, 1-rho)/2, ncol = 2)
 
 }

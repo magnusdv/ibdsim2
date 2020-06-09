@@ -34,7 +34,7 @@ is 0, whatever the pedigree-based kinship may be.
 }
 \examples{
 x = nuclearPed(2)
-s = ibdsim(x, sims=10)
-realised_kappa(s, ids=3:4)
+s = ibdsim(x, sims = 10)
+realised_kappa(s, ids = 3:4)
 
 }

@@ -26,10 +26,10 @@ realisedAutozygosity = function(sims, id = NULL) {
     
     # TODO: following code is not optimised for the simple situation of autozygosity
     # merge adjacent segments with equal IBD status (and equal chrom)
-    seg_starts_idx = which(c(T, diff(aut) != 0 | diff(chrom) != 0))
+    seg_starts_idx = which(c(TRUE, diff(aut) != 0 | diff(chrom) != 0))
     seg_ends_idx = c(seg_starts_idx[-1] - 1, length(aut))
     
-    a_merged = a[seg_starts_idx, , drop = F]
+    a_merged = a[seg_starts_idx, , drop = FALSE]
     a_merged[, 'end'] = a[seg_ends_idx, 'end']
     a_merged[, 'length'] = a_merged[, 'end'] - a_merged[, 'start'] 
     # TODO: Possible speedup of the above: Modify 'end' and 'length' only when needed
@@ -45,7 +45,7 @@ realisedAutozygosity = function(sims, id = NULL) {
       fraction = totLength/genomeL)
   })
   
-  summDF = as.data.frame(do.call(rbind, summList), make.names = F)
+  summDF = as.data.frame(do.call(rbind, summList), make.names = FALSE)
   
   cbind(summDF, expected = inb, genomeLength = genomeL)
 }
@@ -74,7 +74,7 @@ realisedAutozygosity = function(sims, id = NULL) {
 #' HSpat = addChildren(HSpat, 4, 5, 1)
 #' HSmat = swapSex(HSpat, 1)              # maternal half sibs
 #' QHFC = quadHalfFirstCousins()          # quad half first cousins
-#' QHFC = addChildren(QHFC, 9, 10, nch=1)
+#' QHFC = addChildren(QHFC, 9, 10, nch = 1)
 #' 
 #' peds = list(G = G, HSpat = HSpat, HSmat = HSmat, QHFC = QHFC)
 #' plotPedList(peds, newdev = TRUE)
@@ -145,7 +145,7 @@ plotSegDist = function(segDist, labels = NULL, alpha = 1, ellipses = TRUE,
     
     g = g + 
       geom_line(data = curveData, aes_string("x", "y", linetype = "coeff"), 
-                lwd = 1, inherit.aes = F) + 
+                lwd = 1, inherit.aes = FALSE) + 
       scale_linetype_manual(values = 1 + seq_along(expected), # avoid solid line
                             name = "Expected")
   }
@@ -154,7 +154,7 @@ plotSegDist = function(segDist, labels = NULL, alpha = 1, ellipses = TRUE,
   g = g + 
     theme(legend.key.width = unit(0.9, "cm")) + 
     guides(color = if(nLabs > 1) guide_legend(order = 1) else FALSE,
-           linetype = guide_legend(order = 2, reverse = T))
+           linetype = guide_legend(order = 2, reverse = TRUE))
   
   if(legend_inside) 
     g = g + theme(legend.position = c(.95, .95), 

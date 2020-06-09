@@ -11,8 +11,7 @@ karyo_diploid(
   colors = c(paternal = "lightblue", maternal = "orange"),
   alpha = 1,
   bgcol = "gray99",
-  title = NULL,
-  noCaption = FALSE
+  title = NULL
 )
 }
 \arguments{
@@ -34,9 +33,6 @@ is included in the plot, using the names as labels.}
 \item{bgcol}{The background color of the chromosomes.}
 
 \item{title}{Plot title.}
-
-\item{noCaption}{Logical: If TRUE, the default caption "Simulation by ibdsim2"
-is removed.}
 }
 \value{
 The plot object is returned invisibly, so that additional ggplot

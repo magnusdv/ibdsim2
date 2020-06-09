@@ -34,7 +34,7 @@ mergeConsecutiveSegments = function(df, mergeBy, segStart = "start",
   else if(length(mergeBy) != N)
     mergeBy = apply(df[, mergeBy], 1, paste, collapse = ":")
   
-  newSeg = c(T, df[-N, segEnd] != df[-1, segStart])
+  newSeg = c(TRUE, df[-N, segEnd] != df[-1, segStart])
   mergeBy = paste(mergeBy, cumsum(newSeg), sep = "_chunk")
   
   # Runs of consecutive segs; row numbers of start/end
@@ -83,7 +83,7 @@ pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks -
 }
 
 .sortDouble = function(x) {
-  x[order(x, method="shell")]
+  x[order(x, method = "shell")]
 }
 
 .comb2 = function(n) {

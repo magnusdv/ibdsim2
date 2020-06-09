@@ -8,11 +8,10 @@ karyo_haploid(
   segments,
   colorBy = NA,
   color = "black",
-  separate = T,
+  separate = TRUE,
   alpha = 1,
   bgcol = "gray98",
-  title = NULL,
-  noCaption = F
+  title = NULL
 )
 }
 \arguments{
@@ -40,9 +39,6 @@ are drawn in separate bands on the chromosomes.}
 \item{bgcol}{The background color of the chromosomes.}
 
 \item{title}{Plot title.}
-
-\item{noCaption}{A logical; set this to FALSE to suppress the "Created by
-ibdsim2" caption.}
 }
 \value{
 The plot object is returned invisibly, so that additional ggplot
@@ -71,7 +67,7 @@ karyo_haploid(segs, colorBy = "IBD", color = cols, separate = FALSE, alpha = 0.7
               
 # Example showing simulated IBD segments of full siblings
 x = nuclearPed(2)
-s = ibdsim(x, sims=1)[[1]]
+s = ibdsim(x, sims = 1)[[1]]
 a = as.data.frame(alleleSummary(s, 3:4))
 a$status = "No IBD"
 a$status[a$IBD == 1 & a$`3:p` == a$`4:p`] = "Paternal"

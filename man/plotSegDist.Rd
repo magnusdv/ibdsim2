@@ -45,7 +45,7 @@ HSpat = swapSex(halfSibPed(), 5)       # paternal half sibs
 HSpat = addChildren(HSpat, 4, 5, 1)
 HSmat = swapSex(HSpat, 1)              # maternal half sibs
 QHFC = quadHalfFirstCousins()          # quad half first cousins
-QHFC = addChildren(QHFC, 9, 10, nch=1)
+QHFC = addChildren(QHFC, 9, 10, nch = 1)
 
 peds = list(G = G, HSpat = HSpat, HSmat = HSmat, QHFC = QHFC)
 plotPedList(peds, newdev = TRUE)

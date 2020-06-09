@@ -56,7 +56,7 @@ alleleSummaryX = function(x, ids) {
   
   # Remove paternal columns of males
   male_pat = colnames(res) %in% paste0(ids[sex == 1], ":p")
-  res = res[, !male_pat, drop = F]
+  res = res[, !male_pat, drop = FALSE]
   
   # Recalculate IBD column
   if(length(ids) == 2 && sum(sex) < 4) {

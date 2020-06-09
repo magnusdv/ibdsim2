@@ -1,6 +1,6 @@
-#' Scatter plot of IBD=1 segment distributions
+#' Scatter plot of segments with IBD = 1
 #'
-#' Visualise and compare distributions of segments with IBD=1 between two
+#' Visualise and compare distributions of segments with `IBD = 1` between two
 #' individuals.
 #'
 #' This function takes as input one or several complete outputs from the
@@ -43,8 +43,8 @@
 #' # Simulate (increase 'sims'!)
 #' map = "uniform.sex.spec"
 #' sims = 10
-#' s.pat = ibdsim(x.pat, sims = sims, map=map)
-#' s.mat = ibdsim(x.mat, sims = sims, map=map)
+#' s.pat = ibdsim(x.pat, sims = sims, map = map)
+#' s.mat = ibdsim(x.mat, sims = sims, map = map)
 #'
 #' # By default, the IBD segments of the "leaves" are computed and plotted
 #' plot_ibd1(s.pat, s.mat, labels = c("HSpat", "HSmat"))
@@ -57,7 +57,7 @@
 #' y = addSon(x.pat, 5)
 #' 
 #' # Simulate 
-#' s = ibdsim(y, sims = sims, map=map)
+#' s = ibdsim(y, sims = sims, map = map)
 #'
 #' # Indicate the pairs explicitly this time.
 #' # List names are used as labels in the plot
@@ -117,7 +117,7 @@ plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
     s = sims[[i]]
     ped = attr(s, 'pedigree')
     ids = pairs[[i]]
-    real = realised_kappa(s, ids=ids)
+    real = realised_kappa(s, ids = ids)
     if(any(real$Nsegments['Nseg2', ] > 0)) 
        message("Warning: Simulation list ", i, " includes IBD = 2 segments. Expected 'kappa_1 curve' will be wrong!")
     count = real$Nsegments["Nseg1", ]
@@ -138,14 +138,15 @@ plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
   max.y = max(plot_data$averlen)
   
   # Create plot
-  g = ggplot(data=plot_data, aes_string(x="count", y="averlen", col="relation")) + 
+  g = ggplot(data = plot_data, 
+             aes_string(x = "count", y = "averlen", col = "relation")) + 
     geom_jitter(width = 0.25, alpha = alpha) +
     theme_bw(base_size = 15) + 
     scale_color_manual(values = ggplotColors(nlevels(plot_data$relation))) +
     labs(title = title, x = xlab, y = ylab, col = "Relationship")
     
   if(ellipses) 
-    g = g + stat_ellipse(aes_string(x = "count"), size=1.3)
+    g = g + stat_ellipse(aes_string(x = "count"), size = 1.3)
   
   # Theoretical ibd1 curves
   ibd1_vals = sort(unique(plot_data$ibd1_theory))
@@ -167,7 +168,7 @@ plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
     
     g = g + 
       geom_line(data = curveData, aes_string("x", "y", linetype = "kappa1"), 
-                lwd = 1, inherit.aes = F) + 
+                lwd = 1, inherit.aes = FALSE) + 
       scale_linetype_manual(values = 1 + seq_along(ibd1_vals), # avoid solid line
                             name = expression(Theoretical~kappa[1]))
   }
@@ -176,7 +177,7 @@ plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
   g = g + 
     theme(legend.key.width = unit(0.9, "cm")) + 
     guides(color = guide_legend(order = 1), 
-           linetype = guide_legend(order = 2, reverse = T))
+           linetype = guide_legend(order = 2, reverse = TRUE))
   
   if(legend_inside) 
     g = g + theme(legend.position = c(.95, .95), 

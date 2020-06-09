@@ -12,12 +12,12 @@ estimateTwoLocusIdentity(
   rho = NULL,
   cM = NULL,
   Nsim,
-  Xchrom = F,
-  verbose = F,
+  Xchrom = FALSE,
+  verbose = FALSE,
   ...
 )
 
-estimateOneLocusIdentity(x, ids, Nsim, Xchrom = F, verbose = F, ...)
+estimateOneLocusIdentity(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped()}} object.}
@@ -58,7 +58,7 @@ identity states, see here: \url{https://github.com/magnusdv/ribd}.
 \examples{
 x = fullSibMating(1)
 rho = 0.25
-Nsim = 100 # Increase!
+Nsim = 100 # (increase for more accurate estimates!)
 
 estimateTwoLocusIdentity(x, ids = 5:6, rho = rho, Nsim = Nsim)
 

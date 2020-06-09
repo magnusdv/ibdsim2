@@ -47,7 +47,7 @@ uniformMap = function(Mb = NULL, cM = NULL,
     structure(map, length_Mb = female_phys, chromosome = chromosome, class = "chromosomeMap")
   }
 
-loadMap = function(map, chrom=NULL) {
+loadMap = function(map, chrom = NULL) {
 
     if (is.character(map)) {
       CHROM.LENGTH = cbind(male_morgan = c(1.9, 1.752, 1.512, 1.35, 1.302, 1.162, 1.238, 1.089, 1.047, 1.147, 0.992, 1.154, 0.919, 0.857, 0.825, 0.88, 0.863, 0.737, 0.708, 0.563, 0.426, 0.45, NA),
@@ -87,7 +87,7 @@ cm2phys = function(cM_locus, mapmat) {    # mapmat matrise med kolonner 'Mb' og 
   nontriv = cM_locus >= 0 & cM_locus <= last[["cM"]]
   res = numeric(length(cM_locus))
   res[!nontriv] <- NA
-  cm <- cM_locus[nontriv]
+  cm = cM_locus[nontriv]
   interv = findInterval(cm, mapmat[, "cM"], all.inside = TRUE)
   res[nontriv] = mapmat[interv, "Mb"] + 
                 (mapmat[interv + 1, "Mb"] - mapmat[interv, "Mb"]) * (cm - mapmat[interv, "cM"]) / 
@@ -102,16 +102,9 @@ phys2cm = function(Mb_locus, mapmat) {    # mapmat matrise med kolonner 'Mb' og 
   nontriv = Mb_locus >= 0 & Mb_locus <= last[["Mb"]]
   res = numeric(length(Mb_locus))
   res[!nontriv] <- NA
-  mb <- Mb_locus[nontriv]
+  mb = Mb_locus[nontriv]
   interv = findInterval(mb, mapmat[, "Mb"], all.inside = TRUE)
-  res[nontriv] = mapmat[interv, "cM"] + (mapmat[interv + 1, "cM"] - mapmat[interv, "cM"]) * (mb - mapmat[interv, "Mb"]) / (mapmat[interv + 1, "Mb"] - mapmat[interv, "Mb"])
+  res[nontriv] = mapmat[interv, "cM"] + 
+    (mapmat[interv + 1, "cM"] - mapmat[interv, "cM"]) * (mb - mapmat[interv, "Mb"]) / (mapmat[interv + 1, "Mb"] - mapmat[interv, "Mb"])
   res
 }
-
-# .genmapC <-
-# function(cM, mapmat) {    # mapmat matrise med kolonner 'pos' og 'cM'   ###NB gammel!!
-#     map_phys = as.double(mapmat[,1])
-#     map_cm = as.double(mapmat[,2])
-#     n = length(cM)
-#     .C("geneticMap", map_phys, map_cm, cM, n, res=numeric(n), PACKAGE="ibdsim2")$res
-# }

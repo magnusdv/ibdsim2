@@ -42,14 +42,14 @@
 #' plot(truncate, zp$zeroprob)
 #' 
 #' @export
-zero_ibd = function(sim, ids, truncate=0) {
+zero_ibd = function(sim, ids, truncate = 0) {
   if(length(ids) != 2)
     stop2("`ids` must be a vector of length 2")
   if(!is.numeric(truncate) || length(truncate) == 0 || any(truncate < 0))
     stop2("`truncate` must be vector of positive numbers")
   
   ibd_count = vapply(sim, function(s) {
-    a = alleleSummary(s, ids=ids)
+    a = alleleSummary(s, ids = ids)
     ibdstatus = a[, 'IBD']
     len = a[, 'length']
     
@@ -65,5 +65,5 @@ zero_ibd = function(sim, ids, truncate=0) {
   zeroprob = rowMeans(ibd_count == 0)
   SE = sqrt(zeroprob*(1 - zeroprob)/length(sim))
   
-  data.frame(truncate=truncate, zeroprob = zeroprob, SE = SE)
+  data.frame(truncate = truncate, zeroprob = zeroprob, SE = SE)
 }

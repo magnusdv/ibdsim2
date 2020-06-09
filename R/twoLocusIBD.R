@@ -69,7 +69,7 @@
 #'
 #' # Completely unlinked, autosomal
 #' rho = 0.5
-#' k2.unlinked = estimateTwoLocusIBD(x, ids = 3:4, rho=rho, 
+#' k2.unlinked = estimateTwoLocusIBD(x, ids = 3:4, rho = rho, 
 #'                                   Nsim = Nsim, seed = 123)
 #' stopifnot(identical(k2.unlinked, outer(k.hat, k.hat)))
 #'
@@ -93,7 +93,7 @@
 #'
 #' # Completely unlinked
 #' rho = 0.5
-#' k2.unlinked.X = estimateTwoLocusIBD(x, ids = 3:4, rho = rho, Xchrom=TRUE, 
+#' k2.unlinked.X = estimateTwoLocusIBD(x, ids = 3:4, rho = rho, Xchrom = TRUE, 
 #'                                     Nsim = Nsim, seed = 123)
 #' stopifnot(identical(k2.unlinked.X, outer(k.hat.X, k.hat.X)))
 #'
@@ -137,7 +137,7 @@
 #' estimateTwoLocusIBD(y, c(1,5), rho = rho, Nsim = Nsim, Xchrom = TRUE)
 #'
 #' # Exact
-#' matrix(c(1-rho, rho, rho, 1-rho)/2, ncol=2)
+#' matrix(c(1-rho, rho, rho, 1-rho)/2, ncol = 2)
 #'
 #' @name estimateIBD
 NULL
@@ -145,7 +145,7 @@ NULL
 #' @rdname estimateIBD
 #' @export
 estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim, 
-                               Xchrom = F, verbose = F, ...) {
+                               Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
 
   if (anyNA(match(ids, labels(x))))
@@ -164,7 +164,7 @@ estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim,
   if (cM == Inf) {
     if (verbose) cat("Analysing unlinked loci.\n")
     m1 = estimateOneLocusIBD(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
-    m2 = estimateOneLocusIBD(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = F, ...) # dont repeat verbose output
+    m2 = estimateOneLocusIBD(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE, ...) # dont repeat verbose output
     res = outer(m1, m2)
     return(res)
   }
@@ -207,7 +207,7 @@ estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim,
 
 #' @rdname estimateIBD
 #' @export
-estimateOneLocusIBD = function(x, ids, Nsim, Xchrom = F, verbose = F, ...) {
+estimateOneLocusIBD = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   if (anyNA(match(ids, labels(x))))

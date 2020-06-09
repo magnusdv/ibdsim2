@@ -14,6 +14,6 @@
 #' @name ibdsim2
 NULL
 
-#' @useDynLib ibdsim2, .registration=TRUE
+#' @useDynLib ibdsim2, .registration = TRUE
 #' @importFrom Rcpp sourceCpp evalCpp
 NULL

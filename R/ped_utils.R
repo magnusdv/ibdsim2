@@ -3,17 +3,17 @@
   zeros = sap[["0"]]
   ones = c(sap[["1"]], sap[["atleast1"]])
   twos = sap[["2"]]
-  caf = fou = setdiff(founders(x, internal=T), zeros)
+  caf = fou = setdiff(founders(x, internal = TRUE), zeros)
   fou_one = intersect(fou, ones)
   if (length(fou_one) > 1 || any(twos %in% fou)) 
     return(numeric()) # since founders always have different alleles (by definition)
 
-  fou_desc = lapply(fou, descendants, x = x, internal=TRUE)
+  fou_desc = lapply(fou, descendants, x = x, internal = TRUE)
 
   if (length(twos) > 0) {
     .ancestral.founders = function(id) if (id %in% fou) return(id) else fou[sapply(fou_desc, function(ds) id %in% ds)]
     if (is.null(loops)) loops = inbreedingLoops(x)
-    if (length(loops) == 0) return(numeric())  # NB: 1)pedigreeLoops uses original ids 2) very inefficient, but fast enough
+    if (length(loops) == 0) return(numeric())  # NB: 1) pedigreeLoops uses original ids 2) very inefficient, but fast enough
     bottoms = sapply(loops, "[[", "bottom")
     tops = sapply(loops, "[[", "top")
     for (bot in twos) caf = intersect(caf, unlist(lapply(tops[bottoms == bot], .ancestral.founders)))
@@ -28,10 +28,9 @@
 }
 
 
-# importFrom pedtools leaves children
 .pedPaths = function(x, from, to) {
   paths = list()
-  lvs = pedtools::leaves(x, internal=TRUE)
+  lvs = leaves(x, internal = TRUE)
 
   descend = function(x, from, to, path) {
     if (from == to) {
@@ -40,7 +39,7 @@
     }
     
     if (from %in% leaves) return()
-    offs = pedtools::children(x, from, internal=TRUE)
+    offs = children(x, from, internal = TRUE)
     for (kid in offs) descend(x, from = kid, to = to, path = c(path, kid))
   }
   descend(x, from, to, path = from)
@@ -64,7 +63,7 @@ obligate.carriers = function(x, sap) {
     allcomb = expand.grid(c(twoPaths, onePaths)) # each row here consists of one of each
     lapply(1:nrow(allcomb), function(i) sort.default(unique(unlist(allcomb[i, ]))))
   })
-  obligs = unique(unlist(cafPaths, recursive = F))
+  obligs = unique(unlist(cafPaths, recursive = FALSE))
   obligs = lapply(obligs, setdiff, c(sap[["atleast1"]], sap[["2"]]))
   obligs = obligs[sapply(obligs, function(vec) !any(sap[["0"]] %in% vec))] # and paths containing 0-indivs
   if (length(obligs) == 0) 

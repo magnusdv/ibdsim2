@@ -1,7 +1,7 @@
 
 # Prepare input 'segments' for plotting (extract and rename relevant columns,
 # merge adjacent segments)
-prepare_segments = function(segments, colorBy=NA) {
+prepare_segments = function(segments, colorBy = NA) {
   segments = as.data.frame(segments)
   
   stopifnot(ncol(segments) >= 3, 
@@ -34,7 +34,7 @@ prepare_segments = function(segments, colorBy=NA) {
   }
   
   # Merge overlapping segments with the same color
-  df = mergeConsecutiveSegments(df, mergeBy = c("chr", "fill"), segLength="length")
+  df = mergeConsecutiveSegments(df, mergeBy = c("chr", "fill"), segLength = "length")
   df
 }
 
@@ -61,8 +61,6 @@ prepare_segments = function(segments, colorBy=NA) {
 #' @param alpha A single numeric in `[0,1]` indicating color transparency.
 #' @param bgcol The background color of the chromosomes.
 #' @param title Plot title.
-#' @param noCaption A logical; set this to FALSE to suppress the "Created by
-#'   ibdsim2" caption.
 #'
 #' @return The plot object is returned invisibly, so that additional ggplot
 #'   layers may be added if needed.
@@ -88,7 +86,7 @@ prepare_segments = function(segments, colorBy=NA) {
 #'               
 #' # Example showing simulated IBD segments of full siblings
 #' x = nuclearPed(2)
-#' s = ibdsim(x, sims=1)[[1]]
+#' s = ibdsim(x, sims = 1)[[1]]
 #' a = as.data.frame(alleleSummary(s, 3:4))
 #' a$status = "No IBD"
 #' a$status[a$IBD == 1 & a$`3:p` == a$`4:p`] = "Paternal"
@@ -100,9 +98,10 @@ prepare_segments = function(segments, colorBy=NA) {
 #' }
 #'
 #' @export
-karyo_haploid = function(segments, colorBy=NA, color="black", separate = T, alpha=1, bgcol="gray98", title=NULL, noCaption = F) {
+karyo_haploid = function(segments, colorBy = NA, color = "black", separate = TRUE, 
+                         alpha = 1, bgcol = "gray98", title = NULL) {
   
-  decode = loadMap("Decode", chrom=1:22)
+  decode = loadMap("Decode", chrom = 1:22)
   chrlen = sapply(decode, attr, 'length')
   seqnames = paste0("chr", 1:22)
   genome = data.frame(chr = factor(seqnames, levels = seqnames), 
@@ -128,9 +127,12 @@ karyo_haploid = function(segments, colorBy=NA, color="black", separate = T, alph
   
   # Build plot object
   p = ggplot() + 
-    geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0, ymax=1), 
+    geom_rect(data = genome, 
+              aes_string(xmin = 0, xmax = "Mb", ymin = 0, ymax = 1), 
               fill = bgcol, col = "black") + 
-    geom_rect(data = segments, aes_string(xmin="start", xmax="end", ymin="ymin", ymax="ymax", fill="fill"), 
+    geom_rect(data = segments, 
+              aes_string(xmin = "start", xmax = "end", ymin = "ymin", ymax = "ymax", 
+                         fill = "fill"), 
               col = "black", alpha = alpha) +
     facet_grid(chr ~ ., switch = "y") + 
     scale_x_continuous(expand = c(0.01, 0.01)) +
@@ -145,9 +147,6 @@ karyo_haploid = function(segments, colorBy=NA, color="black", separate = T, alph
           legend.text = element_text(size = 14)) +
     labs(fill = NULL, title = title)
   
-  if(!noCaption) 
-    p = p +labs(caption = "Created by ibdsim2")
-
   if(is.na(colorBy)) 
     p = p + guides(fill = "none")
   
@@ -172,8 +171,6 @@ karyo_haploid = function(segments, colorBy=NA, color="black", separate = T, alph
 #' @param alpha A single numeric in `[0,1]` indicating color transparency.
 #' @param bgcol The background color of the chromosomes.
 #' @param title Plot title.
-#' @param noCaption Logical: If TRUE, the default caption "Simulation by ibdsim2"
-#'   is removed.
 #'
 #' @return The plot object is returned invisibly, so that additional ggplot
 #'   layers may be added if needed.
@@ -192,15 +189,15 @@ karyo_haploid = function(segments, colorBy=NA, color="black", separate = T, alph
 #' @export
 karyo_diploid = function(paternal, maternal, chromosomes = 1:22, 
                          colors = c(paternal = "lightblue", maternal = "orange"),  
-                         alpha = 1, bgcol = "gray99", title = NULL, noCaption = FALSE) {
+                         alpha = 1, bgcol = "gray99", title = NULL) {
   
   decode = loadMap("Decode", chrom = chromosomes)
   chrlen = sapply(decode, attr, 'length')
   seqnames = paste0("chr", chromosomes)
   genome = data.frame(chr = factor(seqnames, levels = seqnames), Mb = chrlen)
   
-  paternal = prepare_segments(paternal, colorBy=NA)
-  maternal = prepare_segments(maternal, colorBy=NA)
+  paternal = prepare_segments(paternal, colorBy = NA)
+  maternal = prepare_segments(maternal, colorBy = NA)
   
   paternal$chr = factor(paternal$chr, levels = levels(genome$chr))
   maternal$chr = factor(maternal$chr, levels = levels(genome$chr))
@@ -218,20 +215,28 @@ karyo_diploid = function(paternal, maternal, chromosomes = 1:22,
   p = ggplot() + 
     theme_void(base_size = 15) + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 5.5), "pt")) +  
     ggtitle(title) +
-    geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0, ymax=.43), fill=bgcol, col="black") + 
-    geom_rect(data = genome, aes_string(xmin=0, xmax="Mb", ymin=0.57, ymax=1), fill=bgcol, col="black") +
+    geom_rect(aes_string(xmin = 0, xmax = "Mb", ymin = 0, ymax = .43), 
+              data = genome, fill = bgcol, col = "black") + 
+    geom_rect(aes_string(xmin = 0, xmax = "Mb", ymin = 0.57, ymax = 1), 
+              data = genome, fill = bgcol, col = "black") +
     facet_grid(chr ~ ., switch = "y") + 
     theme(strip.text.y = element_text(angle = 180),
           panel.spacing.y = unit(.2, "lines"))
   
   if(Np > 0)
-    p = p + geom_rect(data = paternal, aes_string(xmin="start", xmax="end", ymin=0.57, ymax=1, fill="fill"), col="black", alpha=alpha)
+    p = p + geom_rect(data = paternal, 
+                      aes_string(xmin = "start", xmax = "end", 
+                                 ymin = 0.57, ymax = 1, fill = "fill"), 
+                      col = "black", alpha = alpha)
   if(Nm > 0)
-    p = p +  geom_rect(data = maternal, aes_string(xmin="start", xmax="end", ymin=0, ymax=.43, fill="fill"), col="black", alpha=alpha)
+    p = p +  geom_rect(data = maternal, 
+                       aes_string(xmin = "start", xmax = "end", 
+                                  ymin = 0, ymax = .43, fill = "fill"), 
+                       col = "black", alpha = alpha)
   
   p = p + 
-    scale_fill_manual(values = colors, drop = F) +
-    labs(fill = NULL, caption = if(noCaption) NULL else "Simulation by ibdsim2")
+    scale_fill_manual(values = colors, drop = FALSE) +
+    labs(fill = NULL)
       
   p
 }

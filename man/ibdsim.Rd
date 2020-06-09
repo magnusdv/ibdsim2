@@ -11,7 +11,7 @@ ibdsim(
   map = "decode",
   chromosomes = NULL,
   model = "chi",
-  skip.recomb = "noninf_founders",
+  skipRecomb = "noninf_founders",
   seed = NULL,
   verbose = TRUE
 )
@@ -35,7 +35,7 @@ autosomes.}
 \item{model}{A character indicating the statistical model for recombination:
 Either "chi" (the default) or "haldane". (See details.)}
 
-\item{skip.recomb}{A numeric containing individuals whose meioses should be
+\item{skipRecomb}{A numeric containing individuals whose meioses should be
 simulated without recombination (i.e. a random strand is passed on to each
 offspring). If NULL, nobody is skipped. The default value (the character
 "noninf_founders") computes the set of pedigree founders that cannot be
@@ -63,9 +63,9 @@ Poisson model for recombination is also implemented.)
 Recombination rates are sex-dependent, and vary along each chromosome
 according to the recombination map specified by the \code{map} parameter. By
 default, the complete Decode map of the human autosome is used (see
-References). If \code{map="uniform.sex.spec"}, the genetic chromosome
+References). If \code{map = "uniform.sex.spec"}, the genetic chromosome
 \emph{lengths} are as in the Decode map, but the recombination rate is kept
-constant along each chromosome. If \code{map="uniform.sex.aver"}, sex
+constant along each chromosome. If \code{map = "uniform.sex.aver"}, sex
 averaged genetic chromosome lengths are used (and constant recombination
 rates along each chromosome).
 

@@ -16,7 +16,7 @@
 #' @examples
 #' x = fullSibMating(1)
 #' rho = 0.25
-#' Nsim = 100 # Increase!
+#' Nsim = 100 # (increase for more accurate estimates!)
 #'
 #' estimateTwoLocusIdentity(x, ids = 5:6, rho = rho, Nsim = Nsim)
 #'
@@ -27,7 +27,7 @@ NULL
 #' @rdname estimateIdentity
 #' @export
 estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim, 
-                                    Xchrom = F, verbose = F, ...) {
+                                    Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   if (anyNA(match(ids, labels(x))))
@@ -46,7 +46,7 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
   if (cM == Inf) {
     if (verbose) cat("Analysing unlinked loci.\n")
     m1 = estimateOneLocusIdentity(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
-    m2 = estimateOneLocusIdentity(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = F) # dont repeat verbose output
+    m2 = estimateOneLocusIdentity(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE) # dont repeat verbose output
     res = outer(m1, m2)
     return(res)
   }
@@ -96,7 +96,7 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
 
 #' @rdname estimateIdentity
 #' @export
-estimateOneLocusIdentity = function(x, ids, Nsim, Xchrom = F, verbose = F, ...) {
+estimateOneLocusIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   if (anyNA(match(ids, labels(x))))

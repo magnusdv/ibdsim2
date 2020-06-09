@@ -13,9 +13,9 @@
 #' Recombination rates are sex-dependent, and vary along each chromosome
 #' according to the recombination map specified by the `map` parameter. By
 #' default, the complete Decode map of the human autosome is used (see
-#' References). If `map="uniform.sex.spec"`, the genetic chromosome
+#' References). If `map = "uniform.sex.spec"`, the genetic chromosome
 #' *lengths* are as in the Decode map, but the recombination rate is kept
-#' constant along each chromosome. If `map="uniform.sex.aver"`, sex
+#' constant along each chromosome. If `map = "uniform.sex.aver"`, sex
 #' averaged genetic chromosome lengths are used (and constant recombination
 #' rates along each chromosome).
 #'
@@ -51,7 +51,7 @@
 #'   autosomes.
 #' @param model A character indicating the statistical model for recombination:
 #'   Either "chi" (the default) or "haldane". (See details.)
-#' @param skip.recomb A numeric containing individuals whose meioses should be
+#' @param skipRecomb A numeric containing individuals whose meioses should be
 #'   simulated without recombination (i.e. a random strand is passed on to each
 #'   offspring). If NULL, nobody is skipped. The default value (the character
 #'   "noninf_founders") computes the set of pedigree founders that cannot be
@@ -71,7 +71,7 @@
 #' @importFrom pedtools is.ped hasParentsBeforeChildren parentsBeforeChildren
 #' @export
 ibdsim = function(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
-                  model = "chi", skip.recomb = "noninf_founders", seed = NULL, 
+                  model = "chi", skipRecomb = "noninf_founders", seed = NULL, 
                   verbose = TRUE) {
   # Check input
   if(!is.ped(x))
@@ -83,7 +83,7 @@ ibdsim = function(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
   if(!all(founderInbreeding(x) %in% c(0,1)))
     stop2("Founder inbreeding coefficients other than 0 and 1 are not allowed")
   
-  model_string = if(model=="chi") "Chi square renewal process" else "Haldane's poisson process"    
+  model_string = if(model == "chi") "Chi square renewal process" else "Haldane's poisson process"    
   
   # Ensure that parents precede their children
   if (!pedtools::hasParentsBeforeChildren(x)) {
@@ -122,29 +122,29 @@ ibdsim = function(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
       dischr[] = rep.int(mapchrom, sims) 
     else {
       chromlengths = sapply(map, attr, "length_Mb")
-      dischr[] = sample(mapchrom, size = sims, replace = T, prob = chromlengths)
+      dischr[] = sample(mapchrom, size = sims, replace = TRUE, prob = chromlengths)
     }
     # Process condition SAP
     oblig.saps = sample.obligates(x, condition, sims)
   }
   
   # Determine ped members where recombination should be skipped.
-  if (!is.null(skip.recomb)) {
-    if (skip.recomb == "noninf_founders") {
-      cafs = FOU = founders(x, internal=T)
+  if (!is.null(skipRecomb)) {
+    if (skipRecomb == "noninf_founders") {
+      cafs = FOU = founders(x, internal = TRUE)
       if (!is.null(condition)) 
         cafs = intersect(cafs, .CAFs(x, condition))
-      skip.recomb = setdiff(FOU, cafs)
+      skipRecomb = setdiff(FOU, cafs)
     }
-    if (length(skip.recomb) > 0 && verbose) 
-      message("Skipping recombination in:", paste(skip.recomb, collapse = ","))
+    if (length(skipRecomb) > 0 && verbose) 
+      message("Skipping recombination in:", paste(skipRecomb, collapse = ","))
   }
   
   # The actual simulations: One sim at the time; each chromosome in turn 
   genomeSimList = lapply(1:sims, function(i) {
     lapply(map, function(m) {
       cond = if (dischr[i] == attr(m, "chromosome")) oblig.saps[[i]] else NULL 
-      genedrop(x, map = m, condition = cond, model = model, skip.recomb = skip.recomb)
+      genedrop(x, map = m, condition = cond, model = model, skipRecomb = skipRecomb)
     })
   })
   
@@ -155,14 +155,14 @@ ibdsim = function(x, sims, condition = NULL, map = "decode", chromosomes = NULL,
   
   # Various attributes of the simulation call
   attribs = list(pedigree = x, 
-                 skipped = skip.recomb,
+                 skipped = skipRecomb,
                  condition = condition,
                  genome_length_Mb = attr(map, "length_Mb"),
                  chromosomes = mapchrom,
                  model = model_string)
   
   # Add attributes and class to each genomeSim
-  genomeSimList = lapply(genomeSimList, `attributes<-`, c(attribs, class="genomeSim"))
+  genomeSimList = lapply(genomeSimList, `attributes<-`, c(attribs, class = "genomeSim"))
   
   # Add attributes and class to the entire list 
   attributes(genomeSimList) = c(attribs, class = "genomeSimList")

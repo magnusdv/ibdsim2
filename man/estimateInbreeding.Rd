@@ -12,12 +12,12 @@ estimateTwoLocusInbreeding(
   rho = NULL,
   cM = NULL,
   Nsim,
-  Xchrom = F,
-  verbose = F,
+  Xchrom = FALSE,
+  verbose = FALSE,
   ...
 )
 
-estimateOneLocusInbreeding(x, id, Nsim, Xchrom = F, verbose = F, ...)
+estimateOneLocusInbreeding(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped()}} object.}

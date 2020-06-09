@@ -29,10 +29,10 @@ print.genomeSim = function(x, ...) {
   
   print(glue::glue("
   Total map length: {attrs$genome_length_Mb} Mb
-  Chromosomes: {paste(attrs$chromosomes, collapse=',')}
+  Chromosomes: {paste(attrs$chromosomes, collapse = ',')}
   Recombination model: {attrs$model}
   Pedigree members: {pedsize(attrs$ped)}
-  Skipped recombination in: {paste(attrs$skipped, collapse=',')}
+  Skipped recombination in: {paste(attrs$skipped, collapse = ',')}
   Conditional: {attrs$condition}
   "))
 }

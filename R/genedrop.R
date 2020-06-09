@@ -1,9 +1,9 @@
 #' @importFrom stats runif
-genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x= ped object
+genedrop = function(x, map, condition = NULL, model = "chi", skipRecomb = NULL) {
   FIDX = x$FIDX
   MIDX = x$MIDX
-  FOU = founders(x, internal=T)
-  NONFOU = nonfounders(x, internal=T)
+  FOU = founders(x, internal = TRUE)
+  NONFOU = nonfounders(x, internal = TRUE)
   chrom = attr(map, "chromosome")
   
   h = distribute.founder.alleles(x, chrom)
@@ -13,8 +13,8 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
       for (i in NONFOU) {
         fa = FIDX[i]
         mo = MIDX[i]
-        h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, skip.recomb = fa %in% skip.recomb),
-                      meiosis(h[[mo]], map = map$female, model = model, skip.recomb = mo %in% skip.recomb)
+        h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, skipRecomb = fa %in% skipRecomb),
+                      meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
         )
       }
     }
@@ -22,7 +22,7 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
       for (i in NONFOU) {
         fa = FIDX[i]
         mo = MIDX[i]
-        maternal.gamete = meiosis(h[[mo]], map = map$female, model = model, skip.recomb = mo %in% skip.recomb)
+        maternal.gamete = meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
         h[[i]] = list(
           if (x$SEX[i] == 1) maternal.gamete else h[[fa]][[1]],
           maternal.gamete)
@@ -37,7 +37,8 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
     dis.al = h[[dis.fou]][[1]][[2]] # h[[dis.fou]][[1]] is matrix with 1 row.
     dis.locus = runif(1, min = 0, max = attr(map, "length_Mb"))
 
-    carry_code = lapply(1:pedsize(x), function(j) match(T, c(j %in% zero, j %in% one, j %in% two, j %in% atm1), nomatch = 5))
+    carry_code = lapply(1:pedsize(x), function(j) 
+      match(TRUE, c(j %in% zero, j %in% one, j %in% two, j %in% atm1), nomatch = 5))
     COND = list(c(locus = dis.locus, allele = dis.al, action = 1), 
                 c(locus = dis.locus, allele = dis.al, action = 2), NULL) # action: 1=force; 2=avoid
     if (chrom < 23)
@@ -46,9 +47,9 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
         mo = MIDX[i]
         condits = COND[.decide_action(dis.al, dis.locus, h[c(fa, mo)], carry_code[[i]])] # returns list of 2 elements
         h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, 
-                              skip.recomb = fa %in% skip.recomb, condition = condits[[1]]),
+                              skipRecomb = fa %in% skipRecomb, condition = condits[[1]]),
                       meiosis(h[[mo]], map = map$female, model = model, 
-                              skip.recomb = mo %in% skip.recomb, condition = condits[[2]]))
+                              skipRecomb = mo %in% skipRecomb, condition = condits[[2]]))
       }
     else {
       stop2("X-linked conditional genedrop is not implemented yet")
@@ -60,16 +61,16 @@ genedrop = function(x, map, condition=NULL, model="chi", skip.recomb=NULL) { # x
   attr(h, "length_Mb") = attr(map, "length_Mb")
   attr(h, "condition") = condition
   attr(h, "model") = model
-  attr(h, "skipped") = skip.recomb
+  attr(h, "skipped") = skipRecomb
   
   class(h) = "chromosomeSim"
   h
 }
 
 
-distribute.founder.alleles = function(x, chrom="AUTOSOMAL") {
+distribute.founder.alleles = function(x, chrom = "AUTOSOMAL") {
   h = vector("list", pedsize(x))
-  fou = founders(x, internal=T)
+  fou = founders(x, internal = TRUE)
   nfou = length(fou)
   
   if (is.null(chrom)) chrom = "AUTOSOMAL"
@@ -99,7 +100,7 @@ distribute.founder.alleles = function(x, chrom="AUTOSOMAL") {
   }
   
   h[fou] = lapply(2 * seq_along(fou), function(i) 
-    list(aux[i - 1, , drop = F], aux[i, , drop = F]))
+    list(aux[i - 1, , drop = FALSE], aux[i, , drop = FALSE]))
   h
 }
 

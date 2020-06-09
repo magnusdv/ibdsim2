@@ -22,7 +22,7 @@ NULL
 #' @rdname estimateInbreeding
 #' @export
 estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim, 
-                                      Xchrom = F, verbose = F, ...) {
+                                      Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   if (!id %in%  labels(x))
@@ -41,7 +41,7 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
   if (cM == Inf) {
     if (verbose) cat("Analysing unlinked loci.\n")
     m1 = estimateOneLocusInbreeding(x, id, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
-    m2 = estimateOneLocusInbreeding(x, id, Nsim = Nsim, Xchrom = Xchrom, verbose = F) # dont repeat verbose output
+    m2 = estimateOneLocusInbreeding(x, id, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE) # dont repeat verbose output
     res = m1 * m2
     return(res)
   }
@@ -70,7 +70,7 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
 
 #' @rdname estimateInbreeding
 #' @export
-estimateOneLocusInbreeding = function(x, id, Nsim, Xchrom = F, verbose = F, ...) {
+estimateOneLocusInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   if (!id %in%  labels(x))
@@ -87,7 +87,7 @@ estimateOneLocusInbreeding = function(x, id, Nsim, Xchrom = F, verbose = F, ...)
   f2 = vapply(simdata, function(s) {
     a = sumFUN(s, id)
     a[1, 5] == a[1, 6]
-    }, T)
+    }, FUN.VALUE = TRUE)
   
   if (verbose) 
     cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")

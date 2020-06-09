@@ -1,6 +1,6 @@
 # Not exported
-meiosis = function(parent, map, model="chi", condition=NULL, skip.recomb=FALSE) { 
-  # skip=TRUE returns random strand with no recombination; 
+meiosis = function(parent, map, model = "chi", condition = NULL, skipRecomb = FALSE) { 
+  # skip = TRUE returns random strand with no recombination; 
   # condition should be NULL or a vector with elements 'locus'(Mb), 'allele' and 'action' (1=force,2=avoid).
   
   if (condit <- !is.null(condition)) {
@@ -12,7 +12,7 @@ meiosis = function(parent, map, model="chi", condition=NULL, skip.recomb=FALSE) 
   } else
     startStrand = sample.int(2, 1)
 
-  if (skip.recomb) return(parent[[startStrand]])
+  if (skipRecomb) return(parent[[startStrand]])
   L.cM = map[nrow(map), "cM"]  # chromosome length in cM
 
   switch(model,
@@ -27,7 +27,7 @@ meiosis = function(parent, map, model="chi", condition=NULL, skip.recomb=FALSE) 
       if (nC == 0) return(parent[[startStrand]])
       C_events = .sortDouble(runif(nC, min = 0, max = L.cM)) # potential crossover positions (N-1 intervals, uniformly distr given nC)
       Cx.bundle = C_events[!as.logical((seq_len(nC) + sample.int(m + 1, 1)) %% (m + 1))]    # Cx events on 4 strand bundle: every (m+1)th
-      Cx = Cx.bundle[as.logical(sample.int(2, length(Cx.bundle), replace = T) %% 2)]    # thinning. Each survive with prob=1/2
+      Cx = Cx.bundle[as.logical(sample.int(2, length(Cx.bundle), replace = TRUE) %% 2)]    # thinning. Each survive with prob=1/2
   })
   
   cpos = cm2phys(cM_locus = Cx, mapmat = map) # crossover positions
