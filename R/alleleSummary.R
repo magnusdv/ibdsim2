@@ -43,7 +43,7 @@
 #' 
 #' # Full sib mating: all 9 states are possible
 #' y = fullSibMating(1)
-#' sim = ibdsim(y, sims = 1, chrom = 1, seed = 36)[[1]]
+#' sim = ibdsim(y, sims = 1, chrom = 1, seed = 22)[[1]]
 #' a = alleleSummary(sim, ids = 5:6)
 #' 
 #' stopifnot(setequal(a[, 'Sigma'], 1:9))

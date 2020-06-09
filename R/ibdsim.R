@@ -63,10 +63,10 @@
 #'
 #' @examples
 #'
-#' z = pedtools::halfSibPed()
-#' plot(z)
-#' res = ibdsim(z, sims=1)
+#' hs = halfSibPed()
+#' res = ibdsim(hs, sims = 2, map = uniformMap(M = 1))
 #' res
+#' alleleSummary(res[[1]])
 #'
 #' @importFrom pedtools is.ped hasParentsBeforeChildren parentsBeforeChildren
 #' @export

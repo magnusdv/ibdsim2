@@ -80,7 +80,7 @@ realisedAutozygosity = function(sims, id = NULL) {
 #' plotPedList(peds, newdev = TRUE)
 #' 
 #' # Simulations (increase 'sims'!))
-#' s = lapply(peds, ibdsim, sims = 1000, map = "uniform.sex.spec")
+#' s = lapply(peds, ibdsim, sims = 10, map = "uniform.sex.spec")
 #' 
 #' # Summarise autozygous regions
 #' segs = lapply(s, realisedAutozygosity)
