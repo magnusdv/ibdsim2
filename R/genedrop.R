@@ -1,65 +1,36 @@
 #' @importFrom stats runif
-genedrop = function(x, map, condition = NULL, model = "chi", skipRecomb = NULL) {
+genedrop = function(x, map, model = "chi", skipRecomb = NULL) {
   FIDX = x$FIDX
   MIDX = x$MIDX
   FOU = founders(x, internal = TRUE)
   NONFOU = nonfounders(x, internal = TRUE)
   chrom = attr(map, "chromosome")
   
-  h = distribute.founder.alleles(x, chrom)
+  h = distributeFounderAlleles(x, chrom)
   
-  if (is.null(condition)) {
-    if (chrom < 23) {
-      for (i in NONFOU) {
-        fa = FIDX[i]
-        mo = MIDX[i]
-        h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, skipRecomb = fa %in% skipRecomb),
-                      meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
-        )
-      }
-    }
-    else if (chrom == 23) {
-      for (i in NONFOU) {
-        fa = FIDX[i]
-        mo = MIDX[i]
-        maternal.gamete = meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
-        h[[i]] = list(
-          if (x$SEX[i] == 1) maternal.gamete else h[[fa]][[1]],
-          maternal.gamete)
-      }
+  
+  if (chrom < 23) {
+    for (i in NONFOU) {
+      fa = FIDX[i]
+      mo = MIDX[i]
+      h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, skipRecomb = fa %in% skipRecomb),
+                    meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
+      )
     }
   }
-  else {
-    zero = condition$"0"; one = condition$"1"; two = condition$"2"; atm1 = condition$"atmost1";
-    dis.fou = one[one %in% FOU]
-    if (length(dis.fou) != 1) 
-      stop2("Obligate carriers must include exactly 1 founder")
-    dis.al = h[[dis.fou]][[1]][[2]] # h[[dis.fou]][[1]] is matrix with 1 row.
-    dis.locus = runif(1, min = 0, max = attr(map, "length_Mb"))
-
-    carry_code = lapply(1:pedsize(x), function(j) 
-      match(TRUE, c(j %in% zero, j %in% one, j %in% two, j %in% atm1), nomatch = 5))
-    COND = list(c(locus = dis.locus, allele = dis.al, action = 1), 
-                c(locus = dis.locus, allele = dis.al, action = 2), NULL) # action: 1=force; 2=avoid
-    if (chrom < 23)
-      for (i in NONFOU) {
-        fa = FIDX[i]
-        mo = MIDX[i]
-        condits = COND[.decide_action(dis.al, dis.locus, h[c(fa, mo)], carry_code[[i]])] # returns list of 2 elements
-        h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, 
-                              skipRecomb = fa %in% skipRecomb, condition = condits[[1]]),
-                      meiosis(h[[mo]], map = map$female, model = model, 
-                              skipRecomb = mo %in% skipRecomb, condition = condits[[2]]))
-      }
-    else {
-      stop2("X-linked conditional genedrop is not implemented yet")
+  else if (chrom == 23) {
+    for (i in NONFOU) {
+      fa = FIDX[i]
+      mo = MIDX[i]
+      maternal.gamete = meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
+      h[[i]] = list(
+        if (x$SEX[i] == 1) maternal.gamete else h[[fa]][[1]],
+        maternal.gamete)
     }
-    attr(h, "dis.locus") = dis.locus
-    attr(h, "dis.allele") = dis.al
   }
+  
   attr(h, "chromosome") = chrom
   attr(h, "length_Mb") = attr(map, "length_Mb")
-  attr(h, "condition") = condition
   attr(h, "model") = model
   attr(h, "skipped") = skipRecomb
   
@@ -68,7 +39,7 @@ genedrop = function(x, map, condition = NULL, model = "chi", skipRecomb = NULL) 
 }
 
 
-distribute.founder.alleles = function(x, chrom = "AUTOSOMAL") {
+distributeFounderAlleles = function(x, chrom = "AUTOSOMAL") {
   h = vector("list", pedsize(x))
   fou = founders(x, internal = TRUE)
   nfou = length(fou)
@@ -103,23 +74,4 @@ distribute.founder.alleles = function(x, chrom = "AUTOSOMAL") {
     list(aux[i - 1, , drop = FALSE], aux[i, , drop = FALSE]))
   h
 }
-
-.decide_action <-
-  function(dis.al, dis.locus, parental.haplos, carry_code) { # carry_code = 1 (0 disease alleles), 2 (1), 3 (2) or 4 (at most 1);
-    fa = sum(dis.al == .getAlleles(parental.haplos[[1]], posvec = dis.locus))
-    mo = sum(dis.al == .getAlleles(parental.haplos[[2]], posvec = dis.locus))
-    f = 1; a = 2; nocond = 3; co = c(nocond, nocond)   # f = "force"; a = "avoid"
-    err = function() stop("Impossible condition.")
-
-    if (fa == 0 && mo == 0) switch(carry_code, NULL, err(), err(), NULL)
-    else if (fa == 1 && mo == 0) switch(carry_code, co[1] <- a, co[1] <- f, err(), co[1] <- sample.int(2, 1))
-    else if (fa == 0 && mo == 1) switch(carry_code, co[2] <- a, co[2] <- f, err(), co[2] <- sample.int(2, 1))
-    else if (fa == 2 && mo == 0) switch(carry_code, err(), NULL, err(), NULL)
-    else if (fa == 0 && mo == 2) switch(carry_code, err(), NULL, err(), NULL)
-    else if (fa == 1 && mo == 1) switch(carry_code, co <- c(a, a), co <- sample.int(2), co <- c(f, f), co <- sample(list(c(f, a), c(a, f), c(a, a)), size = 1)[[1]])
-    else if (fa == 1 && mo == 2) switch(carry_code, err(), co[1] <- a, co[1] <- f, co[1] <- a)
-    else if (fa == 2 && mo == 1) switch(carry_code, err(), co[2] <- a, co[2] <- f, co[2] <- a)
-    else if (fa == 2 && mo == 2) switch(carry_code, err(), err(), co[2] <- f, co[2] <- a)
-    return(co)
-  }
 

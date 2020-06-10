@@ -6,34 +6,29 @@ print.chromosomeSim = function(x, ...) {
   model = attr(x, 'model')
   pedsize = length(x)
   skipped = attr(x, 'skipped')
-  skip_str = if(!length(skipped)) "None" else toString(skipped)
-  cond_sap = attr(x, 'condition')
-  cond = if(is.null(cond_sap)) "No" else cond_sap
+  skip_str = if(!length(skipped)) "-" else toString(skipped)
   
   print(glue::glue("
-  Simulation of a single chromosome throughout a pedigree.
-  Chromosome name: {chrom}
-  Chromosome length: {len} Mb
-  Recombination model: {model}
-  Pedigree members: {pedsize}
-  Skipped recombination in: {skip_str}
-  Conditional: {cond}
+  Simulation of a single chromosome
+  Chrom name    : {chrom}
+  Chrom length  : {len} Mb
+  Recomb model  : {model}
+  Pedigree size : {pedsize}
+  Skipped recomb: {skip_str}
   "))
 }
 
 #' @export
 print.genomeSim = function(x, ...) {
   attrs = attributes(x)
-  if(!length(attrs$skipped)) attrs$skipped = "None"
-  if(is.null(attrs$condition)) attrs$condition = "No"
+  if(!length(attrs$skipped)) attrs$skipped = "-"
   
   print(glue::glue("
   Total map length: {attrs$genome_length_Mb} Mb
   Chromosomes: {paste(attrs$chromosomes, collapse = ',')}
   Recombination model: {attrs$model}
   Pedigree members: {pedsize(attrs$ped)}
-  Skipped recombination in: {paste(attrs$skipped, collapse = ',')}
-  Conditional: {attrs$condition}
+  Skipped recomb: {paste(attrs$skipped, collapse = ',')}
   "))
 }
 

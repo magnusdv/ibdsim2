@@ -1,16 +1,8 @@
 # Not exported
-meiosis = function(parent, map, model = "chi", condition = NULL, skipRecomb = FALSE) { 
+meiosis = function(parent, map, model = "chi", skipRecomb = FALSE) { 
   # skip = TRUE returns random strand with no recombination; 
-  # condition should be NULL or a vector with elements 'locus'(Mb), 'allele' and 'action' (1=force,2=avoid).
   
-  if (condit <- !is.null(condition)) {
-    whichStrand = which(condition[["allele"]] == .getAlleles(parent, locus <- condition[["locus"]]))
-    startStrand = switch(condition[["action"]],
-      switch(length(whichStrand) + 1, stop("Conditional meiosis: Forced allele is not present."), whichStrand, sample.int(2, 1)),
-      switch(length(whichStrand) + 1, sample.int(2, 1), 3 - whichStrand, stop("Allele cannot be avoided."))
-    )
-  } else
-    startStrand = sample.int(2, 1)
+  startStrand = sample.int(2, 1)
 
   if (skipRecomb) return(parent[[startStrand]])
   L.cM = map[nrow(map), "cM"]  # chromosome length in cM
@@ -32,10 +24,6 @@ meiosis = function(parent, map, model = "chi", condition = NULL, skipRecomb = FA
   
   cpos = cm2phys(cM_locus = Cx, mapmat = map) # crossover positions
   
-  # Switch start strand if sum(cpos < locus) is odd
-  if (condit)
-    startStrand = 2 - (startStrand + sum(cpos < locus)) %% 2
-
   # Recombine!
   child = recombine(parent[[startStrand]], parent[[3 - startStrand]], cpos)
   
