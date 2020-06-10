@@ -1,16 +1,15 @@
-#' Probability of zero ibd
+#' Probability of zero IBD
 #'
-#' Estimate the probability of no ibd sharing in a pairwise relationship.
+#' Estimate the probability of no IBD sharing in a pairwise relationship.
 #'
-#' @param sim A list of genome simulations, as output by [ibdsim()].
-#' @param ids A vector of length 2, with ID labels of the two individuals in
-#'   question.
+#' @param sims A list of genome simulations, as output by [ibdsim()].
+#' @param ids A vector with two ID labels.
 #' @param truncate A vector of positive real numbers. Only IBD segments longer than this are
 #'   included in the computation. If `truncate` has more than one
 #'   element, a separate estimate is provided for each value. The default (`truncate = 0`) is to
 #'   include all segments.
 #'   
-#' @return A data.frame with tree numeric columns:
+#' @return A data frame with tree numeric columns:
 #' \describe{
 #'   \item{truncate}{Same as input.}
 #'   \item{zeroprob}{The estimated probability of no IBD segments.}
@@ -29,24 +28,26 @@
 #' x = cousinPed(4)
 #' cousins = leaves(x)
 #' 
-#' # Simulate (increase 'sims'!)
-#' s = ibdsim(x, sims = 7, ids = cousins)
+#' # Simulate (increase `sims`!)
+#' s = ibdsim(x, sims = 10)
 #' 
 #' # Probability of zero ibd segments. (By default all segs are used)
-#' zero_ibd(s, ids = cousins)
+#' zeroIBD(s, ids = cousins)
 #' 
 #' # Re-compute the probability with several truncation levels
-#' truncate = 0:50
-#' zp = zero_ibd(s, ids = cousins, truncate = truncate)
+#' truncate = 0:20
+#' zp = zeroIBD(s, ids = cousins, truncate = truncate)
 #' 
-#' plot(truncate, zp$zeroprob)
+#' plot(truncate, zp$zeroprob, type = "b", ylim = c(0,1))
 #' 
 #' @export
-zero_ibd = function(sim, ids, truncate = 0) {
+zeroIBD = function(sims, ids, truncate = 0) {
   if(!is.numeric(truncate) || length(truncate) == 0 || any(truncate < 0))
     stop2("`truncate` must be vector of positive numbers")
   
-  ibd_count = vapply(sim, function(a) {
+  ibdCount = vapply(sims, function(s) {
+    a = segmentSummary(s, ids, addState = TRUE)
+    
     ibdstatus = a[, 'IBD']
     len = a[, 'length']
     
@@ -56,11 +57,12 @@ zero_ibd = function(sim, ids, truncate = 0) {
   FUN.VALUE = numeric(length(truncate)))
   
   # Fix vapply output inconsistency.
-  if(length(truncate) == 1) dim(ibd_count) = c(1, length(ibd_count))
+  if(length(truncate) == 1) 
+    dim(ibdCount) = c(1, length(ibdCount))
   
   # Fraction (and standard error) of sims with 0 segments
-  zeroprob = rowMeans(ibd_count == 0)
-  SE = sqrt(zeroprob*(1 - zeroprob)/length(sim))
+  zeroprob = rowMeans(ibdCount == 0)
+  SE = sqrt(zeroprob*(1 - zeroprob)/length(sims))
   
   data.frame(truncate = truncate, zeroprob = zeroprob, SE = SE)
 }
