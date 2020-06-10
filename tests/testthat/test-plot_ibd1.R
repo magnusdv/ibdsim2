@@ -1,6 +1,6 @@
 context("plot IBD1")
 
-pp = function(...) plot_ibd1(..., ellipses = F)
+pp = function(...) plotIBD1(..., ellipses = F)
 
 test_that("plot_ibd1() catches input errors", {
   x = nuclearPed(2)
