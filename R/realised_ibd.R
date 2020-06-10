@@ -26,10 +26,10 @@
 #' @examples
 #' x = nuclearPed(2)
 #' s = ibdsim(x, sims = 10)
-#' realised_kappa(s, ids = 3:4)
+#' realisedKappa(s, ids = 3:4)
 #' 
 #' @export
-realised_kappa = function(sim, ids) {
+realisedKappa = function(sim, ids) {
   if(length(ids) != 2) 
     stop2("`ids` must be a vector of length 2")
   

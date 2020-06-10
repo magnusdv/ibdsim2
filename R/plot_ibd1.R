@@ -117,7 +117,7 @@ plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
     s = sims[[i]]
     ped = attr(s, 'pedigree')
     ids = pairs[[i]]
-    real = realised_kappa(s, ids = ids)
+    real = realisedKappa(s, ids = ids)
     if(any(real$Nsegments['Nseg2', ] > 0)) 
        message("Warning: Simulation list ", i, " includes IBD = 2 segments. Expected 'kappa_1 curve' will be wrong!")
     count = real$Nsegments["Nseg1", ]
