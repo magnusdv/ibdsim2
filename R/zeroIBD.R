@@ -28,8 +28,8 @@
 #' x = cousinPed(4)
 #' cousins = leaves(x)
 #' 
-#' # Simulate (increase `sims`!)
-#' s = ibdsim(x, sims = 10)
+#' # Simulate (increase N!)
+#' s = ibdsim(x, N = 10)
 #' 
 #' # Probability of zero ibd segments. (By default all segs are used)
 #' zeroIBD(s, ids = cousins)

@@ -7,7 +7,7 @@
 karyo_diploid(
   paternal,
   maternal,
-  chromosomes = 1:22,
+  chrom = 1:22,
   colors = c(paternal = "lightblue", maternal = "orange"),
   alpha = 1,
   bgcol = "gray99",
@@ -21,7 +21,7 @@ the karyogram. The first three columns must contain chromosome (with or
 without "chr" prefix), start position and stop position (in Mb). Column
 names are ignored, as well as any further columns.}
 
-\item{chromosomes}{The (autosomal) chromosomes to be included in the plot,
+\item{chrom}{The (autosomal) chromosomes to be included in the plot,
 given as a subset of the integers 1, 2,..., 22.}
 
 \item{colors}{A vector of two colors (in any form recognisable by R). If only

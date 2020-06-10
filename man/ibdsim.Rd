@@ -6,10 +6,10 @@
 \usage{
 ibdsim(
   x,
-  sims = 1,
+  N = 1,
   ids = labels(x),
   map = "decode",
-  chromosomes = NULL,
+  chrom = NULL,
   model = "chi",
   skipRecomb = NULL,
   seed = NULL,
@@ -19,7 +19,7 @@ ibdsim(
 \arguments{
 \item{x}{A \code{\link[pedtools:ped]{pedtools::ped()}} object.}
 
-\item{sims}{A positive integer indicating the number of simulations.}
+\item{N}{A positive integer indicating the number of simulations.}
 
 \item{ids}{A subset of pedigree members whose IBD sharing should be analysed.
 If NULL, the simulations are returned unprocessed.}
@@ -28,7 +28,7 @@ If NULL, the simulations are returned unprocessed.}
 character strings "decode", "uniform.sex.spec", "uniform.sex.aver". (See
 Details.)}
 
-\item{chromosomes}{A numeric vector indicating chromosome numbers, or either
+\item{chrom}{A numeric vector indicating chromosome numbers, or either
 of the words "AUTOSOMAL" or "X". The default is 1:22, i.e., the human
 autosomes.}
 
@@ -92,11 +92,11 @@ chromosome).
 \examples{
 
 hs = halfSibPed()
-ibdsim(hs, sims = 2, map = uniformMap(M = 1), ids = 4:5)
+ibdsim(hs, N = 2, map = uniformMap(M = 1), ids = 4:5)
 
 # Full sib mating: all 9 states are possible
 x = fullSibMating(1)
-sim = ibdsim(x, sims = 1, ids = 5:6, map = uniformMap(M = 10), seed = 1)
+sim = ibdsim(x, N = 1, ids = 5:6, map = uniformMap(M = 10), seed = 1)
 s = sim[[1]]
 stopifnot(setequal(s[, 'Sigma'], 1:9))
 

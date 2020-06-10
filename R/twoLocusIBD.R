@@ -173,7 +173,7 @@ estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim,
   map = uniformMap(cM = cM, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, sims = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
 
   # For each sim, extract first and last rows entry of column "IBD".
   ibd.list = lapply(simdata, function(a) a[c(1, nrow(a)), 'IBD'])
@@ -213,7 +213,7 @@ estimateOneLocusIBD = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ..
   map = uniformMap(cM = 0, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, sims = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, extract first and last rows entry of column "IBD".
   ibdres = vapply(simdata, function(a) a[, 'IBD'], FUN.VALUE = 1)

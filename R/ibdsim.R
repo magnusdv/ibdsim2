@@ -20,13 +20,13 @@
 #' chromosome).
 #'
 #' @param x A [pedtools::ped()] object.
-#' @param sims A positive integer indicating the number of simulations.
+#' @param N A positive integer indicating the number of simulations.
 #' @param ids A subset of pedigree members whose IBD sharing should be analysed.
 #'   If NULL, the simulations are returned unprocessed.
 #' @param map The genetic map to be used in the simulations: One of the
 #'   character strings "decode", "uniform.sex.spec", "uniform.sex.aver". (See
 #'   Details.)
-#' @param chromosomes A numeric vector indicating chromosome numbers, or either
+#' @param chrom A numeric vector indicating chromosome numbers, or either
 #'   of the words "AUTOSOMAL" or "X". The default is 1:22, i.e., the human
 #'   autosomes.
 #' @param model Either "chi" (default) or "haldane", indicating the statistical
@@ -65,23 +65,23 @@
 #' @examples
 #'
 #' hs = halfSibPed()
-#' ibdsim(hs, sims = 2, map = uniformMap(M = 1), ids = 4:5)
+#' ibdsim(hs, N = 2, map = uniformMap(M = 1), ids = 4:5)
 #'
 #' # Full sib mating: all 9 states are possible
 #' x = fullSibMating(1)
-#' sim = ibdsim(x, sims = 1, ids = 5:6, map = uniformMap(M = 10), seed = 1)
+#' sim = ibdsim(x, N = 1, ids = 5:6, map = uniformMap(M = 10), seed = 1)
 #' s = sim[[1]]
 #' stopifnot(setequal(s[, 'Sigma'], 1:9))
 #'
 #' @export
-ibdsim = function(x, sims = 1, ids = labels(x), map = "decode", chromosomes = NULL,
+ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
                   model = "chi", skipRecomb = NULL, 
                   seed = NULL, verbose = TRUE) {
   # Check input
   if(!is.ped(x))
     stop2("The first argument must be a `ped` object")
-  if(!is_count(sims))
-    stop2("`sims` must be a positive integer")
+  if(!is_count(N))
+    stop2("`N` must be a positive integer")
   if(!model %in% c("chi", "haldane"))
     stop2('Argument `model`` must be either "chi" or "haldane"')
   if(!all(founderInbreeding(x) %in% c(0,1)))
@@ -99,7 +99,7 @@ ibdsim = function(x, sims = 1, ids = labels(x), map = "decode", chromosomes = NU
   starttime = proc.time()
 
   # Load map and extract chromosome names.
-  map = loadMap(map, chrom = chromosomes)
+  map = loadMap(map, chrom = chrom)
   mapchrom = attr(map, "chromosome") %||% sapply(map, attr, "chromosome")
 
   if (verbose) {
@@ -107,7 +107,7 @@ ibdsim = function(x, sims = 1, ids = labels(x), map = "decode", chromosomes = NU
     ids_str = if (is.null(ids)) "-" else toString(ids)
     
     message(glue::glue("
-    No. of sims: {sims}
+    No. of sims: {N}
     Chromosomes: {toString(mapchrom)}
     Rec. model : {model_string}
     Target ids : {ids_str}
@@ -123,11 +123,11 @@ ibdsim = function(x, sims = 1, ids = labels(x), map = "decode", chromosomes = NU
                  ids = ids,
                  skipped = skipRecomb,
                  genome_length_Mb = attr(map, "length_Mb"),
-                 chromosomes = mapchrom,
+                 chrom = mapchrom,
                  model = model_string)
   
   # The actual simulations: One sim at the time; each chromosome in turn 
-  genomeSimList = lapply(1:sims, function(i) {
+  genomeSimList = lapply(1:N, function(i) {
     s = lapply(map, function(m)
       genedrop(x, map = m, model = model, skipRecomb = skipRecomb))
     attributes(s) = c(attribs, class = "genomeSim") 

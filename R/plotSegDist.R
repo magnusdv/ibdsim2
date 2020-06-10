@@ -27,8 +27,8 @@
 #' plotPedList(peds, newdev = TRUE)
 #' dev.off()
 #' 
-#' # Simulations (increase 'sims'!))
-#' s = lapply(peds, ibdsim, sims = 10, map = "uniform.sex.spec")
+#' # Simulations (increase N!))
+#' s = lapply(peds, ibdsim, N = 10, map = "uniform.sex.spec")
 #' 
 #' # Summarise autozygous regions
 #' segs = lapply(s, realisedAutozygosity, id = "leaf")

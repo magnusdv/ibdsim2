@@ -86,7 +86,7 @@ prepare_segments = function(segments, colorBy = NA) {
 #'               
 #' # Example showing simulated IBD segments of full siblings
 #' x = nuclearPed(2)
-#' s = ibdsim(x, sims = 1, ids = 3:4)
+#' s = ibdsim(x, N = 1, ids = 3:4)
 #' a = as.data.frame(s[[1]])
 #' a$status = "No IBD"
 #' a$status[a$IBD == 1 & a$`3:p` == a$`4:p`] = "Paternal"
@@ -163,7 +163,7 @@ karyo_haploid = function(segments, colorBy = NA, color = "black", separate = TRU
 #'   the karyogram. The first three columns must contain chromosome (with or
 #'   without "chr" prefix), start position and stop position (in Mb). Column
 #'   names are ignored, as well as any further columns.
-#' @param chromosomes The (autosomal) chromosomes to be included in the plot,
+#' @param chrom The (autosomal) chromosomes to be included in the plot,
 #'   given as a subset of the integers 1, 2,..., 22.
 #' @param colors A vector of two colors (in any form recognisable by R). If only
 #'   one color is given it is recycled. If the vector is named, a color legend
@@ -187,13 +187,13 @@ karyo_haploid = function(segments, colorBy = NA, color = "black", separate = TRU
 #' }
 #'
 #' @export
-karyo_diploid = function(paternal, maternal, chromosomes = 1:22, 
+karyo_diploid = function(paternal, maternal, chrom = 1:22, 
                          colors = c(paternal = "lightblue", maternal = "orange"),  
                          alpha = 1, bgcol = "gray99", title = NULL) {
   
-  decode = loadMap("Decode", chrom = chromosomes)
+  decode = loadMap("Decode", chrom = chrom)
   chrlen = sapply(decode, attr, 'length')
-  seqnames = paste0("chr", chromosomes)
+  seqnames = paste0("chr", chrom)
   genome = data.frame(chr = factor(seqnames, levels = seqnames), Mb = chrlen)
   
   paternal = prepare_segments(paternal, colorBy = NA)

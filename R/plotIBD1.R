@@ -40,11 +40,11 @@
 #' x.pat = halfSibPed()
 #' x.mat = swapSex(x.pat, 1)
 #' 
-#' # Simulate (increase 'sims'!)
+#' # Simulate (increase N!)
 #' map = "uniform.sex.spec"
-#' sims = 10
-#' s.pat = ibdsim(x.pat, sims = sims, map = map)
-#' s.mat = ibdsim(x.mat, sims = sims, map = map)
+#' N = 10
+#' s.pat = ibdsim(x.pat, N = N, map = map)
+#' s.mat = ibdsim(x.mat, N = N, map = map)
 #'
 #' # By default, the IBD segments of the "leaves" are computed and plotted
 #' plotIBD1(s.pat, s.mat, labels = c("HSpat", "HSmat"))
@@ -57,7 +57,7 @@
 #' y = addSon(x.pat, 5)
 #' 
 #' # Simulate 
-#' s = ibdsim(y, sims = sims, map = map)
+#' s = ibdsim(y, N = N, map = map)
 #'
 #' # Indicate the pairs explicitly this time.
 #' # List names are used as labels in the plot

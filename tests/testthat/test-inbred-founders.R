@@ -1,7 +1,7 @@
 context("inbred founders")
 
-quickSim = function(x, sims=1, map="uniform.sex.aver", chromosomes=1, model="haldane")
-  ibdsim(x, sims=sims, verbose=F, map=map, chromosomes=chromosomes, model=model)
+quickSim = function(x, N=1, map="uniform.sex.aver", chrom=1, model="haldane")
+  ibdsim(x, N=N, verbose=F, map=map, chrom=chrom, model=model)
 
 test_that("100% inbred founders are accounted for", {
   x = nuclearPed(1)

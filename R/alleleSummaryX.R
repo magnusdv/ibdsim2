@@ -31,7 +31,7 @@
 #'
 #' @examples
 #' x = fullSibMating(1)
-#' s = ibdsim(x, sims = 1, ids = NULL, chrom = 23)[[1]]
+#' s = ibdsim(x, N = 1, ids = NULL, chrom = 23)[[1]]
 #'
 #' # Complete summary.
 #' # Note only one allele column for males

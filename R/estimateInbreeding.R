@@ -51,7 +51,7 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
   map = uniformMap(cM = cM, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, sims = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, extract first and last rows entry of column "IBD".
   f2 = lapply(simdata, function(a) {
@@ -79,7 +79,7 @@ estimateOneLocusInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FAL
   map = uniformMap(cM = 0, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, sims = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, check for autozygosity
   f2 = vapply(simdata, function(a) {a[1, 5] == a[1, 6]}, FUN.VALUE = TRUE)

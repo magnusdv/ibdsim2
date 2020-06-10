@@ -4,7 +4,7 @@ pp = function(...) plotIBD1(..., ellipses = F)
 
 test_that("plot_ibd1() catches input errors", {
   x = nuclearPed(2)
-  s = ibdsim(x, sims=10, chromosomes=21, verbose=F)
+  s = ibdsim(x, N=10, chrom=21, verbose=F)
   expect_error(pp(s, pairs = list(PO = c(1,5))),
                "Unknown ID label in pedigree PO: 5")
   expect_error(pp(s, pairs = list(PO = c(1))),

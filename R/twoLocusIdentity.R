@@ -55,7 +55,7 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
   map = uniformMap(cM = cM, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, sims = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, extract first and last rows entry of column "IBD".
   sigma.list = lapply(simdata, function(a) a[c(1, nrow(a)), 'Sigma'])
@@ -102,7 +102,7 @@ estimateOneLocusIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALS
   map = uniformMap(cM = 0, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, sims = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, extract first entry of column "Sigma".
   ibdres = vapply(simdata, function(a) a[1, 'Sigma'], FUN.VALUE = 1)

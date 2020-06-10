@@ -32,7 +32,7 @@
 #' @examples
 #' ### Sibling simulation (3 sims of chromosomes 1 and 2)
 #' x = nuclearPed(2)
-#' sim = ibdsim(x, sims = 3, ids = NULL, chromosomes = 1:2)
+#' sim = ibdsim(x, N = 3, ids = NULL, chrom = 1:2)
 #'
 #' sim1 = sim[[1]] # the first simulation
 #'
