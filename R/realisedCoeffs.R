@@ -1,33 +1,47 @@
 #' Realised relatedness
 #'
-#' Compute the realised values of various measures of pairwise relatedness, in
-#' simulated data. For now, only the realised IBD ("kappa") coefficients are implemented.
+#' Compute the realised values of various pedigree coefficients, in simulated
+#' data. The current implementation covers realised inbreeding coefficients
+#' (autozygosity) and realised kappa coefficients.
 #'
-#' DRAFT:  
-#' Consider two members A and B of a pedigree P. The *kinship coefficient*
-#' between A and B is defined as the probability that a random allele sampled in
-#' A is identical by descent (IBD) with an allele sampled in B at the same
-#' autosomal locus. If this probability is taken conditional only on the
-#' pedigree P, the result is the traditional pedigre-based kinship coefficient.
+#' DRAFT: Consider two members A and B of a pedigree P. The *kinship
+#' coefficient* between A and B is defined as the probability that a random
+#' allele sampled in A is identical by descent (IBD) with an allele sampled in B
+#' at the same autosomal locus. If this probability is taken conditional only on
+#' the pedigree P, the result is the traditional pedigree-based kinship
+#' coefficient.
 #'
 #' However, because of the discrete nature of meiotic recombination, the actual
 #' IBD distribution of individuals with the specified relationship is subject to
-#' variation. Hence we may also be interested in the *realised* (or
-#' *genomic*) kinship coefficient between A and B, which is the same
-#' probability as above, but conditional on the recombination events in the
-#' meioses between A and B in P. For example, if the recombition events between
-#' A and B happen to result in no segments of IBD sharing, the realised kinship
-#' is 0, whatever the pedigree-based kinship may be.
+#' variation. Hence we may also be interested in the *realised* (or *genomic*)
+#' kinship coefficient between A and B, which is the same probability as above,
+#' but conditional on the recombination events in the meioses between A and B in
+#' P. For example, if the recombination events between A and B happen to result
+#' in no segments of IBD sharing, the realised kinship is 0, whatever the
+#' pedigree-based kinship may be.
 #'
-#' 
+#'
 #' @param sims A list of genome simulations, as output by [ibdsim()].
-#' @param ids A vector of length 2, with ID labels of the two individuals in question.
+#' @param id A single ID label.
+#' @param ids A vector with two ID labels.
 #'
 #' @examples
+#'
+#' # Realised IBD coefficients between full siblings
 #' x = nuclearPed(2)
-#' s = ibdsim(x, N = 10)
+#' s = ibdsim(x, N = 10) # increase N
 #' realisedKappa(s, ids = 3:4)
-#' 
+#'
+#' # Realised inbreeding coefficients, child of first cousins
+#' x = cousinPed(1, child = TRUE)
+#' s = ibdsim(x, N = 10)
+#' realisedAutozygosity(s, id = 9)
+#'
+#'
+#' @name realised
+NULL
+
+#' @rdname realised
 #' @export
 realisedKappa = function(sims, ids = attr(sims, 'ids')) {
   
@@ -64,7 +78,7 @@ realisedKappa = function(sims, ids = attr(sims, 'ids')) {
 }
 
 
-#' @rdname realisedKappa
+#' @rdname realised
 #' @export
 realisedAutozygosity = function(sims, id = attr(sims, 'ids')) {
   # Pedigree

@@ -2,7 +2,7 @@ context("plot IBD1")
 
 pp = function(...) plotIBD1(..., ellipses = F)
 
-test_that("plot_ibd1() catches input errors", {
+test_that("plotIBD1() catches input errors", {
   x = nuclearPed(2)
   s = ibdsim(x, N=10, chrom=21, verbose=F)
   expect_error(pp(s, pairs = list(PO = c(1,5))),
