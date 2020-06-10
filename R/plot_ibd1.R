@@ -39,7 +39,7 @@
 #' # Define the pedigrees
 #' x.pat = halfSibPed()
 #' x.mat = swapSex(x.pat, 1)
-#'
+#' 
 #' # Simulate (increase 'sims'!)
 #' map = "uniform.sex.spec"
 #' sims = 10
@@ -47,7 +47,7 @@
 #' s.mat = ibdsim(x.mat, sims = sims, map = map)
 #'
 #' # By default, the IBD segments of the "leaves" are computed and plotted
-#' plot_ibd1(s.pat, s.mat, labels = c("HSpat", "HSmat"))
+#' plotIBD1(s.pat, s.mat, labels = c("HSpat", "HSmat"))
 #'
 #' ###
 #' # Example 2: Half siblings vs grandparent/grandchild
@@ -61,13 +61,13 @@
 #'
 #' # Indicate the pairs explicitly this time.
 #' # List names are used as labels in the plot
-#' plot_ibd1(s, pairs = list(HS = 4:5, GR = c(1,7)))
+#' plotIBD1(s, pairs = list(HS = 4:5, GR = c(1,7)))
 #' 
 #' 
 #' @import ggplot2
 #' @importFrom ribd kinship
 #' @export
-plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE, 
+plotIBD1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE, 
                      legend_inside = TRUE, title = "Distribution of IBD segments", 
                      xlab = "Segment count", ylab = "Average segment length (cM)") {
   sims = list(...)
@@ -118,10 +118,10 @@ plot_ibd1 = function(..., labels, pairs = "leaves", alpha = 1, ellipses = TRUE,
     ped = attr(s, 'pedigree')
     ids = pairs[[i]]
     real = realisedKappa(s, ids = ids)
-    if(any(real$Nsegments['Nseg2', ] > 0)) 
+    if(any(real$nSegments['Nseg2', ] > 0)) 
        message("Warning: Simulation list ", i, " includes IBD = 2 segments. Expected 'kappa_1 curve' will be wrong!")
-    count = real$Nsegments["Nseg1", ]
-    averlen = ifelse(count == 0, 0, real$kappa.realised['ibd1', ] * real$genomeLength / count)
+    count = real$nSegments["Nseg1", ]
+    averlen = ifelse(count == 0, 0, real$kappaRealised['ibd1', ] * real$genomeLength / count)
     kinship_coeff = kinship(ped)[ids[1], ids[2]]
   
     data.frame(count = count,
