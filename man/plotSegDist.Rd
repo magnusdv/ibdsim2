@@ -49,12 +49,13 @@ QHFC = addChildren(QHFC, 9, 10, nch = 1)
 
 peds = list(G = G, HSpat = HSpat, HSmat = HSmat, QHFC = QHFC)
 plotPedList(peds, newdev = TRUE)
+dev.off()
 
 # Simulations (increase 'sims'!))
 s = lapply(peds, ibdsim, sims = 10, map = "uniform.sex.spec")
 
 # Summarise autozygous regions
-segs = lapply(s, realisedAutozygosity)
+segs = lapply(s, realisedAutozygosity, id = "leaf")
 
 # Plot distributions
 plotSegDist(segs, title = "Distribution of autozygous segments")

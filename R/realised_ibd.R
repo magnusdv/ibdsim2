@@ -20,7 +20,7 @@
 #' is 0, whatever the pedigree-based kinship may be.
 #'
 #' 
-#' @param sim A list of genome simulations, as output by [ibdsim()].
+#' @param sims A list of genome simulations, as output by [ibdsim()].
 #' @param ids A vector of length 2, with ID labels of the two individuals in question.
 #'
 #' @examples
@@ -29,36 +29,79 @@
 #' realisedKappa(s, ids = 3:4)
 #' 
 #' @export
-realisedKappa = function(sim, ids) {
-  if(length(ids) != 2) 
-    stop2("`ids` must be a vector of length 2")
+realisedKappa = function(sims, ids = attr(sims, 'ids')) {
   
-  L = attr(sim, 'genome_length_Mb')
+  if(identical(ids, "leaves"))
+    ids = leaves(ped)
   
-  segment_summary = vapply(sim, function(s) {
-    a = alleleSummary(s, ids = ids)
-    chrom = a[, 'chrom']
-    ibd = a[, 'IBD']  
+  if(length(ids) != 2)
+    stop2("Argument `ids` must contain exactly two ID labels: ", ids)
 
-    # merge adjacent segments with equal IBD status (and equal chrom)
-    seg_starts_idx = which(c(TRUE, diff(ibd) != 0 | diff(chrom) != 0))
-    seg_ends_idx = c(seg_starts_idx[-1] - 1, length(ibd))
-    
-    a_merged = a[seg_starts_idx, c('chrom', 'start', 'end', 'length', 'IBD'), drop = FALSE]
-    a_merged[, 'end'] = a[seg_ends_idx, 'end']
-    a_merged[, 'length'] = a_merged[, 'end'] - a_merged[, 'start'] 
-    # TODO: Possible speedup of the above: Modify 'end' and 'length' only when needed
-    
-    len = a_merged[, 'length']  
-    ibd = a_merged[, 'IBD']  
-      
-    c(ibd0 = sum(len[ibd == 0]), ibd1 = sum(len[ibd == 1]), ibd2 = sum(len[ibd == 2]), 
-      Nseg1 = sum(ibd == 1), Nseg2 = sum(ibd == 2), Nseg = sum(ibd > 0))
-  }, numeric(6))
+  L = attr(sims, 'genome_length_Mb')
   
-  kappa.realised = segment_summary[1:3, , drop = FALSE]/L
-  list(kappa.realised = kappa.realised, 
-       Nsegments = segment_summary[4:6, , drop = FALSE], 
-       kappa.hat = rowMeans(kappa.realised),
+  segs = vapply(sims, function(s) {
+    a = segmentSummary(s, ids, addState = TRUE)
+    
+    # Merge adjacent segments with equal IBD state
+    a2 = mergeAdjacent(a, vec = a[, 'IBD'])
+
+    len = a2[, 'length']  
+    ibd = a2[, 'IBD']  
+      
+    c(ibd0 = sum(len[ibd == 0]), 
+      ibd1 = sum(len[ibd == 1]), 
+      ibd2 = sum(len[ibd == 2]), 
+      Nseg1 = sum(ibd == 1), 
+      Nseg2 = sum(ibd == 2), 
+      Nseg = sum(ibd > 0))
+  }, FUN.VALUE = numeric(6))
+  
+  kappaRealised = segs[1:3, , drop = FALSE]/L
+  list(kappaRealised = kappaRealised, 
+       nSegments = segs[4:6, , drop = FALSE], 
+       kappaHat = rowMeans(kappaRealised),
        genomeLength = L)
+}
+
+
+#' @rdname realisedKappa
+#' @export
+realisedAutozygosity = function(sims, id = attr(sims, 'ids')) {
+  # Pedigree
+  ped = attr(sims, 'pedigree')
+  
+  if(identical(id, "leaf"))
+    id = leaves(ped)
+  
+  if(length(id) != 1)
+    stop2("Argument `id` must contain a single ID label: ", id)
+  
+  # Theoretical inbreeding coefficient
+  inb = ribd::inbreeding(ped)[[internalID(ped, id)]] # `[[` to remove name
+  
+  # Total genome length
+  genomeL = attr(sims, "genome_length_Mb")
+  
+  # Summarise each simulation (previously used vapply(); now lapply + do.call(rbind))
+  summList = lapply(sims, function(s) {
+    a = segmentSummary(s, ids = id, addState = TRUE)
+    
+    # Merge adjacent segments with equal IBD state
+    a2 = mergeAdjacent(a, vec = as.logical(a[, 'Aut']))
+    
+    aut = as.logical(a2[, "Aut"])
+    segLengths = a2[aut, 'length']
+    segCount = length(segLengths)
+    totLength = sum(segLengths)
+    meanLen = ifelse(segCount == 0, 0, totLength/segCount)
+    
+    c(segCount = segCount, meanLength = meanLen, 
+      totLength = totLength, 
+      longest = max(segLengths), shortest = min(segLengths),
+      fraction = totLength/genomeL)
+  })
+  
+  summDF = as.data.frame(do.call(rbind, summList), make.names = FALSE)
+  
+  cbind(summDF, expected = inb, genomeLength = genomeL)
 }

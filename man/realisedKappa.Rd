@@ -2,12 +2,15 @@
 % Please edit documentation in R/realised_ibd.R
 \name{realisedKappa}
 \alias{realisedKappa}
+\alias{realisedAutozygosity}
 \title{Realised relatedness}
 \usage{
-realisedKappa(sim, ids)
+realisedKappa(sims, ids = attr(sims, "ids"))
+
+realisedAutozygosity(sims, id = attr(sims, "ids"))
 }
 \arguments{
-\item{sim}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
+\item{sims}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
 
 \item{ids}{A vector of length 2, with ID labels of the two individuals in question.}
 }

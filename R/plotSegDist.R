@@ -1,56 +1,3 @@
-#' @export
-realisedAutozygosity = function(sims, id = NULL) {
-  # Pedigree
-  ped = attr(sims, 'pedigree')
-  
-  # If `id` is not given, use pedigree leaf (if unique)
-  if(is.null(id)) {
-    id = leaves(ped)
-    if(length(id) > 1)
-      stop2("Automatic selection of `id` failed; pedigree has more than one leaf:", id)
-  }
-  else if(length(id) != 1)
-    stop2("Argument `id` must contain a single ID label: ", id)
-  
-  # Theoretical inbreeding coefficient
-  inb = ribd::inbreeding(ped)[[internalID(ped, id)]] # `[[` to remove name
-  
-  # Total genome length
-  genomeL = attr(sims, "genome_length_Mb")
-  
-  # Summarise each simulation (previously used vapply(); now lapply + do.call(rbind))
-  summList = lapply(sims, function(s) {
-    a = alleleSummary(s, ids = id)
-    chrom = a[, 'chrom']
-    aut = a[, 5] == a[, 6]
-    
-    # TODO: following code is not optimised for the simple situation of autozygosity
-    # merge adjacent segments with equal IBD status (and equal chrom)
-    seg_starts_idx = which(c(TRUE, diff(aut) != 0 | diff(chrom) != 0))
-    seg_ends_idx = c(seg_starts_idx[-1] - 1, length(aut))
-    
-    a_merged = a[seg_starts_idx, , drop = FALSE]
-    a_merged[, 'end'] = a[seg_ends_idx, 'end']
-    a_merged[, 'length'] = a_merged[, 'end'] - a_merged[, 'start'] 
-    # TODO: Possible speedup of the above: Modify 'end' and 'length' only when needed
-    
-    aut_merged = a_merged[, 5] == a_merged[, 6]
-    segLengths = a_merged[aut_merged, 'length']
-    segCount = length(segLengths)
-    totLength = sum(segLengths)
-    meanLen = ifelse(segCount == 0, 0, totLength/segCount)
-    
-    c(segCount = segCount, meanLength = meanLen, totLength = totLength, 
-      longest = max(segLengths), shortest = min(segLengths),
-      fraction = totLength/genomeL)
-  })
-  
-  summDF = as.data.frame(do.call(rbind, summList), make.names = FALSE)
-  
-  cbind(summDF, expected = inb, genomeLength = genomeL)
-}
-
-
 #' Segment distribution plot
 #'
 #' @param segDist A data frame or a list of data frames
@@ -78,12 +25,13 @@ realisedAutozygosity = function(sims, id = NULL) {
 #' 
 #' peds = list(G = G, HSpat = HSpat, HSmat = HSmat, QHFC = QHFC)
 #' plotPedList(peds, newdev = TRUE)
+#' dev.off()
 #' 
 #' # Simulations (increase 'sims'!))
 #' s = lapply(peds, ibdsim, sims = 10, map = "uniform.sex.spec")
 #' 
 #' # Summarise autozygous regions
-#' segs = lapply(s, realisedAutozygosity)
+#' segs = lapply(s, realisedAutozygosity, id = "leaf")
 #' 
 #' # Plot distributions
 #' plotSegDist(segs, title = "Distribution of autozygous segments")
