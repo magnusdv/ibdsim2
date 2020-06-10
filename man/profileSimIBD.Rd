@@ -24,8 +24,7 @@ genotypes for linked markers.
 x = nuclearPed(2)
 
 # Simulation of IBD in the pedigree
-s = ibdsim(x, 1, map = uniformMap(M = 1), seed = 1729)[[1]]
-alleleSummary(s, 3:4)
+s = ibdsim(x, 1, ids = 3:4, map = uniformMap(M = 1), seed = 1729)[[1]]
 
 # Attach 3 markers on chromosome 1
 loci = list(

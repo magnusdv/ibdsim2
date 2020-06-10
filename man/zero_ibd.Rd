@@ -37,11 +37,11 @@ Estimate the probability of no ibd sharing in a pairwise relationship.
 ###
 
 # Define the pedigree
-x = pedtools::cousinPed(4)
-cousins = pedtools::leaves(x)
+x = cousinPed(4)
+cousins = leaves(x)
 
 # Simulate (increase 'sims'!)
-s = ibdsim(x, sims = 7)
+s = ibdsim(x, sims = 7, ids = cousins)
 
 # Probability of zero ibd segments. (By default all segs are used)
 zero_ibd(s, ids = cousins)

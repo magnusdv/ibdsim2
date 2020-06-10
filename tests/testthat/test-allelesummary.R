@@ -2,7 +2,7 @@ context("allele_summary")
 
 test_that("allele summary properties of sibs", {
   x = nuclearPed(2)
-  sim = ibdsim(x, sims=1, chromosomes=1:2, verbose=F)[[1]]
+  sim = ibdsim(x, ids = NULL, sims=1, chromosomes=1:2, verbose=F)[[1]]
   summar_all = alleleSummary(sim)
   summar_sibs = alleleSummary(sim, ids=3:4)
   
@@ -21,7 +21,6 @@ test_that("allele summary properties of sibs", {
 
 test_that("allele summary of FSM", {
   x = fullSibMating(1)
-  sim = ibdsim(x, sims=1, map=uniformMap(M=10), verbose=T, seed=1)[[1]]
-  a = alleleSummary(sim, 5:6)
-  expect_setequal(a[, 'Sigma'], 1:9)
+  sim = ibdsim(x, sims=1, ids = 5:6, map=uniformMap(M=10), verbose=F, seed=1)[[1]]
+  expect_setequal(sim[, 'Sigma'], 1:9)
 })

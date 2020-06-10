@@ -35,5 +35,4 @@ print.genomeSim = function(x, ...) {
 #' @export
 print.genomeSimList = function(x, ...) {
   print(glue::glue("List of {length(x)} genome simulations."))
-  print(x[[1]])
 }

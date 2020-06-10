@@ -1,8 +1,7 @@
 #' Allele sharing summary
 #'
-#' This function facilitates downstream analysis of simulations produced by
-#' [ibdsim()]. It summarises a single genome simulation by describing the allele
-#' flow through the pedigree.
+#' This function is used by `ibdsim()` to summarise a simulated allele flow
+#' through the pedigree.
 #'
 #' @param x An object of class `genomeSim`, i.e. a list of simulated
 #'   chromosomes. Each chromosome is a list, with one entry for each individual.
@@ -33,29 +32,24 @@
 #' @examples
 #' ### Sibling simulation (3 sims of chromosomes 1 and 2)
 #' x = nuclearPed(2)
-#' sim = ibdsim(x, sims = 3, chromosomes = 1:2)
-#' 
+#' sim = ibdsim(x, sims = 3, ids = NULL, chromosomes = 1:2)
+#'
 #' sim1 = sim[[1]] # the first simulation
 #'
 #' alleleSummary(sim1) # Summary of all individuals
 #' alleleSummary(sim1, ids = 3:4) # Summary of the siblings
 #' alleleSummary(sim1, ids = 1) # Summary of father. Trivial!
-#' 
-#' # Full sib mating: all 9 states are possible
-#' y = fullSibMating(1)
-#' sim = ibdsim(y, sims = 1, chrom = 1, seed = 22)[[1]]
-#' a = alleleSummary(sim, ids = 5:6)
-#' 
-#' stopifnot(setequal(a[, 'Sigma'], 1:9))
-#' 
+#'
 #' @export
 alleleSummary = function(x, ids) {
-  if(!inherits(x, "genomeSim")) 
-    stop2("The first argument is not a `genomeSim` object")
   
   ped = attr(x, "pedigree")
   if (missing(ids)) 
     ids = labels(ped)
+  
+  # Hack which simplifies code in `ibdsim()`
+  if(is.null(ids))
+    return(x)
   
   allele.colnames = paste0(rep(ids, each = 2), c(":p", ":m"))
 
@@ -77,21 +71,32 @@ alleleSummary = function(x, ids) {
   
   res = do.call(rbind, each.chrom)
   
-  # Extra columns when "ids" is a pair
-  if(length(ids) == 2) {
+  # Add IBD state columns when "ids" has length 1 or 2
+  res = addStates(res)
+    
+  res
+}
+
+# Add columns with IBD states (if 1 or 2 ids)
+addStates = function(x) {
+  if(ncol(x) == 8) { # Pairwise
     # Jacquard state
-    Sigma = jacquardState(a1 = res[, 5], a2 = res[, 6], b1 = res[, 7], b2 = res[, 8])
+    Sigma = jacquardState(a1 = x[, 5], a2 = x[, 6], b1 = x[, 7], b2 = x[, 8])
     
     # IBD state (0 <-> 9; 1 <-> 8; 2 <-> 7; otherwise NA)
     IBD = 9 - Sigma
     IBD[IBD > 2] = NA
     
-    res = cbind(res, IBD = IBD, Sigma = Sigma)
+    return(cbind(x, IBD = IBD, Sigma = Sigma))
+  } 
+  else if(ncol(x) == 6) {
+    # Autozygosity state
+    a = as.numeric(x[, 5] == x[, 6]) # since x is numeric
+    return(cbind(x, Aut = a))
   }
-  
-  res
+  else 
+    return(x)
 }
-
 
 # Return the condensed identity ("jacquard") state given 4 alleles:
 # a1 and a2 from individual 1; b1 and b2 from individual 2
@@ -123,3 +128,45 @@ jacquardState = function(a1, a2, b1, b2) {
   res
 }
 
+
+segmentSummary = function(x, ids, addState = TRUE) {
+  if(ncol(x) == 4 + 2 * length(ids) + 2 * (length(ids) == 2))
+    return(x)
+  
+  # Allele columns of selected ids
+  colnms = paste(rep(ids, each = 2), c("p", "m"), sep = ":")
+  
+  # Merge identical rows
+  y = mergeAdjacent(x, vec = apply(x[, colnms], 1, paste, collapse = " "))
+  y = y[, c(1:4, match(colnms, colnames(x)))]
+  
+  if(addState)
+    y = addStates(y)
+  
+  y
+}
+
+# Merge adjacent segments with equal `vec` entry and equal chrom
+mergeAdjacent = function(x, vec) {
+  k = length(vec)
+  if(k != nrow(x))
+    stop2("Incompatible input")
+  
+  chr = x[, 'chrom']
+  
+  vecEq = vec[-1] == vec[-k]
+  chrEq = chr[-1] == chr[-k]
+  
+  mergeRow = vecEq & chrEq
+  if(!any(mergeRow))
+    return(x)
+  
+  fromRow = which(c(TRUE, !mergeRow))
+  toRow = c(fromRow[-1] - 1, k)
+  
+  
+  y = x[fromRow, , drop = FALSE]
+  y[, 'end'] = x[toRow, 'end']
+  y[, 'length'] = y[, 'end'] - y[, 'start'] 
+  y
+}

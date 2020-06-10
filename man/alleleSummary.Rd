@@ -36,26 +36,18 @@ respectively.
 }
 }
 \description{
-This function facilitates downstream analysis of simulations produced by
-\code{\link[=ibdsim]{ibdsim()}}. It summarises a single genome simulation by describing the allele
-flow through the pedigree.
+This function is used by \code{ibdsim()} to summarise a simulated allele flow
+through the pedigree.
 }
 \examples{
 ### Sibling simulation (3 sims of chromosomes 1 and 2)
 x = nuclearPed(2)
-sim = ibdsim(x, sims = 3, chromosomes = 1:2)
+sim = ibdsim(x, sims = 3, ids = NULL, chromosomes = 1:2)
 
 sim1 = sim[[1]] # the first simulation
 
 alleleSummary(sim1) # Summary of all individuals
 alleleSummary(sim1, ids = 3:4) # Summary of the siblings
 alleleSummary(sim1, ids = 1) # Summary of father. Trivial!
-
-# Full sib mating: all 9 states are possible
-y = fullSibMating(1)
-sim = ibdsim(y, sims = 1, chrom = 1, seed = 22)[[1]]
-a = alleleSummary(sim, ids = 5:6)
-
-stopifnot(setequal(a[, 'Sigma'], 1:9))
 
 }

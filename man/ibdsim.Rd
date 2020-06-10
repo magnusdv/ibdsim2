@@ -7,6 +7,7 @@
 ibdsim(
   x,
   sims = 1,
+  ids = labels(x),
   map = "decode",
   chromosomes = NULL,
   model = "chi",
@@ -19,6 +20,9 @@ ibdsim(
 \item{x}{A \code{\link[pedtools:ped]{pedtools::ped()}} object.}
 
 \item{sims}{A positive integer indicating the number of simulations.}
+
+\item{ids}{A subset of pedigree members whose IBD sharing should be analysed.
+If NULL, the simulations are returned unprocessed.}
 
 \item{map}{The genetic map to be used in the simulations: One of the
 character strings "decode", "uniform.sex.spec", "uniform.sex.aver". (See
@@ -34,15 +38,35 @@ model for recombination. (See details.)}
 \item{skipRecomb}{An optional vector of ID labels indicating individuals
 whose meioses should be simulated without recombination. (Each child will
 then receive a random strand of each chromosome.) If NULL (default), nobody
-is skipped. Note that \code{skipRecomb = founders(x)} is a sensible (and
-time saving) choice in many applications.}
+is skipped. Note that \code{skipRecomb = founders(x)} is a sensible (and time
+saving) choice in many applications.}
 
 \item{seed}{An integer to be passed on to \code{\link[=set.seed]{set.seed()}}).}
 
 \item{verbose}{A logical.}
 }
 \value{
-The simulated genomes are invisibly returned.
+A list of \code{genomeSim} objects.
+
+A \code{genomeSim} object is essentially a numerical matrix describing the
+allele flow through the pedigree in a single simulated. Each row
+corresponds to a chromosomal segment. The first 4 columns describe the
+segment (chromosome, start, end, length), and are followed by two columns
+(paternal allele, maternal allele) for each of the selected individuals. If
+\code{length(ids) == 2} two additional columns are added:
+\itemize{
+\item \code{IBD} : The IBD status of each segment (= number of alleles shared
+identical by descent). For a given segment, the IBD status is either 0, 1,
+2 or NA. If either individual is inbred, they may be autozygous in a
+segment, in which case the IBD status is reported as NA. With inbred
+individuals the \code{Sigma} column (see below) is more informative than the
+\code{IBD} column.
+\item \code{Sigma} : The condensed identity ("Jacquard") state of each segment,
+given as an integer in the range 1-9. The numbers correspond to the
+standard ordering of the condensed states. In particular, for non-inbred
+individuals the states 9, 8, 7 correspond to IBD status 0, 1, 2
+respectively.
+}
 }
 \description{
 This is the main function of the package, simulating the recombination
@@ -68,7 +92,12 @@ chromosome).
 \examples{
 
 hs = halfSibPed()
-ibdsim(hs, sims = 2, map = uniformMap(M = 1))
+ibdsim(hs, sims = 2, map = uniformMap(M = 1), ids = 4:5)
 
+# Full sib mating: all 9 states are possible
+x = fullSibMating(1)
+sim = ibdsim(x, sims = 1, ids = 5:6, map = uniformMap(M = 10), seed = 1)
+s = sim[[1]]
+stopifnot(setequal(s[, 'Sigma'], 1:9))
 
 }

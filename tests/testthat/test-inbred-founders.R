@@ -3,14 +3,11 @@ context("inbred founders")
 quickSim = function(x, sims=1, map="uniform.sex.aver", chromosomes=1, model="haldane")
   ibdsim(x, sims=sims, verbose=F, map=map, chromosomes=chromosomes, model=model)
 
-library(pedtools)
-
 test_that("100% inbred founders are accounted for", {
   x = nuclearPed(1)
   founderInbreeding(x, 1:2) = 1
-  sim = quickSim(x)
-  as = alleleSummary(sim[[1]])
-  expect_true(all(as[,"3:p"] == 1) && all(as[,"3:m"] == 3))
+  sim = quickSim(x)[[1]]
+  expect_true(all(sim[,"3:p"] == 1) && all(sim[,"3:m"] == 3))
 })
 
 test_that("intermediate inbred founders raise errors", {

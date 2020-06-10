@@ -26,11 +26,11 @@
 #' ###
 #' 
 #' # Define the pedigree
-#' x = pedtools::cousinPed(4)
-#' cousins = pedtools::leaves(x)
+#' x = cousinPed(4)
+#' cousins = leaves(x)
 #' 
 #' # Simulate (increase 'sims'!)
-#' s = ibdsim(x, sims = 7)
+#' s = ibdsim(x, sims = 7, ids = cousins)
 #' 
 #' # Probability of zero ibd segments. (By default all segs are used)
 #' zero_ibd(s, ids = cousins)
@@ -43,13 +43,10 @@
 #' 
 #' @export
 zero_ibd = function(sim, ids, truncate = 0) {
-  if(length(ids) != 2)
-    stop2("`ids` must be a vector of length 2")
   if(!is.numeric(truncate) || length(truncate) == 0 || any(truncate < 0))
     stop2("`truncate` must be vector of positive numbers")
   
-  ibd_count = vapply(sim, function(s) {
-    a = alleleSummary(s, ids = ids)
+  ibd_count = vapply(sim, function(a) {
     ibdstatus = a[, 'IBD']
     len = a[, 'length']
     

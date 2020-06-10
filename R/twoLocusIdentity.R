@@ -55,14 +55,10 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
   map = uniformMap(cM = cM, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, map = map, sims = Nsim, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, sims = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, extract first and last rows entry of column "IBD".
-  sumFUN = if (Xchrom) alleleSummaryX else alleleSummary
-  sigma.list = lapply(simdata, function(s) {
-    a = sumFUN(s, ids)
-    a[c(1, nrow(a)), 'Sigma']
-  })
+  sigma.list = lapply(simdata, function(a) a[c(1, nrow(a)), 'Sigma'])
   
   # Shape list of observations into wide matrix
   sigma.mat = unlist(sigma.list)
@@ -106,11 +102,10 @@ estimateOneLocusIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALS
   map = uniformMap(cM = 0, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, map = map, sims = Nsim, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, sims = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, extract first entry of column "Sigma".
-  sumFUN = if (Xchrom) alleleSummaryX else alleleSummary
-  ibdres = vapply(simdata, function(s) sumFUN(s, ids)[1, 'Sigma'], 1)
+  ibdres = vapply(simdata, function(a) a[1, 'Sigma'], FUN.VALUE = 1)
   
   # Frequency table
   res = table(factor(ibdres, levels = 1:9, labels = paste0("state", 1:9)))

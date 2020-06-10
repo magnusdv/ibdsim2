@@ -86,8 +86,8 @@ prepare_segments = function(segments, colorBy = NA) {
 #'               
 #' # Example showing simulated IBD segments of full siblings
 #' x = nuclearPed(2)
-#' s = ibdsim(x, sims = 1)[[1]]
-#' a = as.data.frame(alleleSummary(s, 3:4))
+#' s = ibdsim(x, sims = 1, ids = 3:4)
+#' a = as.data.frame(s[[1]])
 #' a$status = "No IBD"
 #' a$status[a$IBD == 1 & a$`3:p` == a$`4:p`] = "Paternal"
 #' a$status[a$IBD == 1 & a$`3:m` == a$`4:m`] = "Maternal"

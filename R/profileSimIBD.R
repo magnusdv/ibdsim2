@@ -13,8 +13,7 @@
 #' x = nuclearPed(2)
 #'
 #' # Simulation of IBD in the pedigree
-#' s = ibdsim(x, 1, map = uniformMap(M = 1), seed = 1729)[[1]]
-#' alleleSummary(s, 3:4)
+#' s = ibdsim(x, 1, ids = 3:4, map = uniformMap(M = 1), seed = 1729)[[1]]
 #' 
 #' # Attach 3 markers on chromosome 1
 #' loci = list(
@@ -31,13 +30,14 @@
 #' @export
 profileSimIBD = function(x, ibdpattern, markers = NULL) {
 
-  if(class(ibdpattern) == "genomeSimList")
+  if(!is.data.frame(ibdpattern) && is.list("genomeSimList"))
     return(lapply(ibdpattern, function(patt) profileSimIBD(x, patt, markers = markers)))
   
   if(!is.null(markers))
     x = selectMarkers(x, markers)
 
-  a = alleleSummary(ibdpattern)
+  a = ibdpattern
+  achr = a[, 'chrom']
   
   nMark = nMarkers(x)
   mname = name(x, 1:nMark)
@@ -47,23 +47,28 @@ profileSimIBD = function(x, ibdpattern, markers = NULL) {
   if(any(is.na(mpos) | is.na(mchr)))
     stop2("All markers must have defined chromosome and position attributes")
 
-  if(!all(mchr %in% a[, 'chrom']))
-    stop2("Chromosome missing from `ibdpattern`: ", setdiff(mchr, a[, 'chrom']))
+  if(!all(mchr %in% achr))
+    stop2("Chromosome missing from `ibdpattern`: ", setdiff(mchr, achr))
     
   # Pick rows (indices) in `a` corresponding to marker positions
   arows = vapply(seq_len(nMark), function(i) {
-    chrrows = which(a[, 'chrom'] == mchr[i])
+    chrrows = which(achr == mchr[i])
     chrrows[findInterval(mpos[i], a[chrrows, 'start'])]
   }, FUN.VALUE = 1L)
   
+  # Individuals present in simulation
+  colnms = colnames(a)
+  colnms.2 = substr(colnms, 1, nchar(colnms) - 2) # remove last 2 (e.g. ":p")
+  ids = intersect(labels(x), colnms.2)
+  
   # Allele columns
-  acols = paste(rep(labels(x), each = 2), c('p','m'), sep = ":")
+  acols = which(colnms.2 %in% ids)
   
   # Number of founder alleles (i.e,. "different colours")
   nA = 2 * length(founders(x))
   
   # Create empty allele matrix
-  alsMat.transp = matrix("0", nrow = 2*nMark, ncol = pedsize(x))
+  alsMat.transp = matrix("0", nrow = 2*nMark, ncol = length(ids))
   
   # Fill in allele matrix one marker at a time
   for(i in seq_len(nMark)) {
@@ -86,6 +91,6 @@ profileSimIBD = function(x, ibdpattern, markers = NULL) {
   alsMat = t.default(alsMat.transp)
   
   # Attach and return
-  setAlleles(x, alleles = alsMat)
+  setAlleles(x, ids = ids, alleles = alsMat)
 }
 

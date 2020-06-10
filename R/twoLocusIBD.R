@@ -173,14 +173,10 @@ estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim,
   map = uniformMap(cM = cM, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, map = map, sims = Nsim, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, sims = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
 
   # For each sim, extract first and last rows entry of column "IBD".
-  sumFUN = if (Xchrom) alleleSummaryX else alleleSummary
-  ibd.list = lapply(simdata, function(s) {
-    a = sumFUN(s, ids)
-    a[c(1, nrow(a)), 'IBD']
-  })
+  ibd.list = lapply(simdata, function(a) a[c(1, nrow(a)), 'IBD'])
   
   # Shape IBD list into matrix
   ibd.mat = unlist(ibd.list)
@@ -217,11 +213,10 @@ estimateOneLocusIBD = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ..
   map = uniformMap(cM = 0, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, map = map, sims = Nsim, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, sims = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, extract first and last rows entry of column "IBD".
-  sumFUN = if (Xchrom) alleleSummaryX else alleleSummary
-  ibdres = vapply(simdata, function(s) sumFUN(s, ids)[, 'IBD'], 1)
+  ibdres = vapply(simdata, function(a) a[, 'IBD'], FUN.VALUE = 1)
   
   # Frequency table
   res = table(factor(ibdres, levels = 0:2, labels = paste0("ibd", 0:2)))
@@ -240,9 +235,9 @@ estimateOneLocusIBD = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ..
 }
 
 
-# Utility function: IBD status (0, 1 or 2) for a pair of (non-inbred!) genotypes.
+# Utility function: IBD state (0, 1 or 2) for a pair of (non-inbred!) genotypes.
 # Each genotype is a pair of alleles.
-ibd.status = function(gt1, gt2)
+ibd.state = function(gt1, gt2)
   sum(gt1 %in% gt2)
 
 # Utility function: Jacquard configuration (Sigma 1 - 9) of a pair of genotypes at the same locus.
@@ -260,7 +255,7 @@ jacquard.state = function(pat1, mat1, pat2, mat2) {
     else return(6)
 
   # If still running: No inbreeding
-  ibd = ibd.status(c(pat1, mat1), c(pat2, mat2))
+  ibd = ibd.state(c(pat1, mat1), c(pat2, mat2))
   return((9:7)[ibd + 1])
 }
 

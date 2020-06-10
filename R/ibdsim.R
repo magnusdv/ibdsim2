@@ -21,6 +21,8 @@
 #'
 #' @param x A [pedtools::ped()] object.
 #' @param sims A positive integer indicating the number of simulations.
+#' @param ids A subset of pedigree members whose IBD sharing should be analysed.
+#'   If NULL, the simulations are returned unprocessed.
 #' @param map The genetic map to be used in the simulations: One of the
 #'   character strings "decode", "uniform.sex.spec", "uniform.sex.aver". (See
 #'   Details.)
@@ -32,22 +34,47 @@
 #' @param skipRecomb An optional vector of ID labels indicating individuals
 #'   whose meioses should be simulated without recombination. (Each child will
 #'   then receive a random strand of each chromosome.) If NULL (default), nobody
-#'   is skipped. Note that `skipRecomb = founders(x)` is a sensible (and
-#'   time saving) choice in many applications.
+#'   is skipped. Note that `skipRecomb = founders(x)` is a sensible (and time
+#'   saving) choice in many applications.
 #' @param seed An integer to be passed on to [set.seed()]).
 #' @param verbose A logical.
 #'
-#' @return The simulated genomes are invisibly returned.
+#' @return A list of `genomeSim` objects.
+#'
+#'   A `genomeSim` object is essentially a numerical matrix describing the
+#'   allele flow through the pedigree in a single simulated. Each row
+#'   corresponds to a chromosomal segment. The first 4 columns describe the
+#'   segment (chromosome, start, end, length), and are followed by two columns
+#'   (paternal allele, maternal allele) for each of the selected individuals. If
+#'   `length(ids) == 2` two additional columns are added:
+#'
+#'   * `IBD` : The IBD status of each segment (= number of alleles shared
+#'   identical by descent). For a given segment, the IBD status is either 0, 1,
+#'   2 or NA. If either individual is inbred, they may be autozygous in a
+#'   segment, in which case the IBD status is reported as NA. With inbred
+#'   individuals the `Sigma` column (see below) is more informative than the
+#'   `IBD` column.
+#'
+#'   * `Sigma` : The condensed identity ("Jacquard") state of each segment,
+#'   given as an integer in the range 1-9. The numbers correspond to the
+#'   standard ordering of the condensed states. In particular, for non-inbred
+#'   individuals the states 9, 8, 7 correspond to IBD status 0, 1, 2
+#'   respectively.
+#'
 #'
 #' @examples
 #'
 #' hs = halfSibPed()
-#' ibdsim(hs, sims = 2, map = uniformMap(M = 1))
+#' ibdsim(hs, sims = 2, map = uniformMap(M = 1), ids = 4:5)
 #'
+#' # Full sib mating: all 9 states are possible
+#' x = fullSibMating(1)
+#' sim = ibdsim(x, sims = 1, ids = 5:6, map = uniformMap(M = 10), seed = 1)
+#' s = sim[[1]]
+#' stopifnot(setequal(s[, 'Sigma'], 1:9))
 #'
-#' @importFrom pedtools is.ped hasParentsBeforeChildren parentsBeforeChildren
 #' @export
-ibdsim = function(x, sims = 1, map = "decode", chromosomes = NULL,
+ibdsim = function(x, sims = 1, ids = labels(x), map = "decode", chromosomes = NULL,
                   model = "chi", skipRecomb = NULL, 
                   seed = NULL, verbose = TRUE) {
   # Check input
@@ -77,11 +104,13 @@ ibdsim = function(x, sims = 1, map = "decode", chromosomes = NULL,
 
   if (verbose) {
     skip_str = if (is.null(skipRecomb)) "-" else toString(skipRecomb)
+    ids_str = if (is.null(ids)) "-" else toString(ids)
     
     message(glue::glue("
     No. of sims: {sims}
     Chromosomes: {toString(mapchrom)}
     Rec. model : {model_string}
+    Target ids : {ids_str}
     Skip recomb: {skip_str}
     "))
   }
@@ -89,27 +118,26 @@ ibdsim = function(x, sims = 1, map = "decode", chromosomes = NULL,
   # Seed for random sampling
   set.seed(seed)
   
+  # Various attributes which will be attached to the sims
+  attribs = list(pedigree = x, 
+                 ids = ids,
+                 skipped = skipRecomb,
+                 genome_length_Mb = attr(map, "length_Mb"),
+                 chromosomes = mapchrom,
+                 model = model_string)
+  
   # The actual simulations: One sim at the time; each chromosome in turn 
   genomeSimList = lapply(1:sims, function(i) {
-    lapply(map, function(m) {
-      genedrop(x, map = m, model = model, skipRecomb = skipRecomb)
-    })
+    s = lapply(map, function(m)
+      genedrop(x, map = m, model = model, skipRecomb = skipRecomb))
+    attributes(s) = c(attribs, class = "genomeSim") 
+    alleleSummary(s, ids)
   })
   
   if (verbose) {
     elapsed = (proc.time() - starttime)[["elapsed"]]
     message("Simulation finished in ", elapsed, " seconds.")
   }
-  
-  # Various attributes of the simulation call
-  attribs = list(pedigree = x, 
-                 skipped = skipRecomb,
-                 genome_length_Mb = attr(map, "length_Mb"),
-                 chromosomes = mapchrom,
-                 model = model_string)
-  
-  # Add attributes and class to each genomeSim
-  genomeSimList = lapply(genomeSimList, `attributes<-`, c(attribs, class = "genomeSim"))
   
   # Add attributes and class to the entire list 
   attributes(genomeSimList) = c(attribs, class = "genomeSimList")

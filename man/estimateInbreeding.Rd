@@ -22,6 +22,8 @@ estimateOneLocusInbreeding(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped()}} object.}
 
+\item{id}{A single ID label}
+
 \item{rho}{A scalar in the interval \verb{[0, 0.5]}: the recombination fraction
 between the two loci, converted to centiMorgan using Haldanes map function:
 cM = -50 * log(1 - 2*rho). Either \code{rho} or \code{cM} (but not both) must be
@@ -44,7 +46,7 @@ autosomal (FALSE).}
 A single numeric
 }
 \description{
-Estimate by simulation the inbreeding coefficients of any
+Estimate by simulation the inbreeding coefficient of any
 pedigree member, and also the \emph{two-locus} inbreeding
 coefficient at a given recombination rate.
 }

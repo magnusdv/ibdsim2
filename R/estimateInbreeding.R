@@ -1,11 +1,12 @@
 #' Estimate one-locus and two-locus inbreeding coefficients
 #'
-#' Estimate by simulation the inbreeding coefficients of any
+#' Estimate by simulation the inbreeding coefficient of any
 #' pedigree member, and also the _two-locus_ inbreeding
 #' coefficient at a given recombination rate.
 #'
 #' @inheritParams estimateIBD
-#'
+#' @param id A single ID label
+#' 
 #' @return A single numeric
 #'
 #' @examples
@@ -50,12 +51,10 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
   map = uniformMap(cM = cM, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, map = map, sims = Nsim, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, sims = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, extract first and last rows entry of column "IBD".
-  sumFUN = if (Xchrom) alleleSummaryX else alleleSummary
-  f2 = lapply(simdata, function(s) {
-    a = sumFUN(s, id)
+  f2 = lapply(simdata, function(a) {
     a[1, 5] == a[1, 6] && a[nrow(a), 5] == a[nrow(a), 6] 
   })
   
@@ -80,14 +79,10 @@ estimateOneLocusInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FAL
   map = uniformMap(cM = 0, chromosome = if (Xchrom) 23 else 1)
   
   # Simulate data
-  simdata = ibdsim(x, map = map, sims = Nsim, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, sims = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, check for autozygosity
-  sumFUN = if (Xchrom) alleleSummaryX else alleleSummary
-  f2 = vapply(simdata, function(s) {
-    a = sumFUN(s, id)
-    a[1, 5] == a[1, 6]
-    }, FUN.VALUE = TRUE)
+  f2 = vapply(simdata, function(a) {a[1, 5] == a[1, 6]}, FUN.VALUE = TRUE)
   
   if (verbose) 
     cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")
