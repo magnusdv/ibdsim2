@@ -4,7 +4,7 @@ genedrop = function(x, map, model = "chi", skipRecomb = NULL) {
   MIDX = x$MIDX
   FOU = founders(x, internal = TRUE)
   NONFOU = nonfounders(x, internal = TRUE)
-  chrom = attr(map, "chromosome")
+  chrom = attr(map, "chrom")
   
   h = distributeFounderAlleles(x, chrom)
   
@@ -29,7 +29,7 @@ genedrop = function(x, map, model = "chi", skipRecomb = NULL) {
     }
   }
   
-  attr(h, "chromosome") = chrom
+  attr(h, "chrom") = chrom
   attr(h, "length_Mb") = attr(map, "length_Mb")
   attr(h, "model") = model
   attr(h, "skipped") = skipRecomb

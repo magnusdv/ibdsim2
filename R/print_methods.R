@@ -1,7 +1,7 @@
 
 #' @export
 print.chromosomeSim = function(x, ...) {
-  chrom = attr(x, 'chromosome')
+  chrom = attr(x, 'chrom')
   len = attr(x, 'length_Mb')
   model = attr(x, 'model')
   pedsize = length(x)

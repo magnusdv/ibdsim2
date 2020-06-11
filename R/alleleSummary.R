@@ -65,7 +65,7 @@ alleleSummary = function(x, ids) {
     colnames(alleles) = allele.colnames
 
     stops = c(breaks[-1], attr(y, "length_Mb"))
-    chrom = rep.int(attr(y, "chromosome"), length(breaks))
+    chrom = rep.int(attr(y, "chrom"), length(breaks))
     cbind(chrom = chrom, start = breaks, end = stops, length = stops - breaks, alleles)
   })
   

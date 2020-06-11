@@ -6,9 +6,9 @@
 #' @param cM Map length in centiMorgan
 #' @param M Map length in Morgan
 #' @param cm.per.mb A positive number; the cM/Mb ratio
-#' @param chromosome A chromosome label.
+#' @param chrom A chromosome label.
 #'
-#' @return An object of class "chromosomeMap", which is a list of two matrices,
+#' @return An object of class `chromosomeMap`, which is a list of two matrices,
 #'   named "male" and "female".
 #'
 #' @examples
@@ -17,7 +17,7 @@
 #' @export
 uniformMap = function(Mb = NULL, cM = NULL, 
                       M = NULL, cm.per.mb = 1, 
-                      chromosome = 1) { # genL numeric of length 1 or 2: genetic length male & female
+                      chrom = 1) { # genL numeric of length 1 or 2: genetic length male & female
     if (!is.null(cM) && !is.null(M)) 
       stop2("Either `cM` or `M` must be NULL")
     stopifnot(!is.null(cM) || !is.null(M) || !is.null(Mb))
@@ -26,8 +26,8 @@ uniformMap = function(Mb = NULL, cM = NULL,
       cM = if (!is.null(M)) M * 100 else  cm.per.mb * Mb
     if (is.null(Mb)) Mb = cM / cm.per.mb
 
-    if (is.character(chromosome) && tolower(chromosome) == "x")
-      chromosome = 23
+    if (is.character(chrom) && tolower(chrom) == "x")
+      chrom = 23
 
     map = switch(max(length(Mb), length(cM)), {
       m = cbind(Mb = c(0, Mb), cM = c(0, cM))
@@ -39,12 +39,12 @@ uniformMap = function(Mb = NULL, cM = NULL,
            female = cbind(Mb = c(0, Mb[2]), cM = c(0, cM[2])))
     })
     female_phys = as.numeric(map$female[2, 1])
-    if (chromosome == 23)
+    if (chrom == 23)
       map$male = NA
     else
     if (female_phys != map$male[2, 1]) 
       stop2("Male and female chromosomes must have equal physical length")
-    structure(map, length_Mb = female_phys, chromosome = chromosome, class = "chromosomeMap")
+    structure(map, length_Mb = female_phys, chrom = chrom, class = "chromosomeMap")
   }
 
 loadMap = function(map, chrom = NULL) {
@@ -65,11 +65,11 @@ loadMap = function(map, chrom = NULL) {
         decode = DecodeMap[chrom],
         uniform.sex.spec = lapply(chrom, function(chr) {
           dat = as.numeric(CHROM.LENGTH[chr, ])
-          uniformMap(M = dat[1:2], Mb = dat[3], chromosome = chr)
+          uniformMap(M = dat[1:2], Mb = dat[3], chrom = chr)
         }),
         uniform.sex.aver = lapply(chrom, function(chr) {
           dat = as.numeric(CHROM.LENGTH[chr, ])
-          uniformMap(M = mean(dat[1:2]), Mb = dat[3], chromosome = chr)
+          uniformMap(M = mean(dat[1:2]), Mb = dat[3], chrom = chr)
         }),
         stop2("Invalid map name"))
     }

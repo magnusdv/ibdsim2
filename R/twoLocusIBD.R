@@ -170,7 +170,7 @@ estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim,
   }
 
   # Define map
-  map = uniformMap(cM = cM, chromosome = if (Xchrom) 23 else 1)
+  map = uniformMap(cM = cM, chrom = if (Xchrom) 23 else 1)
   
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
@@ -210,7 +210,7 @@ estimateOneLocusIBD = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ..
     stop2("Unknown ID label: ", setdiff(ids, labels(x)))
   
   # Define map of length 0
-  map = uniformMap(cM = 0, chromosome = if (Xchrom) 23 else 1)
+  map = uniformMap(cM = 0, chrom = if (Xchrom) 23 else 1)
   
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)

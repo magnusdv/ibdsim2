@@ -4,7 +4,7 @@
 \alias{uniformMap}
 \title{Uniform recombination maps}
 \usage{
-uniformMap(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, chromosome = 1)
+uniformMap(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, chrom = 1)
 }
 \arguments{
 \item{Mb}{Map length in megabases.}
@@ -15,10 +15,10 @@ uniformMap(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, chromosome = 1)
 
 \item{cm.per.mb}{A positive number; the cM/Mb ratio}
 
-\item{chromosome}{A chromosome label.}
+\item{chrom}{A chromosome label.}
 }
 \value{
-An object of class "chromosomeMap", which is a list of two matrices,
+An object of class \code{chromosomeMap}, which is a list of two matrices,
 named "male" and "female".
 }
 \description{
