@@ -40,8 +40,9 @@ identity states on X, please see the explanation at the \code{ribd} homepage:
 This is the X-chromosomal version of \code{\link[=alleleSummary]{alleleSummary()}}.
 }
 \examples{
+\donttest{
 x = fullSibMating(1)
-s = ibdsim(x, N = 1, ids = NULL, chrom = 23)[[1]]
+s = ibdsim(x, N = 1, ids = NULL, chrom = "X")[[1]]
 
 # Complete summary.
 # Note only one allele column for males
@@ -52,5 +53,5 @@ alleleSummaryX(s, ids = 3:4)
 
 # Inbred brother/sister
 alleleSummaryX(s, ids = 5:6)
-
+}
 }

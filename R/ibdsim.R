@@ -101,6 +101,9 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
   # Load map and extract chromosome names.
   map = loadMap(map, chrom = chrom)
   mapchrom = attr(map, "chrom") %||% sapply(map, attr, "chrom")
+  
+  if(any(mapchrom == "X"))
+    stop2("X chromosomal simulations are put on hold, but will be back in the near future.")
 
   if (verbose) {
     skip_str = if (is.null(skipRecomb)) "-" else toString(skipRecomb)

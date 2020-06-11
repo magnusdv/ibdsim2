@@ -57,8 +57,8 @@
 #' ### 1a) One-locus kappa estimates (autosomal and X):
 #' k.hat = estimateOneLocusIBD(x, ids = 3:4, 
 #'                             Nsim = Nsim, seed = 123)
-#' k.hat.X = estimateOneLocusIBD(x, ids = 3:4, Nsim = Nsim, 
-#'                               Xchrom = TRUE, seed = 123)
+#' # k.hat.X = estimateOneLocusIBD(x, ids = 3:4, Nsim = Nsim, 
+#' #                               Xchrom = TRUE, seed = 123)
 #'
 #' ### 1b) Two-locus IBD estimation
 #' # Completely linked, autosomal
@@ -84,6 +84,7 @@
 #'                          Nsim = Nsim, seed = 17)
 #' stopifnot(identical(r1, r2))
 #'
+#' \donttest{
 #' ### 1c) Two-locus IBD on X
 #' # Completely linked
 #' rho = 0
@@ -105,7 +106,7 @@
 #' r2.X = estimateTwoLocusIBD(x, ids = 3:4, cM = cM, Xchrom = TRUE,
 #'                            Nsim = Nsim, seed = 123)
 #' stopifnot(identical(r1.X, r2.X))
-#'
+#' }
 #'
 #' ### Example 2: Grandparent vs half sib vs uncle
 #' # These are indistinguishable with unlinked loci, see e.g.
@@ -134,7 +135,7 @@
 #' y = linearPed(2, sex = c(2, 2))
 #' rho = 0.25
 #' Nsim = 10
-#' estimateTwoLocusIBD(y, c(1,5), rho = rho, Nsim = Nsim, Xchrom = TRUE)
+#' # estimateTwoLocusIBD(y, c(1,5), rho = rho, Nsim = Nsim, Xchrom = TRUE)
 #'
 #' # Exact
 #' matrix(c(1-rho, rho, rho, 1-rho)/2, ncol = 2)
@@ -170,7 +171,7 @@ estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim,
   }
 
   # Define map
-  map = uniformMap(cM = cM, chrom = if (Xchrom) 23 else 1)
+  map = uniformMap(cM = cM, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
@@ -210,7 +211,7 @@ estimateOneLocusIBD = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ..
     stop2("Unknown ID label: ", setdiff(ids, labels(x)))
   
   # Define map of length 0
-  map = uniformMap(cM = 0, chrom = if (Xchrom) 23 else 1)
+  map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)

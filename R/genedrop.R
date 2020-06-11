@@ -8,24 +8,22 @@ genedrop = function(x, map, model = "chi", skipRecomb = NULL) {
   
   h = distributeFounderAlleles(x, chrom)
   
-  
-  if (chrom < 23) {
+  if (chrom == 23) {
+    for (i in NONFOU) {
+      fa = FIDX[i]
+      mo = MIDX[i]
+      maternal.gamete = meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
+      paternal.gamete = if (x$SEX[i] == 1) maternal.gamete else h[[fa]][[1]]
+      h[[i]] = list(paternal.gamene, maternal.gamete)
+    }
+  }
+  else {
     for (i in NONFOU) {
       fa = FIDX[i]
       mo = MIDX[i]
       h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, skipRecomb = fa %in% skipRecomb),
                     meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
       )
-    }
-  }
-  else if (chrom == 23) {
-    for (i in NONFOU) {
-      fa = FIDX[i]
-      mo = MIDX[i]
-      maternal.gamete = meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
-      h[[i]] = list(
-        if (x$SEX[i] == 1) maternal.gamete else h[[fa]][[1]],
-        maternal.gamete)
     }
   }
   
@@ -44,21 +42,7 @@ distributeFounderAlleles = function(x, chrom = "AUTOSOMAL") {
   fou = founders(x, internal = TRUE)
   nfou = length(fou)
   
-  if (is.null(chrom)) chrom = "AUTOSOMAL"
-  if (is.numeric(chrom)) chrom = ifelse(chrom < 23, "AUTOSOMAL", "X")
-
-  if (chrom == "AUTOSOMAL") {
-    aux = cbind(rep.int(0, 2 * nfou), seq_len(2 * nfou))
-    
-    # For 100% inbred founders; make alleles identical
-    FOU_INB = founderInbreeding(x)
-    stopifnot(all(FOU_INB %in% c(0,1)))
-    inb1 = which(FOU_INB == 1)
-    if(length(inb1) > 0)
-      aux[2 * inb1, ] = aux[2 * inb1 - 1, ]
-  }
-  
-  else {
+  if(identical(chrom, "X")) {
     SEX = x$SEX
     alleles = numeric(nfou)
     k = 1
@@ -68,6 +52,16 @@ distributeFounderAlleles = function(x, chrom = "AUTOSOMAL") {
       k = k + sex
     }
     aux = cbind(rep.int(0, 2 * nfou), alleles, deparse.level = 0)
+  }
+  else {
+    aux = cbind(rep.int(0, 2 * nfou), seq_len(2 * nfou))
+    
+    # For 100% inbred founders; make alleles identical
+    FOU_INB = founderInbreeding(x)
+    stopifnot(all(FOU_INB %in% c(0,1)))
+    inb1 = which(FOU_INB == 1)
+    if(length(inb1) > 0)
+      aux[2 * inb1, ] = aux[2 * inb1 - 1, ]
   }
   
   h[fou] = lapply(2 * seq_along(fou), function(i) 

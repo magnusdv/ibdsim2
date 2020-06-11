@@ -27,7 +27,7 @@ uniformMap = function(Mb = NULL, cM = NULL,
     if (is.null(Mb)) Mb = cM / cm.per.mb
 
     if (is.character(chrom) && tolower(chrom) == "x")
-      chrom = 23
+      chrom = "X"
 
     map = switch(max(length(Mb), length(cM)), {
       m = cbind(Mb = c(0, Mb), cM = c(0, cM))
@@ -39,47 +39,59 @@ uniformMap = function(Mb = NULL, cM = NULL,
            female = cbind(Mb = c(0, Mb[2]), cM = c(0, cM[2])))
     })
     female_phys = as.numeric(map$female[2, 1])
-    if (chrom == 23)
+    if (identical(chrom, "X"))
       map$male = NA
-    else
-    if (female_phys != map$male[2, 1]) 
+    else if (female_phys != map$male[2, 1]) 
       stop2("Male and female chromosomes must have equal physical length")
+    
     structure(map, length_Mb = female_phys, chrom = chrom, class = "chromosomeMap")
   }
 
 loadMap = function(map, chrom = NULL) {
 
-    if (is.character(map)) {
-      CHROM.LENGTH = cbind(male_morgan = c(1.9, 1.752, 1.512, 1.35, 1.302, 1.162, 1.238, 1.089, 1.047, 1.147, 0.992, 1.154, 0.919, 0.857, 0.825, 0.88, 0.863, 0.737, 0.708, 0.563, 0.426, 0.45, NA),
-      female_morgan = c(3.34, 3.129, 2.687, 2.6, 2.49, 2.333, 2.21, 2.042, 1.879, 2.062, 1.886, 1.974, 1.468, 1.24, 1.393, 1.494, 1.529, 1.379, 1.152, 1.109, 0.67, 0.662, 1.733),
-      Mb = c(247.2, 242.7, 199.3, 191.1, 180.6, 170.8, 158.7, 146.2, 140.1, 135.3, 134.4, 132.3, 114.1, 105.3, 100.2, 88.7, 78.6, 76.1, 63.8, 62.4, 46.9, 49.5, 154.6))
+  if (is.character(map)) {
+    CHROM.LENGTH = cbind(male_morgan = c(1.9, 1.752, 1.512, 1.35, 1.302, 1.162, 1.238, 1.089, 1.047, 1.147, 0.992, 1.154, 0.919, 0.857, 0.825, 0.88, 0.863, 0.737, 0.708, 0.563, 0.426, 0.45, NA),
+    female_morgan = c(3.34, 3.129, 2.687, 2.6, 2.49, 2.333, 2.21, 2.042, 1.879, 2.062, 1.886, 1.974, 1.468, 1.24, 1.393, 1.494, 1.529, 1.379, 1.152, 1.109, 0.67, 0.662, 1.733),
+    Mb = c(247.2, 242.7, 199.3, 191.1, 180.6, 170.8, 158.7, 146.2, 140.1, 135.3, 134.4, 132.3, 114.1, 105.3, 100.2, 88.7, 78.6, 76.1, 63.8, 62.4, 46.9, 49.5, 154.6))
 
-      if (is.null(chrom)) chrom = 1:22
-      if (is.character(chrom)) 
-        if (chrom == "AUTOSOMAL") chrom = 1:22 
-        else if (chrom == "X") chrom = 23
-      if (any(!chrom %in% 1:23)) 
-        stop2("Invalid chromosome number: ", setdiff(chrom, 1:23))
+    if (is.null(chrom) || identical(chrom, "AUTOSOMAL")) 
+      chromnum = 1:22
+    else if (identical(chrom, "X")) 
+      chromnum = 23
+    else if(is.numeric(chrom))
+      chromnum = chrom
 
-      maps = switch(tolower(map),
-        decode = DecodeMap[chrom],
-        uniform.sex.spec = lapply(chrom, function(chr) {
-          dat = as.numeric(CHROM.LENGTH[chr, ])
-          uniformMap(M = dat[1:2], Mb = dat[3], chrom = chr)
-        }),
-        uniform.sex.aver = lapply(chrom, function(chr) {
-          dat = as.numeric(CHROM.LENGTH[chr, ])
-          uniformMap(M = mean(dat[1:2]), Mb = dat[3], chrom = chr)
-        }),
-        stop2("Invalid map name"))
-    }
-    else {
-      maps = map
-      if (inherits(maps, "chromosomeMap")) maps = list(maps)
-    }
-    attr(maps, "length_Mb") = sum(unlist(lapply(maps, attr, "length_Mb")))
-    maps
+    maps = switch(tolower(map),
+      decode = DecodeMap[chromnum],
+      uniform.sex.spec = lapply(chromnum, function(chr) {
+        dat = as.numeric(CHROM.LENGTH[chr, ])
+        uniformMap(M = dat[1:2], Mb = dat[3], chrom = chr)
+      }),
+      uniform.sex.aver = lapply(chromnum, function(chr) {
+        dat = as.numeric(CHROM.LENGTH[chr, ])
+        uniformMap(M = mean(dat[1:2]), Mb = dat[3], chrom = chr)
+      }),
+      stop2("Invalid map name"))
+    
+    # Fix chrom attributes TODO: update DecodeMap
+    maps = lapply(maps, function(m) {
+      attrs = attributes(m)
+      chr = attrs$chromosome %||% attrs$chrom
+      attrs$chromosome = NULL
+      attrs$chrom = if(chr == 23) "X" else chr
+      attributes(m) = attrs
+      m
+    })
+    
   }
+  else {
+    maps = map
+    if (inherits(maps, "chromosomeMap")) maps = list(maps)
+  }
+  attr(maps, "length_Mb") = sum(unlist(lapply(maps, attr, "length_Mb")))
+  maps
+}
+
 
 cm2phys = function(cM_locus, mapmat) {    # mapmat matrise med kolonner 'Mb' og 'cM'
   if(!length(cM_locus)) return(cM_locus)

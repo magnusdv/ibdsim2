@@ -48,7 +48,7 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
   }
   
   # Define map
-  map = uniformMap(cM = cM, chrom = if (Xchrom) 23 else 1)
+  map = uniformMap(cM = cM, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
@@ -76,7 +76,7 @@ estimateOneLocusInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FAL
     stop2("Unknown ID label: ", id)
   
   # Define map of length 0
-  map = uniformMap(cM = 0, chrom = if (Xchrom) 23 else 1)
+  map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)

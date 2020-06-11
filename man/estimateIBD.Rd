@@ -85,8 +85,8 @@ Nsim = 100 # Should be increased substantially
 ### 1a) One-locus kappa estimates (autosomal and X):
 k.hat = estimateOneLocusIBD(x, ids = 3:4, 
                             Nsim = Nsim, seed = 123)
-k.hat.X = estimateOneLocusIBD(x, ids = 3:4, Nsim = Nsim, 
-                              Xchrom = TRUE, seed = 123)
+# k.hat.X = estimateOneLocusIBD(x, ids = 3:4, Nsim = Nsim, 
+#                               Xchrom = TRUE, seed = 123)
 
 ### 1b) Two-locus IBD estimation
 # Completely linked, autosomal
@@ -112,6 +112,7 @@ r2 = estimateTwoLocusIBD(x, ids = 3:4, cM = cM,
                          Nsim = Nsim, seed = 17)
 stopifnot(identical(r1, r2))
 
+\donttest{
 ### 1c) Two-locus IBD on X
 # Completely linked
 rho = 0
@@ -133,7 +134,7 @@ r1.X = estimateTwoLocusIBD(x, ids = 3:4, rho = rho, Xchrom = TRUE,
 r2.X = estimateTwoLocusIBD(x, ids = 3:4, cM = cM, Xchrom = TRUE,
                            Nsim = Nsim, seed = 123)
 stopifnot(identical(r1.X, r2.X))
-
+}
 
 ### Example 2: Grandparent vs half sib vs uncle
 # These are indistinguishable with unlinked loci, see e.g.
@@ -162,7 +163,7 @@ estimateTwoLocusIBD(U, U.ids, rho = rho, Nsim = Nsim)[2,2]
 y = linearPed(2, sex = c(2, 2))
 rho = 0.25
 Nsim = 10
-estimateTwoLocusIBD(y, c(1,5), rho = rho, Nsim = Nsim, Xchrom = TRUE)
+# estimateTwoLocusIBD(y, c(1,5), rho = rho, Nsim = Nsim, Xchrom = TRUE)
 
 # Exact
 matrix(c(1-rho, rho, rho, 1-rho)/2, ncol = 2)
