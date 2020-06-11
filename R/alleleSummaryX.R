@@ -30,7 +30,7 @@
 #'   <https://github.com/magnusdv/ribd>.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' x = fullSibMating(1)
 #' s = ibdsim(x, N = 1, ids = NULL, chrom = "X")[[1]]
 #'

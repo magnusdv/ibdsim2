@@ -40,7 +40,7 @@ identity states on X, please see the explanation at the \code{ribd} homepage:
 This is the X-chromosomal version of \code{\link[=alleleSummary]{alleleSummary()}}.
 }
 \examples{
-\donttest{
+\dontrun{
 x = fullSibMating(1)
 s = ibdsim(x, N = 1, ids = NULL, chrom = "X")[[1]]
 

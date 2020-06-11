@@ -8,13 +8,13 @@ genedrop = function(x, map, model = "chi", skipRecomb = NULL) {
   
   h = distributeFounderAlleles(x, chrom)
   
-  if (chrom == 23) {
+  if (chrom == "X") {
     for (i in NONFOU) {
       fa = FIDX[i]
       mo = MIDX[i]
       maternal.gamete = meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
       paternal.gamete = if (x$SEX[i] == 1) maternal.gamete else h[[fa]][[1]]
-      h[[i]] = list(paternal.gamene, maternal.gamete)
+      h[[i]] = list(paternal.gamete, maternal.gamete)
     }
   }
   else {

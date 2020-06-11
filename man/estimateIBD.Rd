@@ -112,7 +112,7 @@ r2 = estimateTwoLocusIBD(x, ids = 3:4, cM = cM,
                          Nsim = Nsim, seed = 17)
 stopifnot(identical(r1, r2))
 
-\donttest{
+\dontrun{
 ### 1c) Two-locus IBD on X
 # Completely linked
 rho = 0
