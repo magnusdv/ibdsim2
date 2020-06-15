@@ -3,12 +3,12 @@
 \name{realised}
 \alias{realised}
 \alias{realisedKappa}
-\alias{realisedAutozygosity}
+\alias{realisedInbreeding}
 \title{Realised relatedness}
 \usage{
-realisedKappa(sims, ids = attr(sims, "ids"))
+realisedKappa(sims, ids = NULL)
 
-realisedAutozygosity(sims, id = attr(sims, "ids"))
+realisedInbreeding(sims, id = NULL)
 }
 \arguments{
 \item{sims}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
@@ -49,7 +49,7 @@ realisedKappa(s, ids = 3:4)
 # Realised inbreeding coefficients, child of first cousins
 x = cousinPed(1, child = TRUE)
 s = ibdsim(x, N = 10)
-realisedAutozygosity(s, id = 9)
+realisedInbreeding(s, id = 9)
 
 
 }

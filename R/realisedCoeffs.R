@@ -35,7 +35,7 @@
 #' # Realised inbreeding coefficients, child of first cousins
 #' x = cousinPed(1, child = TRUE)
 #' s = ibdsim(x, N = 10)
-#' realisedAutozygosity(s, id = 9)
+#' realisedInbreeding(s, id = 9)
 #'
 #'
 #' @name realised
@@ -43,15 +43,18 @@ NULL
 
 #' @rdname realised
 #' @export
-realisedKappa = function(sims, ids = attr(sims, 'ids')) {
+realisedKappa = function(sims, ids = NULL) {
   
-  if(identical(ids, "leaves"))
-    ids = leaves(ped)
+  if(is.null(ids))
+    ids = extractIdsFromSegmentSummary(sims)
   
   if(length(ids) != 2)
     stop2("Argument `ids` must contain exactly two ID labels: ", ids)
-
-  L = attr(sims, 'genome_length_Mb')
+  
+  if(!is.list(sims))
+    sims = list(sims)
+  
+  L = sum(sims[[1]][, 'length'])
   
   segs = vapply(sims, function(s) {
     a = segmentSummary(s, ids, addState = TRUE)
@@ -65,57 +68,91 @@ realisedKappa = function(sims, ids = attr(sims, 'ids')) {
     c(ibd0 = sum(len[ibd == 0]), 
       ibd1 = sum(len[ibd == 1]), 
       ibd2 = sum(len[ibd == 2]), 
+      Nseg0 = sum(ibd == 0), 
       Nseg1 = sum(ibd == 1), 
-      Nseg2 = sum(ibd == 2), 
-      Nseg = sum(ibd > 0))
+      Nseg2 = sum(ibd == 2))
   }, FUN.VALUE = numeric(6))
   
-  kappaRealised = segs[1:3, , drop = FALSE]/L
-  list(kappaRealised = kappaRealised, 
-       nSegments = segs[4:6, , drop = FALSE], 
-       kappaHat = rowMeans(kappaRealised),
+  realKappa = segs[1:3, , drop = FALSE]/L
+  realCount = segs[4:6, , drop = FALSE]
+  
+  list(kappaRealised = realKappa, 
+       nSegments = realCount, 
+       kappaHat = rowMeans(realKappa),
        genomeLength = L)
 }
 
 
 #' @rdname realised
 #' @export
-realisedAutozygosity = function(sims, id = attr(sims, 'ids')) {
-  # Pedigree
+realisedInbreeding = function(sims, id = NULL) {
+  
+  # Extract pedigree (if `sims` is `genomeSimList`; otherwise NULL)
   ped = attr(sims, 'pedigree')
   
-  if(identical(id, "leaf"))
-    id = leaves(ped)
+  # IDs present in sims
+  idsims = extractIdsFromSegmentSummary(sims)
   
+  # Target ID
+  if(is.null(id))
+    id = idsims
+  else if(identical(id, "leaf") && !is.null(ped))
+    id = leaves(ped)
   if(length(id) != 1)
     stop2("Argument `id` must contain a single ID label: ", id)
+  if(!id %in% idsims)
+    stop2("Target ID not found in the IBD segment input")
   
-  # Theoretical inbreeding coefficient
-  inb = ribd::inbreeding(ped)[[internalID(ped, id)]] # `[[` to remove name
+  # Theoretical inbreeding coefficient (if pedigree is attached)
+  if(!is.null(ped))
+    inb = ribd::inbreeding(ped)[[internalID(ped, id)]] # `[[` to remove name
+  else 
+    inb = NA_real_
   
-  # Total genome length
-  genomeL = attr(sims, "genome_length_Mb")
+  # Ensure sims is a list
+  if(!is.null(dim(sims)))
+    sims = list(sims)
   
-  # Summarise each simulation (previously used vapply(); now lapply + do.call(rbind))
-  summList = lapply(sims, function(s) {
-    a = segmentSummary(s, ids = id, addState = TRUE)
+  # Summarise each simulation
+  resList = lapply(sims, function(s) {
+    if(length(idsims) > 1 || !"Aut" %in% colnames(s)) {
+      s0 = segmentSummary(s, ids = id, addState = TRUE)
+      
+      # Merge adjacent segments with equal IBD state
+      s = mergeAdjacent(s0, vec = as.logical(s0[, 'Aut']))
+    }
+
+    # Which segments are autozygous
+    aut = as.logical(s[, "Aut"])
     
-    # Merge adjacent segments with equal IBD state
-    a2 = mergeAdjacent(a, vec = as.logical(a[, 'Aut']))
+    # Summary stats on autoz segs
+    segLen = s[aut, 'length']
+    nSeg = length(segLen)
+    totLen = sum(segLen)
     
-    aut = as.logical(a2[, "Aut"])
-    segLengths = a2[aut, 'length']
-    segCount = length(segLengths)
-    totLength = sum(segLengths)
-    meanLen = ifelse(segCount == 0, 0, totLength/segCount)
-    
-    c(segCount = segCount, meanLength = meanLen, 
-      totLength = totLength, 
-      longest = max(segLengths), shortest = min(segLengths),
-      fraction = totLength/genomeL)
+    c(nSeg = nSeg, 
+      meanLen = ifelse(nSeg == 0, 0, totLen/nSeg), 
+      totLen = totLen, 
+      maxLen = ifelse(nSeg == 0, 0, max(segLen)), 
+      minLen = ifelse(nSeg == 0, 0, min(segLen)))
   })
   
-  summDF = as.data.frame(do.call(rbind, summList), make.names = FALSE)
+  # Bind row-wise
+  res = as.data.frame(do.call(rbind, resList), make.names = FALSE)
   
-  cbind(summDF, expected = inb, genomeLength = genomeL)
+  # Total genome length (assume same for all!)
+  L = sum(sims[[1]][, 'length'])
+  
+  # Add observed and pedigree coeffs
+  cbind(res, fReal = res$totLen/L, fPed = inb, genomeLen = L)
+}
+
+# Utility for deducing ID labels present in an output of `ibdsim()` simulation
+extractIdsFromSegmentSummary = function(x) {
+  clnms = colnames(x) %||% colnames(x[[1]])
+  if(is.null(clnms))
+    stop2("Cannot deduce ID labels from segment summary")
+  
+  idcols = grep(":p", clnms, fixed = TRUE, value = TRUE)
+  substring(idcols, 1, nchar(idcols) - 2)
 }
