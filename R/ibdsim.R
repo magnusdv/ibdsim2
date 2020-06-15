@@ -87,7 +87,7 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
   if(!all(founderInbreeding(x) %in% c(0,1)))
     stop2("Founder inbreeding coefficients other than 0 and 1 are not allowed")
   
-  model_string = if(model == "chi") "Chi^2 renewal process" else "Haldane's poisson process"    
+  model_string = if(model == "chi") "Chi square" else "Haldane"    
   
   # Ensure that parents precede their children
   if (!hasParentsBeforeChildren(x)) {
@@ -96,7 +96,7 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
   }
   
   # Start timer
-  starttime = proc.time()
+  starttime = Sys.time()
 
   # Load map and extract chromosome names.
   map = loadMap(map, chrom = chrom)
@@ -111,7 +111,7 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
     
     message(glue::glue("
     No. of sims: {N}
-    Chromosomes: {toString(mapchrom)}
+    Chromosomes: {vecToRanges(mapchrom)}
     Rec. model : {model_string}
     Target ids : {ids_str}
     Skip recomb: {skip_str}
@@ -137,10 +137,9 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
     alleleSummary(s, ids)
   })
   
-  if (verbose) {
-    elapsed = (proc.time() - starttime)[["elapsed"]]
-    message("Simulation finished in ", elapsed, " seconds.")
-  }
+  # Timing
+  if(verbose)
+    message("Total time used: ", format(Sys.time() - starttime, digits = 3))
   
   # Add attributes and class to the entire list 
   attributes(genomeSimList) = c(attribs, class = "genomeSimList")

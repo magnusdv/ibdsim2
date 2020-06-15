@@ -98,3 +98,18 @@ pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks -
   if (is.null(x)) y
   else x
 }
+
+vecToRanges = function(x) {
+  xInt = suppressWarnings(as.integer(x))
+  if(any(is.na(xInt) | x != xInt))
+    return(x)
+
+  x = xInt
+  conseqs = unname(split(x, cumsum(c(0, diff(x) != 1))))
+  rngs = sapply(conseqs, function(v) {
+    if(length(v) == 1) as.character(v)
+    else if(length(v) == 2) toString(v)
+    else sprintf("%d-%d", min(v), max(v))
+  })
+  paste(rngs, collapse = ", ")
+}
