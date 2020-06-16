@@ -94,16 +94,19 @@ loadMap = function(map, chrom = NULL) {
 
 
 cm2phys = function(cM_locus, mapmat) {    # mapmat matrise med kolonner 'Mb' og 'cM'
-  if(!length(cM_locus)) return(cM_locus)
-  last = mapmat[nrow(mapmat), ]
-  nontriv = cM_locus >= 0 & cM_locus <= last[["cM"]]
+  if(!length(cM_locus)) 
+    return(cM_locus)
+  mapMB = mapmat[, 'Mb']
+  mapCM = mapmat[, 'cM']
+  
   res = numeric(length(cM_locus))
+  nontriv = cM_locus >= 0 & cM_locus <= mapCM[length(mapCM)]
   res[!nontriv] <- NA
+  
   cm = cM_locus[nontriv]
-  interv = findInterval(cm, mapmat[, "cM"], all.inside = TRUE)
-  res[nontriv] = mapmat[interv, "Mb"] + 
-                (mapmat[interv + 1, "Mb"] - mapmat[interv, "Mb"]) * (cm - mapmat[interv, "cM"]) / 
-                (mapmat[interv + 1, "cM"] - mapmat[interv, "cM"])
+  interv = findInterval(cm, mapCM, all.inside = TRUE)
+  res[nontriv] = mapMB[interv] + (cm - mapCM[interv]) *
+    (mapMB[interv + 1] - mapMB[interv]) / (mapCM[interv + 1] - mapCM[interv])
   res
 }
 
