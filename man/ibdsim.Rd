@@ -10,7 +10,7 @@ ibdsim(
   ids = labels(x),
   map = "decode",
   chrom = NULL,
-  model = "chi",
+  model = c("chi", "haldane"),
   skipRecomb = NULL,
   seed = NULL,
   verbose = TRUE
@@ -28,18 +28,23 @@ If NULL, the simulations are returned unprocessed.}
 character strings "decode", "uniform.sex.spec", "uniform.sex.aver". (See
 Details.)}
 
-\item{chrom}{A numeric vector indicating chromosome numbers, or either
-of the words "AUTOSOMAL" or "X". The default is 1:22, i.e., the human
-autosomes.}
+\item{chrom}{A numeric vector indicating chromosome numbers, or either of the
+words "AUTOSOMAL" or "X". The default is 1:22, i.e., the human autosomes.}
 
 \item{model}{Either "chi" (default) or "haldane", indicating the statistical
 model for recombination. (See details.)}
 
-\item{skipRecomb}{An optional vector of ID labels indicating individuals
-whose meioses should be simulated without recombination. (Each child will
-then receive a random strand of each chromosome.) If NULL (default), nobody
-is skipped. Note that \code{skipRecomb = founders(x)} is a sensible (and time
-saving) choice in many applications.}
+\item{skipRecomb}{A vector of ID labels indicating individuals whose meioses
+should be simulated without recombination. (Each child will then receive a
+random strand of each chromosome.) By default (\code{skipRecomb = NULL}) the
+following individuals are skipped:
+\itemize{
+\item If \code{length(ids) > 1}: founders of \code{x} who are not common ancestors of
+\code{ids}
+\item If \code{ids} consist of a single nonfounder: founders of \code{x} who are not
+common ancestors of the parents.
+\item Otherwise: None.
+}}
 
 \item{seed}{An integer to be passed on to \code{\link[=set.seed]{set.seed()}}).}
 

@@ -26,16 +26,23 @@
 #' @param map The genetic map to be used in the simulations: One of the
 #'   character strings "decode", "uniform.sex.spec", "uniform.sex.aver". (See
 #'   Details.)
-#' @param chrom A numeric vector indicating chromosome numbers, or either
-#'   of the words "AUTOSOMAL" or "X". The default is 1:22, i.e., the human
-#'   autosomes.
+#' @param chrom A numeric vector indicating chromosome numbers, or either of the
+#'   words "AUTOSOMAL" or "X". The default is 1:22, i.e., the human autosomes.
 #' @param model Either "chi" (default) or "haldane", indicating the statistical
 #'   model for recombination. (See details.)
-#' @param skipRecomb An optional vector of ID labels indicating individuals
-#'   whose meioses should be simulated without recombination. (Each child will
-#'   then receive a random strand of each chromosome.) If NULL (default), nobody
-#'   is skipped. Note that `skipRecomb = founders(x)` is a sensible (and time
-#'   saving) choice in many applications.
+#' @param skipRecomb A vector of ID labels indicating individuals whose meioses
+#'   should be simulated without recombination. (Each child will then receive a
+#'   random strand of each chromosome.) By default (`skipRecomb = NULL`) the
+#'   following individuals are skipped:
+#'
+#'   * If `length(ids) > 1`: founders of `x` who are not common ancestors of
+#'   `ids`
+#'
+#'   * If `ids` consist of a single nonfounder: founders of `x` who are not
+#'   common ancestors of the parents.
+#'
+#'   * Otherwise: None.
+#'
 #' @param seed An integer to be passed on to [set.seed()]).
 #' @param verbose A logical.
 #'
@@ -75,19 +82,15 @@
 #'
 #' @export
 ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
-                  model = "chi", skipRecomb = NULL, 
+                  model = c("chi", "haldane"), skipRecomb = NULL, 
                   seed = NULL, verbose = TRUE) {
   # Check input
   if(!is.ped(x))
     stop2("The first argument must be a `ped` object")
   if(!is_count(N))
     stop2("`N` must be a positive integer")
-  if(!model %in% c("chi", "haldane"))
-    stop2('Argument `model`` must be either "chi" or "haldane"')
   if(!all(founderInbreeding(x) %in% c(0,1)))
     stop2("Founder inbreeding coefficients other than 0 and 1 are not allowed")
-  
-  model_string = if(model == "chi") "Chi square" else "Haldane"    
   
   # Ensure that parents precede their children
   if (!hasParentsBeforeChildren(x)) {
@@ -105,17 +108,24 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
   if(any(mapchrom == "X"))
     stop2("X chromosomal simulations are put on hold, but will be back in the near future.")
 
-  if (verbose) {
-    skip_str = if (is.null(skipRecomb)) "-" else toString(skipRecomb)
-    ids_str = if (is.null(ids)) "-" else toString(ids)
+  model = match.arg(model)
+  
+  # Skip recombination
+  if(is.null(skipRecomb) && !is.null(ids)) {
+    if(length(ids) == 1 && ids %in% nonfounders(x))
+      skipRecomb = setdiff(founders(x), commonAncestors(x, parents(x, ids)))
+    else if(length(ids) > 1)
+      skipRecomb = setdiff(founders(x), commonAncestors(x, ids))
+  }
     
+  if (verbose) {
     message(glue::glue("
-    No. of sims: {N}
-    Chromosomes: {vecToRanges(mapchrom)}
-    Rec. model : {model_string}
-    Target ids : {ids_str}
-    Skip recomb: {skip_str}
-    "))
+      No. of sims: {N}
+      Chromosomes: {toString2(mapchrom)}
+      Rec. model : {ifelse(model == 'chi', 'Chi square', 'Haldane')}
+      Target ids : {toString2(ids, ifempty = '-')}
+      Skip recomb: {toString2(skipRecomb, ifempty = '-')}"
+    ))
   }
   
   # Seed for random sampling
@@ -127,7 +137,7 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
                  skipped = skipRecomb,
                  genome_length_Mb = attr(map, "length_Mb"),
                  chrom = mapchrom,
-                 model = model_string)
+                 model = model)
   
   # The actual simulations: One sim at the time; each chromosome in turn 
   genomeSimList = lapply(1:N, function(i) {

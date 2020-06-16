@@ -84,13 +84,27 @@ pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks -
   else x
 }
 
-vecToRanges = function(x) {
-  xInt = suppressWarnings(as.integer(x))
-  if(any(is.na(xInt) | x != xInt))
-    return(x)
 
-  x = xInt
-  conseqs = unname(split(x, cumsum(c(0, diff(x) != 1))))
+# Private version of `toString`
+#  * Converts sequences to ranges: 1,2,3,5,6,7 -> "1-3, 5-7"
+#  * Default returns if NULL or empty
+toString2 = function(x, ifempty = "-", ifnull = ifempty) {
+  if(is.null(x))
+    return(ifnull)
+  if(!length(x))
+    return(ifempty)
+  
+  xInt = suppressWarnings(as.integer(x))
+  
+  # If not all integers, return toString(x)
+  if(any(is.na(xInt) | x != xInt))
+    return(toString(x))
+
+  conseqs = unname(split(xInt, cumsum(c(0, diff(xInt) != 1))))
+  
+  if(all(lengths(conseqs) == 1))
+    return(toString(x))
+  
   rngs = sapply(conseqs, function(v) {
     if(length(v) == 1) as.character(v)
     else if(length(v) == 2) toString(v)
