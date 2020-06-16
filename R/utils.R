@@ -68,8 +68,37 @@ pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks -
 }
 
 .sortDouble = function(x) {
+  len = length(x)
+  if(len == 1) 
+    return(x)
+  if(len == 2) {
+    if(x[1] > x[2]) 
+      return(x[2:1])
+    else 
+      return(x)
+  }
+  if(len == 3) {
+    a = x[1]; b = x[2]; c = x[3]
+    if (b < a) {
+      tmp = a
+      a = b
+      b = tmp
+    }
+    if (c < b) {
+      tmp = b
+      b = c
+      c = tmp
+    }
+    if (b < a) {
+      tmp = a
+      a = b
+      b = tmp
+    }
+    return(c(a,b,c))
+  }
   x[order(x, method = "shell")]
 }
+
 
 .comb2 = function(n) {
   if (n < 2) return(matrix(nrow = 0, ncol = 2))
