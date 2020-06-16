@@ -1,12 +1,12 @@
 #' @importFrom stats runif
-genedrop = function(x, map, model = "chi", skipRecomb = NULL) {
+genedrop = function(x, map, model = "chi", skipRecomb = NULL, startData = NULL) {
   FIDX = x$FIDX
   MIDX = x$MIDX
   FOU = founders(x, internal = TRUE)
   NONFOU = nonfounders(x, internal = TRUE)
   chrom = attr(map, "chrom")
   
-  h = distributeFounderAlleles(x, chrom)
+  h = startData %||% distributeFounderAlleles(x, chrom)
   
   if (chrom == "X") {
     for (i in NONFOU) {
@@ -27,13 +27,8 @@ genedrop = function(x, map, model = "chi", skipRecomb = NULL) {
     }
   }
   
-  attr(h, "chrom") = chrom
-  attr(h, "length_Mb") = attr(map, "length_Mb")
-  attr(h, "model") = model
-  attr(h, "skipped") = skipRecomb
-  
-  class(h) = "chromosomeSim"
-  h
+  structure(h, chrom = chrom, length_Mb = attr(map, "length_Mb"), 
+            model = model, skipped = skipRecomb, class = "chromosomeSim")
 }
 
 

@@ -136,10 +136,13 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
                  chrom = mapchrom,
                  model = model)
   
+  # Start-data with founder alleles
+  startData = distributeFounderAlleles(x, chrom = "AUTOSOMAL")
+  
   # The actual simulations: One sim at the time; each chromosome in turn 
   genomeSimList = lapply(1:N, function(i) {
     s = lapply(map, function(m)
-      genedrop(x, map = m, model = model, skipRecomb = skipRecomb))
+      genedrop(x, map = m, model = model, skipRecomb = skipRecomb, startData = startData))
     attributes(s) = c(attribs, class = "genomeSim") 
     alleleSummary(s, ids)
   })
