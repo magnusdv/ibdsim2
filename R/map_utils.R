@@ -93,7 +93,7 @@ loadMap = function(map, chrom = NULL) {
 }
 
 
-cm2phys = function(cM_locus, mapmat) {    # mapmat matrise med kolonner 'Mb' og 'cM'
+cm2phys = function(cM_locus, mapmat) { # mapmat matrise med kolonner 'Mb' og 'cM'
   if(!length(cM_locus)) 
     return(cM_locus)
   mapMB = mapmat[, 'Mb']

@@ -15,6 +15,7 @@ mergeConsecutiveRows = function(df, mergeBy) {
   if(nrow(df) < 2) return(df)
   if(length(mergeBy) == 1) 
     mergeBy = df[, mergeBy]
+  
   stopifnot(length(mergeBy) == nrow(df))
       
   runs = rle(mergeBy)

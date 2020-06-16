@@ -36,15 +36,9 @@ model for recombination. (See details.)}
 
 \item{skipRecomb}{A vector of ID labels indicating individuals whose meioses
 should be simulated without recombination. (Each child will then receive a
-random strand of each chromosome.) By default (\code{skipRecomb = NULL}) the
-following individuals are skipped:
-\itemize{
-\item If \code{length(ids) > 1}: founders of \code{x} who are not common ancestors of
-\code{ids}
-\item If \code{ids} consist of a single nonfounder: founders of \code{x} who are not
-common ancestors of the parents.
-\item Otherwise: None.
-}}
+random strand of each chromosome.) By default (\code{skipRecomb = NULL})
+recombination is skipped for founders who are uninformative for analysis
+of \code{ids}.}
 
 \item{seed}{An integer to be passed on to \code{\link[=set.seed]{set.seed()}}).}
 
