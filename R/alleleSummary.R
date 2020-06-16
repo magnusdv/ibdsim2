@@ -149,8 +149,11 @@ segmentSummary = function(x, ids, addState = TRUE) {
 
 # Merge adjacent segments with equal `vec` entry and equal chrom
 mergeAdjacent = function(x, vec) {
-  k = length(vec)
-  if(k != nrow(x))
+  k = nrow(x)
+  
+  if(length(vec) == 1 && is.character(vec))
+    vec = x[, vec]
+  else if(length(vec) != k)
     stop2("Incompatible input")
   
   chr = x[, 'chrom']

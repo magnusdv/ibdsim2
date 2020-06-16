@@ -1,4 +1,4 @@
-# Not exported
+#' @importFrom stats rpois runif
 meiosis = function(parent, map, model = "chi", skipRecomb = FALSE) { 
   # skip = TRUE returns random strand with no recombination; 
   
@@ -9,13 +9,13 @@ meiosis = function(parent, map, model = "chi", skipRecomb = FALSE) {
 
   switch(model,
     haldane = {
-      ncross = as.integer(stats::rpois(1, L.cM / 100))
+      ncross = as.integer(rpois(1, L.cM / 100))
       if (ncross == 0) return(parent[[startStrand]])
-      Cx = .sortDouble(stats::runif(ncross, min = 0, max = L.cM))
+      Cx = .sortDouble(runif(ncross, min = 0, max = L.cM))
     },
     chi = {
       m = 4
-      nC = stats::rpois(1, L.cM / 50 * (m + 1))    # L.cM/100*2*(m+1); number of potential crossover events
+      nC = rpois(1, L.cM / 50 * (m + 1))    # L.cM/100*2*(m+1); number of potential crossover events
       if (nC == 0) return(parent[[startStrand]])
       C_events = .sortDouble(runif(nC, min = 0, max = L.cM)) # potential crossover positions (N-1 intervals, uniformly distr given nC)
       Cx.bundle = C_events[!as.logical((seq_len(nC) + sample.int(m + 1, 1)) %% (m + 1))]    # Cx events on 4 strand bundle: every (m+1)th

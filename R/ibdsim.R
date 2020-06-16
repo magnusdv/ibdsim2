@@ -32,16 +32,9 @@
 #'   model for recombination. (See details.)
 #' @param skipRecomb A vector of ID labels indicating individuals whose meioses
 #'   should be simulated without recombination. (Each child will then receive a
-#'   random strand of each chromosome.) By default (`skipRecomb = NULL`) the
-#'   following individuals are skipped:
-#'
-#'   * If `length(ids) > 1`: founders of `x` who are not common ancestors of
-#'   `ids`
-#'
-#'   * If `ids` consist of a single nonfounder: founders of `x` who are not
-#'   common ancestors of the parents.
-#'
-#'   * Otherwise: None.
+#'   random strand of each chromosome.) By default (`skipRecomb = NULL`)
+#'   recombination is skipped for founders who are uninformative for analysis
+#'   of `ids`.
 #'
 #' @param seed An integer to be passed on to [set.seed()]).
 #' @param verbose A logical.
@@ -111,18 +104,22 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
   model = match.arg(model)
   
   # Skip recombination
-  if(is.null(skipRecomb) && !is.null(ids)) {
-    if(length(ids) == 1 && ids %in% nonfounders(x))
-      skipRecomb = setdiff(founders(x), commonAncestors(x, parents(x, ids)))
-    else if(length(ids) > 1)
-      skipRecomb = setdiff(founders(x), commonAncestors(x, ids))
+  if(is.null(skipRecomb) && !is.null(ids) && !setequal(ids, labels(x))) {
+    FOU = founders(x)
+    useids = if(length(ids) == 1) parents(x, ids) else ids
+    fous = unlist(lapply(useids, function(id) intersect(FOU, ancestors(x, id, inclusive = TRUE))))
+    fousUniq = unique.default(fous)
+    
+    # Skip founders who are ancestors of at most one ids
+    counts = sapply(fousUniq, function(f) sum(fous == f))
+    skipRecomb = fousUniq[counts == 1]
   }
     
   if (verbose) {
     message(glue::glue("
       No. of sims: {N}
       Chromosomes: {toString2(mapchrom)}
-      Rec. model : {ifelse(model == 'chi', 'Chi square', 'Haldane')}
+      Rec. model : {model}
       Target ids : {toString2(ids, ifempty = '-')}
       Skip recomb: {toString2(skipRecomb, ifempty = '-')}"
     ))
