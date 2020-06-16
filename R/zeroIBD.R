@@ -3,66 +3,74 @@
 #' Estimate the probability of no IBD sharing in a pairwise relationship.
 #'
 #' @param sims A list of genome simulations, as output by [ibdsim()].
-#' @param ids A vector with two ID labels.
-#' @param truncate A vector of positive real numbers. Only IBD segments longer than this are
-#'   included in the computation. If `truncate` has more than one
-#'   element, a separate estimate is provided for each value. The default (`truncate = 0`) is to
-#'   include all segments.
-#'   
-#' @return A data frame with tree numeric columns:
-#' \describe{
-#'   \item{truncate}{Same as input.}
-#'   \item{zeroprob}{The estimated probability of no IBD segments.}
-#'   \item{SE}{The standard error of the estimate.}
-#' }
+#' @param ids A vector with two ID labels. If NULL (default), these are deduced
+#'   from the `sims` object.
+#' @param threshold A nonnegative number (default:0). Only IBD segments longer
+#'   than this are included in the computation.
+#'
+#' @return A list with the following two entries:
+#'
+#'   * `zeroprob`: The fraction of `sims` in which `ids` have no IBD sharing
+#'
+#'   * `stErr`: The standard error of `zeroprob`
 #'
 #' @examples
-#' ### 
+#' ###
 #' # The following example computes the probability of
 #' # no IBD sharing between a pair of fourth cousins.
-#' # We also show how the probability is affected by 
+#' # We also show how the probability is affected by
 #' # truncation, i.e., ignoring short segments.
 #' ###
-#' 
+#'
 #' # Define the pedigree
 #' x = cousinPed(4)
-#' cousins = leaves(x)
-#' 
+#' cous = leaves(x)
+#'
 #' # Simulate (increase N!)
 #' s = ibdsim(x, N = 10)
-#' 
+#'
 #' # Probability of zero ibd segments. (By default all segs are used)
-#' zeroIBD(s, ids = cousins)
-#' 
-#' # Re-compute the probability with several truncation levels
-#' truncate = 0:20
-#' zp = zeroIBD(s, ids = cousins, truncate = truncate)
-#' 
-#' plot(truncate, zp$zeroprob, type = "b", ylim = c(0,1))
-#' 
+#' zeroIBD(s, ids = cous)
+#'
+#' # Re-compute with positive threshold
+#' zeroIBD(s, ids = cous, threshold = 1)
+#'
 #' @export
-zeroIBD = function(sims, ids, truncate = 0) {
-  if(!is.numeric(truncate) || length(truncate) == 0 || any(truncate < 0))
-    stop2("`truncate` must be vector of positive numbers")
+zeroIBD = function(sims, ids = NULL, threshold = 0) {
+  if(!is.numeric(threshold) || length(threshold) != 1 || threshold < 0)
+    stop2("`threshold` must be a nonnegative number")
   
-  ibdCount = vapply(sims, function(s) {
-    a = segmentSummary(s, ids, addState = TRUE)
-    
-    ibdstatus = a[, 'IBD']
-    len = a[, 'length']
-    
-    # Count IBD segments (ibd = 1 or 2) longer than each "truncate"
-    segs = vapply(truncate, function(trunc) sum(ibdstatus > 0 & len >= trunc), 1)
-  }, 
-  FUN.VALUE = numeric(length(truncate)))
+  # IDs present in sims
+  idsims = extractIdsFromSegmentSummary(sims)
   
-  # Fix vapply output inconsistency.
-  if(length(truncate) == 1) 
-    dim(ibdCount) = c(1, length(ibdCount))
+  if(is.null(ids))
+    ids = idsims
+  
+  if(length(ids) != 2)
+    stop2("Argument `ids` must contain exactly two ID labels: ", ids)
+  
+  if(!all(ids %in% idsims))
+    stop2("Target ID not found in segment input:", setdiff(ids, idsims))
+  
+  if(!is.list(sims))
+    sims = list(sims)
+  
+  ibdCount = lapply(sims, function(s) {
+    
+    if(length(idsims) > 2 || !"IBD" %in% colnames(s)) {
+      s0 = segmentSummary(s, ids = ids, addState = TRUE)
+      s = mergeAdjacent(s0, vec = "IBD")
+    }
+    
+    ibdstate = s[, 'IBD']
+    len = s[, 'length']
+    
+    sum(ibdstate > 0 & len >= threshold)
+  })
   
   # Fraction (and standard error) of sims with 0 segments
-  zeroprob = rowMeans(ibdCount == 0)
-  SE = sqrt(zeroprob*(1 - zeroprob)/length(sims))
+  zeroprob = mean(unlist(ibdCount) == 0)
+  stErr = sqrt(zeroprob*(1 - zeroprob)/length(ibdCount))
   
-  data.frame(truncate = truncate, zeroprob = zeroprob, SE = SE)
+  list(zeroprob = zeroprob, stErr = stErr)
 }

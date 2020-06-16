@@ -4,51 +4,46 @@
 \alias{zeroIBD}
 \title{Probability of zero IBD}
 \usage{
-zeroIBD(sims, ids, truncate = 0)
+zeroIBD(sims, ids = NULL, threshold = 0)
 }
 \arguments{
 \item{sims}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
 
-\item{ids}{A vector with two ID labels.}
+\item{ids}{A vector with two ID labels. If NULL (default), these are deduced
+from the \code{sims} object.}
 
-\item{truncate}{A vector of positive real numbers. Only IBD segments longer than this are
-included in the computation. If \code{truncate} has more than one
-element, a separate estimate is provided for each value. The default (\code{truncate = 0}) is to
-include all segments.}
+\item{threshold}{A nonnegative number (default:0). Only IBD segments longer
+than this are included in the computation.}
 }
 \value{
-A data frame with tree numeric columns:
-\describe{
-\item{truncate}{Same as input.}
-\item{zeroprob}{The estimated probability of no IBD segments.}
-\item{SE}{The standard error of the estimate.}
+A list with the following two entries:
+\itemize{
+\item \code{zeroprob}: The fraction of \code{sims} in which \code{ids} have no IBD sharing
+\item \code{stErr}: The standard error of \code{zeroprob}
 }
 }
 \description{
 Estimate the probability of no IBD sharing in a pairwise relationship.
 }
 \examples{
-### 
+###
 # The following example computes the probability of
 # no IBD sharing between a pair of fourth cousins.
-# We also show how the probability is affected by 
+# We also show how the probability is affected by
 # truncation, i.e., ignoring short segments.
 ###
 
 # Define the pedigree
 x = cousinPed(4)
-cousins = leaves(x)
+cous = leaves(x)
 
 # Simulate (increase N!)
 s = ibdsim(x, N = 10)
 
 # Probability of zero ibd segments. (By default all segs are used)
-zeroIBD(s, ids = cousins)
+zeroIBD(s, ids = cous)
 
-# Re-compute the probability with several truncation levels
-truncate = 0:20
-zp = zeroIBD(s, ids = cousins, truncate = truncate)
-
-plot(truncate, zp$zeroprob, type = "b", ylim = c(0,1))
+# Re-compute with positive threshold
+zeroIBD(s, ids = cous, threshold = 1)
 
 }
