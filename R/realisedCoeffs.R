@@ -42,53 +42,60 @@
 NULL
 
 #' @rdname realised
+#' @importFrom stats sd
 #' @export
 realisedKappa = function(sims, ids = NULL) {
   
+  # IDs present in sims
+  idsims = extractIdsFromSegmentSummary(sims)
+  
   if(is.null(ids))
-    ids = extractIdsFromSegmentSummary(sims)
+    ids = idsims
   
   if(length(ids) != 2)
     stop2("Argument `ids` must contain exactly two ID labels: ", ids)
   
+  if(!all(ids %in% idsims))
+    stop2("Target ID not found in segment input:", setdiff(ids, idsims))
+  
   if(!is.list(sims))
     sims = list(sims)
   
+  resList = lapply(sims, function(s) {
+    
+    if(length(idsims) > 2 || !"IBD" %in% colnames(s)) {
+      s0 = segmentSummary(s, ids = ids, addState = TRUE)
+      s = mergeAdjacent(s0, vec = "IBD")
+    }
+    
+    len = s[, 'length']  
+    ibd = s[, 'IBD']  
+      
+    c(ibd0 = sum(len[ibd == 0]), ibd1 = sum(len[ibd == 1]), ibd2 = sum(len[ibd == 2]),
+      nSeg0 = sum(ibd == 0), nSeg1 = sum(ibd == 1), nSeg2 = sum(ibd == 2))
+  })
+  
+  # Bind row-wise
+  resMat = do.call(rbind, resList)
+  
+  # Total genome length (assume same for all!)
   L = sum(sims[[1]][, 'length'])
   
-  segs = vapply(sims, function(s) {
-    a = segmentSummary(s, ids, addState = TRUE)
-    
-    # Merge adjacent segments with equal IBD state
-    a2 = mergeAdjacent(a, vec = a[, 'IBD'])
-
-    len = a2[, 'length']  
-    ibd = a2[, 'IBD']  
-      
-    c(ibd0 = sum(len[ibd == 0]), 
-      ibd1 = sum(len[ibd == 1]), 
-      ibd2 = sum(len[ibd == 2]), 
-      Nseg0 = sum(ibd == 0), 
-      Nseg1 = sum(ibd == 1), 
-      Nseg2 = sum(ibd == 2))
-  }, FUN.VALUE = numeric(6))
+  resDf = data.frame(k0 = resMat[,1]/L, 
+                     k1 = resMat[,2]/L, 
+                     k2 = resMat[,3]/L, 
+                     nSeg0 = as.integer(resMat[,4]), 
+                     nSeg1 = as.integer(resMat[,5]), 
+                     nSeg2 = as.integer(resMat[,6]))
   
-  realKappa = segs[1:3, , drop = FALSE]/L
-  realCount = segs[4:6, , drop = FALSE]
-  
-  list(kappaRealised = realKappa, 
-       nSegments = realCount, 
-       kappaHat = rowMeans(realKappa),
-       genomeLength = L)
+  list(perSimulation = resDf, meanCoef = colMeans(resDf[, 1:3]), stDev = apply(resDf[,1:3], 2, sd))
 }
 
 
 #' @rdname realised
+#' @importFrom stats sd
 #' @export
 realisedInbreeding = function(sims, id = NULL) {
-  
-  # Extract pedigree (if `sims` is `genomeSimList`; otherwise NULL)
-  ped = attr(sims, 'pedigree')
   
   # IDs present in sims
   idsims = extractIdsFromSegmentSummary(sims)
@@ -96,18 +103,10 @@ realisedInbreeding = function(sims, id = NULL) {
   # Target ID
   if(is.null(id))
     id = idsims
-  else if(identical(id, "leaf") && !is.null(ped))
-    id = leaves(ped)
   if(length(id) != 1)
     stop2("Argument `id` must contain a single ID label: ", id)
   if(!id %in% idsims)
     stop2("Target ID not found in the IBD segment input")
-  
-  # Theoretical inbreeding coefficient (if pedigree is attached)
-  if(!is.null(ped))
-    inb = ribd::inbreeding(ped)[[internalID(ped, id)]] # `[[` to remove name
-  else 
-    inb = NA_real_
   
   # Ensure sims is a list
   if(!is.null(dim(sims)))
@@ -115,11 +114,10 @@ realisedInbreeding = function(sims, id = NULL) {
   
   # Summarise each simulation
   resList = lapply(sims, function(s) {
+    
     if(length(idsims) > 1 || !"Aut" %in% colnames(s)) {
       s0 = segmentSummary(s, ids = id, addState = TRUE)
-      
-      # Merge adjacent segments with equal IBD state
-      s = mergeAdjacent(s0, vec = as.logical(s0[, 'Aut']))
+      s = mergeAdjacent(s0, vec = "Aut")
     }
 
     # Which segments are autozygous
@@ -138,13 +136,15 @@ realisedInbreeding = function(sims, id = NULL) {
   })
   
   # Bind row-wise
-  res = as.data.frame(do.call(rbind, resList), make.names = FALSE)
+  resDf = as.data.frame(do.call(rbind, resList), make.names = FALSE)
   
   # Total genome length (assume same for all!)
   L = sum(sims[[1]][, 'length'])
   
-  # Add observed and pedigree coeffs
-  cbind(res, fReal = res$totLen/L, fPed = inb, genomeLen = L)
+  # Add realised f
+  resDf$fReal = fr = resDf$totLen/L
+  
+  list(perSimulation = resDf, meanCoef = mean(fr), stDev = sd(fr))
 }
 
 # Utility for deducing ID labels present in an output of `ibdsim()` simulation
