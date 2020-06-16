@@ -57,7 +57,7 @@ dev.off()
 
 # Simulations (increase N!))
 s = lapply(peds, function(p)
-  ibdsim(p, N = 100, ids = leaves(p), map = "uniform.sex.spec", verbose = FALSE))
+  ibdsim(p, N = 10, ids = leaves(p), map = "uniform.sex.spec", verbose = FALSE))
 
 # Summarise autozygous regions
 segs = lapply(s, realisedInbreeding)
