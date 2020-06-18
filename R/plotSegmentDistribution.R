@@ -256,7 +256,8 @@ plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha 
     theme_bw(base_size = 15) + 
     scale_color_manual(values = col) +
     scale_shape_manual(values = rep(shape, length.out = nRel)) +
-    guides(color = if(nRel > 1) guide_legend(order = 1, override.aes = list(alpha = 1)) else FALSE,
+    guides(color = if(nRel > 1) guide_legend(order = 1, 
+                                             override.aes = list(size = 2, alpha = 1)) else FALSE,
            shape = if(nRel > 1) guide_legend(order = 1) else FALSE) + 
     theme(legend.key.width = unit(0.9, "cm"))
   
