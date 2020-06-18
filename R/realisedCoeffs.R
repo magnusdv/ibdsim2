@@ -1,24 +1,32 @@
 #' Realised relatedness
 #'
-#' Compute the realised values of various pedigree coefficients, in simulated
-#' data. The current implementation covers realised inbreeding coefficients
-#' (autozygosity) and realised kappa coefficients.
+#' Compute the realised values of various pedigree coefficients, from simulated
+#' data. The current implementation covers realised inbreeding coefficients for
+#' single pedigree members, and realised kappa coefficients for pairwise
+#' relationships.
 #'
-#' DRAFT: Consider two members A and B of a pedigree P. The *kinship
-#' coefficient* between A and B is defined as the probability that a random
-#' allele sampled in A is identical by descent (IBD) with an allele sampled in B
-#' at the same autosomal locus. If this probability is taken conditional only on
-#' the pedigree P, the result is the traditional pedigree-based kinship
-#' coefficient.
+#' The inbreeding coefficient \eqn{f} of a pedigree member is defined as the probability
+#' of autozygosity (homozygous for alleles that are identical by descent) in a
+#' random autosomal locus. Equivalently, the inbreeding coefficient is the
+#' *expected* autozygous proportion of the autosomal chromosomes.
 #'
-#' However, because of the discrete nature of meiotic recombination, the actual
-#' IBD distribution of individuals with the specified relationship is subject to
-#' variation. Hence we may also be interested in the *realised* (or *genomic*)
-#' kinship coefficient between A and B, which is the same probability as above,
-#' but conditional on the recombination events in the meioses between A and B in
-#' P. For example, if the recombination events between A and B happen to result
-#' in no segments of IBD sharing, the realised kinship is 0, whatever the
-#' pedigree-based kinship may be.
+#' The *realised* inbreeding coefficient \eqn{f_real} in a given individual is the actual
+#' fraction of the autosomes covered by autozygous segments. Because of the
+#' stochastic nature of meiotic recombination, this may deviate substantially
+#' from the pedigree-based expectation.
+#'
+#' Similarly, the pedigree-based IBD coefficients \eqn{\kappa = (\kappa_0,
+#' \kappa_1, \kappa_2)} have realised counterparts, when looking at a specific
+#' pair of individuals:
+#'
+#' * \eqn{k_0}: The actual fraction of the autosome where the individuals share 0 alleles IBD
+#' 0
+#'
+#' * \eqn{k_1}: The actual fraction of the autosome where the individuals share 1 alleles IBD
+#' 1
+#'
+#' * \eqn{k_2}: The actual fraction of the autosome where the individuals share 2 alleles IBD
+#' 2
 #'
 #'
 #' @param sims A list of genome simulations, as output by [ibdsim()].
