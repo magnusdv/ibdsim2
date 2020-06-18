@@ -13,6 +13,9 @@
 #' @name ibdsim2
 NULL
 
-#' @useDynLib ibdsim2, .registration = TRUE
+## usethis namespace: start
 #' @importFrom Rcpp sourceCpp evalCpp
+#' @useDynLib ibdsim2, .registration = TRUE
+#' @importFrom Rcpp sourceCpp
+## usethis namespace: end
 NULL
