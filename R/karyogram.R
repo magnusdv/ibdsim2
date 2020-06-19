@@ -49,17 +49,17 @@ prepare_segments = function(segments, colorBy = NA) {
 #'   position and stop position (in Mb). Any further columns are ignored, except
 #'   possibly a column indicated by `colorBy`.
 #' @param colorBy The name of a single column of `segments`, to be used for
-#'   coloring. If NA (default), all segments will have the same color,
+#'   colouring. If NA (default), all segments will have the same colour,
 #'   controlled by the `color` parameter.
-#' @param color A single fill color for all the segments, or (if `colorBy` is
-#'   not NA) a named vector of colors. In the latter case, the names should
+#' @param color A single fill colour for all the segments, or (if `colorBy` is
+#'   not NA) a named vector of colours. In the latter case, the names should
 #'   include all entries in the `colorBy` column.
-#' @param separate A logical; relevant only if the `colorBy` colomn has more
+#' @param separate A logical; relevant only if the `colorBy` column has more
 #'   than one level. If FALSE, all segments are drawn in full height. This may
-#'   not be optimal if segments of different colors overlap. If TRUE the levels
+#'   not be optimal if segments of different colours overlap. If TRUE the levels
 #'   are drawn in separate bands on the chromosomes.
-#' @param alpha A single numeric in `[0,1]` indicating color transparency.
-#' @param bgcol The background color of the chromosomes.
+#' @param alpha A single numeric in `[0,1]` indicating colour transparency.
+#' @param bgcol The background colour of the chromosomes.
 #' @param title Plot title.
 #'
 #' @return The plot object is returned invisibly, so that additional ggplot
@@ -75,14 +75,14 @@ prepare_segments = function(segments, colorBy = NA) {
 #'                   IBD = c("cousin1","cousin2"))
 #' cols = c(cousin1 = "blue", cousin2 = "red")
 #' 
-#' karyo_haploid(segs, color = "cyan")
-#' karyo_haploid(segs, colorBy = "IBD", color = cols)
+#' karyoHaploid(segs, color = "cyan")
+#' karyoHaploid(segs, colorBy = "IBD", color = cols)
 #' 
 #' # Note difference if `separate = FALSE`
-#' karyo_haploid(segs, colorBy = "IBD", color = cols, separate = FALSE)
+#' karyoHaploid(segs, colorBy = "IBD", color = cols, separate = FALSE)
 #' 
 #' # To see the overlap now, you can reduce alpha:
-#' karyo_haploid(segs, colorBy = "IBD", color = cols, separate = FALSE, alpha = 0.7)
+#' karyoHaploid(segs, colorBy = "IBD", color = cols, separate = FALSE, alpha = 0.7)
 #'               
 #' # Example showing simulated IBD segments of full siblings
 #' x = nuclearPed(2)
@@ -94,11 +94,11 @@ prepare_segments = function(segments, colorBy = NA) {
 #' a$status[a$IBD == 2] = "Pat & mat"
 #' a$status = as.factor(a$status)
 #'
-#' karyo_haploid(a, colorBy = "status", separate = FALSE)
+#' karyoHaploid(a, colorBy = "status", separate = FALSE)
 #' }
 #'
 #' @export
-karyo_haploid = function(segments, colorBy = NA, color = "black", separate = TRUE, 
+karyoHaploid = function(segments, colorBy = NA, color = "black", separate = TRUE, 
                          alpha = 1, bgcol = "gray98", title = NULL) {
   
   decode = loadMap("Decode", chrom = 1:22)
@@ -165,11 +165,11 @@ karyo_haploid = function(segments, colorBy = NA, color = "black", separate = TRU
 #'   names are ignored, as well as any further columns.
 #' @param chrom The (autosomal) chromosomes to be included in the plot,
 #'   given as a subset of the integers 1, 2,..., 22.
-#' @param colors A vector of two colors (in any form recognisable by R). If only
-#'   one color is given it is recycled. If the vector is named, a color legend
+#' @param colors A vector of two colours (in any form recognisable by R). If only
+#'   one colour is given it is recycled. If the vector is named, a colour legend
 #'   is included in the plot, using the names as labels.
-#' @param alpha A single numeric in `[0,1]` indicating color transparency.
-#' @param bgcol The background color of the chromosomes.
+#' @param alpha A single numeric in `[0,1]` indicating colour transparency.
+#' @param bgcol The background colour of the chromosomes.
 #' @param title Plot title.
 #'
 #' @return The plot object is returned invisibly, so that additional ggplot
@@ -183,11 +183,11 @@ karyo_haploid = function(segments, colorBy = NA, color = "black", separate = TRU
 #'                  end = c(120,100,25,100,70,120))
 #' mat = data.frame(chrom = c(2,4,5,5,10), start = c(80,50,10,80,50),
 #'                  end = c(120,100,35,100,120))
-#' karyo_diploid(pat, mat)
+#' karyoDiploid(pat, mat)
 #' }
 #'
 #' @export
-karyo_diploid = function(paternal, maternal, chrom = 1:22, 
+karyoDiploid = function(paternal, maternal, chrom = 1:22, 
                          colors = c(paternal = "lightblue", maternal = "orange"),  
                          alpha = 1, bgcol = "gray99", title = NULL) {
   
