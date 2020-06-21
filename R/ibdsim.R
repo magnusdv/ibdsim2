@@ -97,10 +97,11 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
   # Load map and extract chromosome names.
   map = loadMap(map, chrom = chrom)
   mapchrom = attr(map, "chrom") %||% sapply(map, attr, "chrom")
-  
   if(any(mapchrom == "X"))
     stop2("X chromosomal simulations are put on hold, but will be back in the near future.")
-
+  genomeMB = attr(map, "length_Mb")
+  
+  # Model: Either "chi" or "haldane"
   model = match.arg(model)
   
   # Skip recombination
@@ -117,8 +118,10 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
     
   if (verbose) {
     message(glue::glue("
+      Simulation parameters:
       No. of sims: {N}
       Chromosomes: {toString2(mapchrom)}
+      Total len  : {genomeMB} Mb
       Rec. model : {model}
       Target ids : {toString2(ids, ifempty = '-')}
       Skip recomb: {toString2(skipRecomb, ifempty = '-')}"
@@ -128,32 +131,42 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
   # Seed for random sampling
   set.seed(seed)
   
-  # Various attributes which will be attached to the sims
-  attribs = list(pedigree = x, 
-                 ids = ids,
-                 skipped = skipRecomb,
-                 genome_length_Mb = attr(map, "length_Mb"),
-                 chrom = mapchrom,
-                 model = model)
-  
   # Start-data with founder alleles
   startData = distributeFounderAlleles(x, chrom = "AUTOSOMAL")
   
-  # The actual simulations: One sim at the time; each chromosome in turn 
-  genomeSimList = lapply(1:N, function(i) {
-    s = lapply(map, function(m)
-      genedrop(x, map = m, model = model, skipRecomb = skipRecomb, startData = startData))
-    attributes(s) = c(attribs, class = "genomeSim") 
-    alleleSummary(s, ids)
-  })
+  # The actual simulations
+  genomeSimList = replicate(N, 
+    genedrop(x, ids, map = map, model = model, skipRecomb = skipRecomb, startData = startData),
+    simplify = FALSE
+  )
   
   # Timing
   if(verbose)
     message("Total time used: ", format(Sys.time() - starttime, digits = 3))
   
-  # Add attributes and class to the entire list 
-  attributes(genomeSimList) = c(attribs, class = "genomeSimList")
+  structure(genomeSimList, 
+            pedigree = x, 
+            ids = ids, 
+            skipRecomb = skipRecomb, 
+            chrom = mapchrom, 
+            genome_length_Mb = genomeMB,
+            model = model, 
+            class = "genomeSimList")
+}
+
+
+
+#' @export
+print.genomeSimList = function(x, ...) {
+  attrs = attributes(x)
   
-  genomeSimList
+  print(glue::glue("
+  List of {length(x)} genome simulations.
+  Chromosomes: {toString2(attrs$chrom)}
+  Total len  : {attrs$genome_length_Mb} Mb
+  Rec. model : {attrs$model}
+  Target ids : {toString2(attrs$ids)}
+  Skip recomb: {toString2(attrs$skipRecomb, ifempty = '-')}
+  "))
 }
 

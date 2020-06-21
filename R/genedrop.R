@@ -1,37 +1,60 @@
-#' @importFrom stats runif
-genedrop = function(x, map, model = "chi", skipRecomb = NULL, startData = NULL) {
+genedrop = function(x, ids, map, model, skipRecomb, startData) {
+  
+  # Loop over chromosomes
+  sims = lapply(map, function(chrommap)
+    genedrop.singlechrom(x, ids, chrommap, model, skipRecomb, startData))
+  
+  res = do.call(rbind, sims)
+  colnames(res)[-(1:4)] = paste(rep(ids, each = 2), c("p", "m"), sep = ":")
+  
+  if(length(ids) < 3)
+    res = addStates(res)
+  
+  structure(res, class = "genomeSim")
+}
+
+genedrop.singlechrom = function(x, ids, chrommap, model, skipRecomb, startData) {
   FIDX = x$FIDX
   MIDX = x$MIDX
-  FOU = founders(x, internal = TRUE)
+  IDS = internalID(x, ids)
   NONFOU = nonfounders(x, internal = TRUE)
-  chrom = attr(map, "chrom")
+  
+  chrom = attr(chrommap, "chrom")
+  chromLen = attr(chrommap, "length_Mb")
+  skip = x$ID %in% skipRecomb
   
   h = startData %||% distributeFounderAlleles(x, chrom)
   
-  if (chrom == "X") {
-    for (i in NONFOU) {
-      fa = FIDX[i]
-      mo = MIDX[i]
-      maternal.gamete = meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
-      paternal.gamete = if (x$SEX[i] == 1) maternal.gamete else h[[fa]][[1]]
-      h[[i]] = list(paternal.gamete, maternal.gamete)
-    }
-  }
-  else {
-    for (i in NONFOU) {
-      fa = FIDX[i]
-      mo = MIDX[i]
-      h[[i]] = list(meiosis(h[[fa]], map = map$male, model = model, skipRecomb = fa %in% skipRecomb),
-                    meiosis(h[[mo]], map = map$female, model = model, skipRecomb = mo %in% skipRecomb)
-      )
-    }
+  for (i in NONFOU) {
+    fa = FIDX[i]
+    mo = MIDX[i]
+    matGamete = meiosis(h[[mo]], map = chrommap$female, model = model, skipRecomb = skip[mo])
+    if (chrom == "X")
+      patGamete = if (x$SEX[i] == 1) matGamete else h[[fa]][[1]]
+    else
+      patGamete = meiosis(h[[fa]], map = chrommap$male, model = model, skipRecomb = skip[fa])
+    
+    h[[i]] = list(patGamete, matGamete)
   }
   
-  structure(h, chrom = chrom, length_Mb = attr(map, "length_Mb"), 
-            model = model, skipped = skipRecomb, class = "chromosomeSim")
+  ### Convert to matrix of allele segments ###
+  haplos = unlist(h[IDS], recursive = FALSE)
+  breaks = unlist(lapply(haplos, function(m) m[-1, 1]))
+  if(anyDuplicated.default(breaks))
+    breaks = unique.default(breaks)
+  
+  sta = c(0, .sortDouble(breaks))
+  
+  alleleMat = vapply(haplos, pos2allele, posvec = sta, FUN.VALUE = sta)
+  if (length(sta) == 1)      # since vapply simplifies if FUN.VALUE has length 1
+    dim(alleleMat) = c(1, 2 * length(IDS))
+  
+  sto = c(sta[-1], chromLen)
+  cbind(chrom = chrom, start = sta, end = sto, length = sto - sta, alleleMat)
 }
 
 
+# Start-data for genedrop: founder alleles
 distributeFounderAlleles = function(x, chrom = "AUTOSOMAL") {
   h = vector("list", pedsize(x))
   fou = founders(x, internal = TRUE)
@@ -63,4 +86,3 @@ distributeFounderAlleles = function(x, chrom = "AUTOSOMAL") {
     list(aux[i - 1, , drop = FALSE], aux[i, , drop = FALSE]))
   h
 }
-

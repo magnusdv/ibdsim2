@@ -11,50 +11,7 @@ is_count = function(x, minimum = 1) {
            x >= minimum)
 }
 
-mergeConsecutiveRows = function(df, mergeBy) {
-  if(nrow(df) < 2) return(df)
-  if(length(mergeBy) == 1) 
-    mergeBy = df[, mergeBy]
-  
-  stopifnot(length(mergeBy) == nrow(df))
-      
-  runs = rle(mergeBy)
-  ends = cumsum(runs$lengths)
-  starts = ends - runs$lengths + 1
-  
-  df[starts, , drop = FALSE]
-}
 
-mergeConsecutiveSegments = function(df, mergeBy, segStart = "start", 
-                                    segEnd = "end", segLength = "length") {
-  N = nrow(df)
-  if(N < 2) return(df)
-  
-  if(length(mergeBy) == 1)
-    mergeBy = df[, mergeBy]
-  else if(length(mergeBy) != N)
-    mergeBy = apply(df[, mergeBy], 1, paste, collapse = ":")
-  
-  newSeg = c(TRUE, df[-N, segEnd] != df[-1, segStart])
-  mergeBy = paste(mergeBy, cumsum(newSeg), sep = "_chunk")
-  
-  # Runs of consecutive segs; row numbers of start/end
-  runs = rle(mergeBy)
-  ends = cumsum(runs$lengths)
-  starts = ends - runs$lengths + 1
-  
-  # Keep only rows starting a new segment
-  newdf = df[starts, , drop = FALSE]
-  
-  # Fix endpoints
-  newdf[, segEnd] = df[ends, segEnd]
-  
-  # Fix lengths if present
-  if(!is.null(segLength) && segLength %in% names(df))
-    newdf[, segLength] = newdf[, segEnd] - newdf[, segStart] 
-  
-  newdf
-}
 
 .getAlleles = function(chromdata, posvec) {
   posvec[posvec < 0] = 0
