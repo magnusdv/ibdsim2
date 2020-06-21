@@ -29,11 +29,17 @@ meiosis = function(parent, map, model = "chi", skipRecomb = FALSE) {
   # Recombine!
   child = recombine(parent[[startStrand]], parent[[3 - startStrand]], cpos)
   
-  # Merge consecutive rows with the same allele
+  # Merge consecutive rows with the same allele (needed in inbred peds)
   als = child[, 2]
-  if(any(als[-1] == als[-length(als)])) {
-    child = mergeConsecutiveRows(child, mergeBy = 2)
+  nr = length(als)
+  if(nr > 1 && any(als[-1] == als[-nr])) {
+    runs = rle(als)
+    ends = cumsum(runs$lengths)
+    starts = ends - runs$lengths + 1
+
+    child = child[starts, , drop = FALSE]
   }
   
   child
 }
+
