@@ -190,7 +190,7 @@ plotSegmentDistribution.autoz = function(sims, ids, col = NULL, shape = 1, alpha
   
   ### Theoretical expectation curves
   fPed = sapply(1:N, function(i) 
-    inbreeding(attr(sims[[i]], "pedigree"))[as.character(ids[[i]])])
+    inbreeding(attr(sims[[i]], "pedigree"), id = as.character(ids[[i]])))
   
   expect.args = list(values = fPed, 
                      genomeLen = attr(sims[[1]], "genome_length_Mb"),
