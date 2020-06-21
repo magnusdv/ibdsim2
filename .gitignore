@@ -8,3 +8,4 @@ Rprof.out
 src/*.o
 src/*.so
 src/*.dll
+R/karyogram.R
