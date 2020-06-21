@@ -30,7 +30,7 @@
 #' @export
 profileSimIBD = function(x, ibdpattern, markers = NULL) {
 
-  if(!is.data.frame(ibdpattern) && is.list("genomeSimList"))
+  if(!is.data.frame(ibdpattern) && is.list(ibdpattern))
     return(lapply(ibdpattern, function(patt) profileSimIBD(x, patt, markers = markers)))
   
   if(!is.null(markers))
