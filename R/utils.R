@@ -99,3 +99,30 @@ toString2 = function(x, ifempty = "-", ifnull = ifempty) {
   })
   paste(rngs, collapse = ", ")
 }
+
+
+# Utility function: IBD state (0, 1 or 2) for a pair of (non-inbred!) genotypes.
+# Each genotype is a pair of alleles.
+ibd.state = function(gt1, gt2)
+  sum(gt1 %in% gt2)
+
+# Utility function: Jacquard configuration (Sigma 1 - 9) of a pair of genotypes at the same locus.
+jacquard.state = function(pat1, mat1, pat2, mat2) {
+  if (pat1 == mat1) # Sigma 1,2,3 eller 4
+    if (pat2 == mat2) # 1 eller 2
+      if (pat1 == pat2) return(1)
+  else return(2)
+  else
+    if (pat1 == pat2 || pat1 == mat2) return(3)
+  else return(4)
+  
+  if (pat2 == mat2)
+    if (pat2 == pat1 || pat2 == mat1) return(5)
+  else return(6)
+  
+  # If still running: No inbreeding
+  ibd = ibd.state(c(pat1, mat1), c(pat2, mat2))
+  return((9:7)[ibd + 1])
+}
+
+
