@@ -7,9 +7,8 @@ Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.
 Description: Simulation of segments shared identical-by-descent (IBD) by 
     pedigree members. Using sex specific recombination rates along the human
     genome (Kong et. al (2010) <doi:10.1038/nature09525>), phased chromosomes
-    are simulated for all pedigree members, either by unconditional gene 
-    dropping or conditional on a specified IBD pattern. Additional functions 
-    provide summaries and further analysis of the simulated genomes.
+    are simulated for all pedigree members. Additional features include calculation
+    of realised IBD coefficients and IBD segment distribution plots.
 License: GPL-3
 URL: https://github.com/magnusdv/ibdsim2
 Encoding: UTF-8
