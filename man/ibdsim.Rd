@@ -36,23 +36,27 @@ model for recombination. (See details.)}
 
 \item{skipRecomb}{A vector of ID labels indicating individuals whose meioses
 should be simulated without recombination. (Each child will then receive a
-random strand of each chromosome.) By default (\code{skipRecomb = NULL})
-recombination is skipped for founders who are uninformative for analysis
-of \code{ids}.}
+random strand of each chromosome.) The default action is to skip
+recombination in founders who are uninformative for IBD sharing in the
+\code{ids} individuals.}
 
 \item{seed}{An integer to be passed on to \code{\link[=set.seed]{set.seed()}}).}
 
 \item{verbose}{A logical.}
 }
 \value{
-A list of \code{genomeSim} objects.
+A list of \code{N} objects of class \code{genomeSim}.
 
 A \code{genomeSim} object is essentially a numerical matrix describing the
 allele flow through the pedigree in a single simulated. Each row
 corresponds to a chromosomal segment. The first 4 columns describe the
 segment (chromosome, start, end, length), and are followed by two columns
-(paternal allele, maternal allele) for each of the selected individuals. If
-\code{length(ids) == 2} two additional columns are added:
+(paternal allele, maternal allele) for each of the \code{ids} individuals.
+
+If \code{ids} has length 1, a column named "Aut" is added, whose entries are 1
+for autozygous segments and 0 otherwise.
+
+If \code{ids} has length 2, two columns are added:
 \itemize{
 \item \code{IBD} : The IBD status of each segment (= number of alleles shared
 identical by descent). For a given segment, the IBD status is either 0, 1,
@@ -73,20 +77,28 @@ process in each meioses of a pedigree. The output summarises the IBD segments
 between all or a subset of individuals.
 }
 \details{
-Each simulation starts by unique alleles being distributed to the pedigree
-founders. In each meiosis, homologue chromosomes are made to recombine
-according to a renewal process along the four-strand bundle, with chi square
-distributed waiting times. (For comparison purposes, Haldane's Poisson model
-for recombination is also implemented.)
+Each simulation starts by unique alleles (labelled 1, 2, ...) being
+distributed to the pedigree founders. In each meiosis, homologue chromosomes
+are made to recombine according to the value of \code{model}:
+\itemize{
+\item \code{model = "haldane"}: In this model, crossover events are modelled as a
+Poisson process along each chromosome.
+\item \code{model = "chi"} (default): This uses a renewal process along the
+four-strand bundle, with waiting times following a chi square distribution.
+}
 
-Recombination rates are sex-dependent, and vary along each chromosome
-according to the recombination map specified by the \code{map} parameter. By
-default, the complete Decode map of the human autosome is used (see
-References). If \code{map = "uniform.sex.spec"}, the genetic chromosome \emph{lengths}
-are as in the Decode map, but the recombination rate is kept constant along
-each chromosome. If \code{map = "uniform.sex.aver"}, sex averaged genetic
-chromosome lengths are used (and constant recombination rates along each
-chromosome).
+Recombination rates along each chromosome are determined by the \code{map}
+parameter, which can take on the following values:
+\itemize{
+\item \code{map = "decode"} (default): The fine-scale Decode recombination map of the
+human genome (Kong etal, 2010)
+\item \code{map = "uniform.sex.spec"}: This uses the genetic chromosome \emph{lengths} from
+the Decode map, but with constant recombination rate along each chromosome
+(i.e., no hot/cold spots).
+\item \code{map = "uniform.sex.aver"}: As the previous map, but with sex-averaged
+genetic chromosome lengths.
+\item A user-defined map, typically made with \link{uniformMap}.
+}
 }
 \examples{
 
@@ -99,4 +111,8 @@ sim = ibdsim(x, N = 1, ids = 5:6, map = uniformMap(M = 10), seed = 1)
 s = sim[[1]]
 stopifnot(setequal(s[, 'Sigma'], 1:9))
 
+}
+\references{
+Kong et al. \emph{Fine-scale recombination rate differences between
+sexes, populations and individuals.} Nature 467, 1099–1103 (2010).
 }

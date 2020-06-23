@@ -1,10 +1,10 @@
-#' Estimation of two-locus relatedness coefficients
+#' Estimation of one- and two-locus relatedness coefficients
 #'
-#' Estimate by simulation the two-locus version of various relatedness
-#' coefficients at a given recombination rate. The current implementation covers
-#' two-locus coefficients of inbreeding, IBD (kappa) and condensed identity.
-#' One-locus versions are also included for completeness. These functions are
-#' primarily meant as tools for validating exact algorithms, e.g., those
+#' Estimate by simulation various relatedness coefficients, and two-locus
+#' versions of the same coefficients, for a given recombination rate. The
+#' current implementation covers inbreeding coefficients, pairwise IBD (kappa)
+#' coefficients and pairwise condensed identity coefficients. These functions
+#' are primarily meant as tools for validating exact algorithms, e.g., as
 #' implemented in the `ribd` package.
 #'
 #' In the following, let L1 and L2 denote two arbitrary autosomal loci with

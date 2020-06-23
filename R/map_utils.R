@@ -3,9 +3,9 @@
 #' Create a uniform recombination map of a given length.
 #'
 #' @param Mb Map length in megabases.
-#' @param cM Map length in centiMorgan
-#' @param M Map length in Morgan
-#' @param cm.per.mb A positive number; the cM/Mb ratio
+#' @param cM Map length in centiMorgan.
+#' @param M Map length in Morgan.
+#' @param cm.per.mb A positive number; the cM/Mb ratio.
 #' @param chrom A chromosome label.
 #'
 #' @return An object of class `chromosomeMap`, which is a list of two matrices,
@@ -50,6 +50,9 @@ uniformMap = function(Mb = NULL, cM = NULL,
 loadMap = function(map, chrom = NULL) {
 
   if (is.character(map)) {
+    if(!all(chrom %in% c(1:23, "X")))
+      stop2("Chromosome not found in the Decode map: ", setdiff(chrom, c(1:23, "X")))
+    
     CHROM.LENGTH = cbind(male_morgan = c(1.9, 1.752, 1.512, 1.35, 1.302, 1.162, 1.238, 1.089, 1.047, 1.147, 0.992, 1.154, 0.919, 0.857, 0.825, 0.88, 0.863, 0.737, 0.708, 0.563, 0.426, 0.45, NA),
     female_morgan = c(3.34, 3.129, 2.687, 2.6, 2.49, 2.333, 2.21, 2.042, 1.879, 2.062, 1.886, 1.974, 1.468, 1.24, 1.393, 1.494, 1.529, 1.379, 1.152, 1.109, 0.67, 0.662, 1.733),
     Mb = c(247.2, 242.7, 199.3, 191.1, 180.6, 170.8, 158.7, 146.2, 140.1, 135.3, 134.4, 132.3, 114.1, 105.3, 100.2, 88.7, 78.6, 76.1, 63.8, 62.4, 46.9, 49.5, 154.6))

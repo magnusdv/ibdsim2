@@ -4,20 +4,30 @@
 #' process in each meioses of a pedigree. The output summarises the IBD segments
 #' between all or a subset of individuals.
 #'
-#' Each simulation starts by unique alleles being distributed to the pedigree
-#' founders. In each meiosis, homologue chromosomes are made to recombine
-#' according to a renewal process along the four-strand bundle, with chi square
-#' distributed waiting times. (For comparison purposes, Haldane's Poisson model
-#' for recombination is also implemented.)
+#' Each simulation starts by unique alleles (labelled 1, 2, ...) being
+#' distributed to the pedigree founders. In each meiosis, homologue chromosomes
+#' are made to recombine according to the value of `model`:
 #'
-#' Recombination rates are sex-dependent, and vary along each chromosome
-#' according to the recombination map specified by the `map` parameter. By
-#' default, the complete Decode map of the human autosome is used (see
-#' References). If `map = "uniform.sex.spec"`, the genetic chromosome *lengths*
-#' are as in the Decode map, but the recombination rate is kept constant along
-#' each chromosome. If `map = "uniform.sex.aver"`, sex averaged genetic
-#' chromosome lengths are used (and constant recombination rates along each
-#' chromosome).
+#' * `model = "haldane"`: In this model, crossover events are modelled as a
+#' Poisson process along each chromosome.
+#'
+#' * `model = "chi"` (default): This uses a renewal process along the
+#' four-strand bundle, with waiting times following a chi square distribution.
+#'
+#' Recombination rates along each chromosome are determined by the `map`
+#' parameter, which can take on the following values:
+#'
+#' * `map = "decode"` (default): The fine-scale Decode recombination map of the
+#' human genome (Kong etal, 2010)
+#'
+#' * `map = "uniform.sex.spec"`: This uses the genetic chromosome *lengths* from
+#' the Decode map, but with constant recombination rate along each chromosome
+#' (i.e., no hot/cold spots).
+#'
+#' * `map = "uniform.sex.aver"`: As the previous map, but with sex-averaged
+#' genetic chromosome lengths.
+#'
+#' * A user-defined map, typically made with [uniformMap].
 #'
 #' @param x A [pedtools::ped()] object.
 #' @param N A positive integer indicating the number of simulations.
@@ -32,21 +42,25 @@
 #'   model for recombination. (See details.)
 #' @param skipRecomb A vector of ID labels indicating individuals whose meioses
 #'   should be simulated without recombination. (Each child will then receive a
-#'   random strand of each chromosome.) By default (`skipRecomb = NULL`)
-#'   recombination is skipped for founders who are uninformative for analysis
-#'   of `ids`.
+#'   random strand of each chromosome.) The default action is to skip
+#'   recombination in founders who are uninformative for IBD sharing in the
+#'   `ids` individuals.
 #'
 #' @param seed An integer to be passed on to [set.seed()]).
 #' @param verbose A logical.
 #'
-#' @return A list of `genomeSim` objects.
+#' @return A list of `N` objects of class `genomeSim`.
 #'
 #'   A `genomeSim` object is essentially a numerical matrix describing the
 #'   allele flow through the pedigree in a single simulated. Each row
 #'   corresponds to a chromosomal segment. The first 4 columns describe the
 #'   segment (chromosome, start, end, length), and are followed by two columns
-#'   (paternal allele, maternal allele) for each of the selected individuals. If
-#'   `length(ids) == 2` two additional columns are added:
+#'   (paternal allele, maternal allele) for each of the `ids` individuals.
+#'
+#'   If `ids` has length 1, a column named "Aut" is added, whose entries are 1
+#'   for autozygous segments and 0 otherwise.
+#'
+#'   If `ids` has length 2, two columns are added:
 #'
 #'   * `IBD` : The IBD status of each segment (= number of alleles shared
 #'   identical by descent). For a given segment, the IBD status is either 0, 1,
@@ -61,6 +75,8 @@
 #'   individuals the states 9, 8, 7 correspond to IBD status 0, 1, 2
 #'   respectively.
 #'
+#' @references Kong et al. *Fine-scale recombination rate differences between
+#'   sexes, populations and individuals.* Nature 467, 1099–1103 (2010).
 #'
 #' @examples
 #'

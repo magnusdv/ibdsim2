@@ -9,11 +9,11 @@ uniformMap(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, chrom = 1)
 \arguments{
 \item{Mb}{Map length in megabases.}
 
-\item{cM}{Map length in centiMorgan}
+\item{cM}{Map length in centiMorgan.}
 
-\item{M}{Map length in Morgan}
+\item{M}{Map length in Morgan.}
 
-\item{cm.per.mb}{A positive number; the cM/Mb ratio}
+\item{cm.per.mb}{A positive number; the cM/Mb ratio.}
 
 \item{chrom}{A chromosome label.}
 }
