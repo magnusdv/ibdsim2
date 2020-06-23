@@ -2,48 +2,50 @@
 % Please edit documentation in R/realisedCoeffs.R
 \name{realised}
 \alias{realised}
-\alias{realisedKappa}
 \alias{realisedInbreeding}
+\alias{realisedKinship}
+\alias{realisedKappa}
 \title{Realised relatedness}
 \usage{
-realisedKappa(sims, ids = NULL)
-
 realisedInbreeding(sims, id = NULL)
+
+realisedKinship(sims, ids = NULL)
+
+realisedKappa(sims, ids = NULL)
 }
 \arguments{
 \item{sims}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
 
-\item{ids}{A vector with two ID labels.}
-
-\item{id}{A single ID label.}
+\item{id, ids}{A vector with one or two ID labels.}
 }
 \description{
 Compute the realised values of various pedigree coefficients, from simulated
 data. The current implementation covers realised inbreeding coefficients for
-single pedigree members, and realised kappa coefficients for pairwise
-relationships.
+single pedigree members, and realised kinship and kappa coefficients for
+pairwise relationships.
 }
 \details{
-The inbreeding coefficient \eqn{f} of a pedigree member is defined as the probability
-of autozygosity (homozygous for alleles that are identical by descent) in a
-random autosomal locus. Equivalently, the inbreeding coefficient is the
-\emph{expected} autozygous proportion of the autosomal chromosomes.
+The inbreeding coefficient \eqn{f} of a pedigree member is defined as the
+probability of autozygosity (homozygous for alleles that are identical by
+descent) in a random autosomal locus. Equivalently, the inbreeding
+coefficient is the \emph{expected} autozygous proportion of the autosomal
+chromosomes.
 
-The \emph{realised} inbreeding coefficient \eqn{f_real} in a given individual is the actual
-fraction of the autosomes covered by autozygous segments. Because of the
-stochastic nature of meiotic recombination, this may deviate substantially
-from the pedigree-based expectation.
+The \emph{realised} inbreeding coefficient \eqn{f_real} in a given individual is
+the actual fraction of the autosomes covered by autozygous segments. Because
+of the stochastic nature of meiotic recombination, this may deviate
+substantially from the pedigree-based expectation.
 
 Similarly, the pedigree-based IBD coefficients \eqn{\kappa = (\kappa_0,
 \kappa_1, \kappa_2)} have realised counterparts, when looking at a specific
 pair of individuals:
 \itemize{
-\item \eqn{k_0}: The actual fraction of the autosome where the individuals share 0 alleles IBD
-0
-\item \eqn{k_1}: The actual fraction of the autosome where the individuals share 1 alleles IBD
-1
-\item \eqn{k_2}: The actual fraction of the autosome where the individuals share 2 alleles IBD
-2
+\item \eqn{k_0}: The actual fraction of the autosome where the individuals share
+0 alleles IBD
+\item \eqn{k_1}: The actual fraction of the autosome where the individuals share
+1 alleles IBD
+\item \eqn{k_2}: The actual fraction of the autosome where the individuals share
+2 alleles IBD
 }
 }
 \examples{
@@ -55,8 +57,10 @@ realisedKappa(s, ids = 3:4)
 
 # Realised inbreeding coefficients, child of first cousins
 x = cousinPed(1, child = TRUE)
-s = ibdsim(x, N = 10)
+s = ibdsim(x, N = 10) # increase N
 realisedInbreeding(s, id = 9)
 
+# Same data: realised kinship coefficients between the parents
+ realisedKinship(s, ids = parents(x, 9))
 
 }
