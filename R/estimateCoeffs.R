@@ -14,7 +14,7 @@
 #' is defined as the probability of being autozygous at both L1 and L2
 #' simultaneously.
 #'
-#' The *two-locus IBD coefficients* \eqn{\kappa_{ij}(\rho)}, for \eqn{i,j =
+#' The *two-locus kappa coefficients* \eqn{\kappa_{ij}(\rho)}, for \eqn{i,j =
 #' 0,1,2}, of individuals A and B are defined by as the probability that A and B
 #' share i alleles IBD at L1, and j alleles IBD at L2.
 #'
@@ -44,13 +44,13 @@
 #'   `estimateKappa()`: a numeric vector of length 3, with the estimated
 #'   \eqn{\kappa} coefficients.
 #'
-#'   `estimateTwoLocusIBD()`: a symmetric, numerical 3*3 matrix, with the
+#'   `estimateTwoLocusKappa()`: a symmetric, numerical 3*3 matrix, with the
 #'   estimated values of \eqn{\kappa_{ij}}, for \eqn{i,j = 0,1,2}.
 #'
 #'   `estimateIdentity()`: a numeric vector of length 9, with the
 #'   estimated identity coefficients.
 #'
-#'   `estimateTwoLocusIBD()`: symmetric, numerical 9*9 matrix, with the
+#'   `estimateTwoLocusIdentity()`: symmetric, numerical 9*9 matrix, with the
 #'   estimated two-locus identity coefficients.
 #'
 #'
@@ -64,7 +64,7 @@
 #' estimateTwoLocusInbreeding(x, id = 5, rho = rho, Nsim = Nsim)
 #'
 #'
-#' ### Two-locus IBD: Grandparent vs half sib vs uncle ###
+#' ### Two-locus kappa: Grandparent vs half sib vs uncle ###
 #'
 #' # These are indistinguishable with unlinked loci, see e.g.
 #' # pages 182-183 in Egeland, Kling and Mostad (2016).
@@ -75,17 +75,17 @@
 #'
 #' # Grandparent/grandchild
 #' G = linearPed(2); G.ids = c(1,5); #plot(G, shaded = G.ids)
-#' estimateTwoLocusIBD(G, G.ids, rho = rho, Nsim = Nsim)[2,2]
+#' estimateTwoLocusKappa(G, G.ids, rho = rho, Nsim = Nsim)[2,2]
 #' .5*(1-rho) # exact
 #'
 #' # Half sibs
 #' H = halfSibPed(); H.ids = c(4,5); # plot(H, shaded = H.ids)
-#' estimateTwoLocusIBD(H, H.ids, rho = rho, Nsim = Nsim)[2,2]
+#' estimateTwoLocusKappa(H, H.ids, rho = rho, Nsim = Nsim)[2,2]
 #' R # exact
 #'
 #' # Uncle
 #' U = cousinPed(0, removal = 1); U.ids = c(3,6); # plot(U, shaded = U.ids)
-#' estimateTwoLocusIBD(U, U.ids, rho = rho, Nsim = Nsim)[2,2]
+#' estimateTwoLocusKappa(U, U.ids, rho = rho, Nsim = Nsim)[2,2]
 #' (1-rho) * R + rho/4 # exact
 #'
 #'
@@ -96,11 +96,11 @@
 #'
 #' estimateTwoLocusIdentity(x, ids = 5:6, rho = rho, Nsim = Nsim)
 #'
-#' @name estimateTwoLocus
+#' @name estimateCoeffs
 NULL
 
 
-#' @rdname estimateTwoLocus
+#' @rdname estimateCoeffs
 #' @export
 estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim, 
                                       Xchrom = FALSE, verbose = FALSE, ...) {
@@ -147,7 +147,7 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
   mean(f2)
 }
 
-#' @rdname estimateTwoLocus
+#' @rdname estimateCoeffs
 #' @export
 estimateInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
@@ -171,9 +171,9 @@ estimateInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 }
 
 
-#' @rdname estimateTwoLocus
+#' @rdname estimateCoeffs
 #' @export
-estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim, 
+estimateTwoLocusKappa = function(x, ids, rho = NULL, cM = NULL, Nsim, 
                                Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
 
@@ -230,7 +230,7 @@ estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim,
   res / Nsim
 }
 
-#' @rdname estimateTwoLocus
+#' @rdname estimateCoeffs
 #' @export
 estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
@@ -264,7 +264,7 @@ estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
 }
 
 
-#' @rdname estimateTwoLocus
+#' @rdname estimateCoeffs
 #' @export
 estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim, 
                                     Xchrom = FALSE, verbose = FALSE, ...) {
@@ -330,7 +330,7 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
   res / Nsim
 }
 
-#' @rdname estimateTwoLocus
+#' @rdname estimateCoeffs
 #' @export
 estimateIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
