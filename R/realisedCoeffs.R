@@ -129,18 +129,19 @@ realisedKinship = function(sims, ids = NULL) {
   
   resList = vapply(sims, function(s) {
     
-    if(length(idsims) > 2 || !"IBD" %in% colnames(s)) {
+    if(length(idsims) > 2 || !"Sigma" %in% colnames(s)) {
       s0 = segmentSummary(s, ids = ids, addState = TRUE)
       s = mergeAdjacent(s0, vec = "IBD")
     }
     
     len = s[, 'length']  
-    ibd = s[, 'IBD']  
+    jacq = s[, 'Sigma']  
     
-    ibd1 = sum(len[ibd == 1])
-    ibd2 = sum(len[ibd == 2])
+    # Coefficients in the relation phi = weights * jacq
+    wei = c(1, 0, .5, 0, .5, 0, .5, .25, 0)
     
-    ibd1/4 + ibd2/2
+    # Weighted sum of segment lengths
+    sum(len * wei[jacq])
   }, FUN.VALUE = numeric(1))
   
   # Total genome length (assume same for all!)

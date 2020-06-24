@@ -37,17 +37,17 @@
 #' @param verbose A logical.
 #' @param ... Further arguments passed on to [ibdsim()], e.g. `seed`.
 #'
-#' @return `estimateOneLocusInbreeding()`: a single probability.
+#' @return `estimateInbreeding()`: a single probability.
 #'
 #'   `estimateTwoLocusInbreeding()`: a single probability.
 #'
-#'   `estimateOneLocusIBD()`: a numeric vector of length 3, with the estimated
+#'   `estimateKappa()`: a numeric vector of length 3, with the estimated
 #'   \eqn{\kappa} coefficients.
 #'
 #'   `estimateTwoLocusIBD()`: a symmetric, numerical 3*3 matrix, with the
 #'   estimated values of \eqn{\kappa_{ij}}, for \eqn{i,j = 0,1,2}.
 #'
-#'   `estimateOneLocusIdentity()`: a numeric vector of length 9, with the
+#'   `estimateIdentity()`: a numeric vector of length 9, with the
 #'   estimated identity coefficients.
 #'
 #'   `estimateTwoLocusIBD()`: symmetric, numerical 9*9 matrix, with the
@@ -121,8 +121,8 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
   
   if (cM == Inf) {
     if (verbose) cat("Analysing unlinked loci.\n")
-    m1 = estimateOneLocusInbreeding(x, id, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
-    m2 = estimateOneLocusInbreeding(x, id, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE) # dont repeat verbose output
+    m1 = estimateInbreeding(x, id, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
+    m2 = estimateInbreeding(x, id, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE) # dont repeat verbose output
     res = m1 * m2
     return(res)
   }
@@ -149,7 +149,7 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
 
 #' @rdname estimateTwoLocus
 #' @export
-estimateOneLocusInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
+estimateInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   if (!id %in%  labels(x))
@@ -192,8 +192,8 @@ estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim,
 
   if (cM == Inf) {
     if (verbose) cat("Analysing unlinked loci.\n")
-    m1 = estimateOneLocusIBD(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
-    m2 = estimateOneLocusIBD(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE, ...) # dont repeat verbose output
+    m1 = estimateKappa(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
+    m2 = estimateKappa(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE, ...) # dont repeat verbose output
     res = outer(m1, m2)
     return(res)
   }
@@ -232,7 +232,7 @@ estimateTwoLocusIBD = function(x, ids, rho = NULL, cM = NULL, Nsim,
 
 #' @rdname estimateTwoLocus
 #' @export
-estimateOneLocusIBD = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
+estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   if (anyNA(match(ids, labels(x))))
@@ -285,8 +285,8 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
   
   if (cM == Inf) {
     if (verbose) cat("Analysing unlinked loci.\n")
-    m1 = estimateOneLocusIdentity(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
-    m2 = estimateOneLocusIdentity(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE) # dont repeat verbose output
+    m1 = estimateIdentity(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
+    m2 = estimateIdentity(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE) # dont repeat verbose output
     res = outer(m1, m2)
     return(res)
   }
@@ -332,7 +332,7 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
 
 #' @rdname estimateTwoLocus
 #' @export
-estimateOneLocusIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
+estimateIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   if (anyNA(match(ids, labels(x))))

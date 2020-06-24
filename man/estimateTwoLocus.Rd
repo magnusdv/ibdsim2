@@ -3,11 +3,11 @@
 \name{estimateTwoLocus}
 \alias{estimateTwoLocus}
 \alias{estimateTwoLocusInbreeding}
-\alias{estimateOneLocusInbreeding}
+\alias{estimateInbreeding}
 \alias{estimateTwoLocusIBD}
-\alias{estimateOneLocusIBD}
+\alias{estimateKappa}
 \alias{estimateTwoLocusIdentity}
-\alias{estimateOneLocusIdentity}
+\alias{estimateIdentity}
 \title{Estimation of one- and two-locus relatedness coefficients}
 \usage{
 estimateTwoLocusInbreeding(
@@ -21,7 +21,7 @@ estimateTwoLocusInbreeding(
   ...
 )
 
-estimateOneLocusInbreeding(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
+estimateInbreeding(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 
 estimateTwoLocusIBD(
   x,
@@ -34,7 +34,7 @@ estimateTwoLocusIBD(
   ...
 )
 
-estimateOneLocusIBD(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
+estimateKappa(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 
 estimateTwoLocusIdentity(
   x,
@@ -47,7 +47,7 @@ estimateTwoLocusIdentity(
   ...
 )
 
-estimateOneLocusIdentity(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
+estimateIdentity(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped()}} object.}
@@ -73,17 +73,17 @@ autosomal (FALSE).}
 \item{...}{Further arguments passed on to \code{\link[=ibdsim]{ibdsim()}}, e.g. \code{seed}.}
 }
 \value{
-\code{estimateOneLocusInbreeding()}: a single probability.
+\code{estimateInbreeding()}: a single probability.
 
 \code{estimateTwoLocusInbreeding()}: a single probability.
 
-\code{estimateOneLocusIBD()}: a numeric vector of length 3, with the estimated
+\code{estimateKappa()}: a numeric vector of length 3, with the estimated
 \eqn{\kappa} coefficients.
 
 \code{estimateTwoLocusIBD()}: a symmetric, numerical 3*3 matrix, with the
 estimated values of \eqn{\kappa_{ij}}, for \eqn{i,j = 0,1,2}.
 
-\code{estimateOneLocusIdentity()}: a numeric vector of length 9, with the
+\code{estimateIdentity()}: a numeric vector of length 9, with the
 estimated identity coefficients.
 
 \code{estimateTwoLocusIBD()}: symmetric, numerical 9*9 matrix, with the
