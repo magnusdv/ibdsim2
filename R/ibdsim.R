@@ -18,7 +18,7 @@
 #' parameter, which can take on the following values:
 #'
 #' * `map = "decode"` (default): The fine-scale Decode recombination map of the
-#' human genome (Kong etal, 2010)
+#' human genome (Kong et al., 2010)
 #'
 #' * `map = "uniform.sex.spec"`: This uses the genetic chromosome *lengths* from
 #' the Decode map, but with constant recombination rate along each chromosome

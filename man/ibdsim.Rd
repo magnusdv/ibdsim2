@@ -91,7 +91,7 @@ Recombination rates along each chromosome are determined by the \code{map}
 parameter, which can take on the following values:
 \itemize{
 \item \code{map = "decode"} (default): The fine-scale Decode recombination map of the
-human genome (Kong etal, 2010)
+human genome (Kong et al., 2010)
 \item \code{map = "uniform.sex.spec"}: This uses the genetic chromosome \emph{lengths} from
 the Decode map, but with constant recombination rate along each chromosome
 (i.e., no hot/cold spots).
