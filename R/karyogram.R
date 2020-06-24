@@ -35,7 +35,7 @@ karyogram2 = function(sim, ids = NULL, verbose = TRUE, ...) {
   if(!all(ids %in% simids))
     stop2("Target ID not found in input data:", setdiff(ids, simids))
   
-  if(length(simids) > 2 || !"IBD" %in% colnames(s)) {
+  if(length(simids) > 2 || !"IBD" %in% colnames(sim)) {
     sim0 = segmentSummary(sim, ids = ids, addState = TRUE)
     sim = mergeAdjacent(sim0, vec = "IBD")
   }
@@ -84,7 +84,7 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
   if(!id %in% simids)
     stop2("Target ID not found in input data:", id)
   
-  if(length(simids) > 2 || !"Aut" %in% colnames(s)) {
+  if(length(simids) > 2 || !"Aut" %in% colnames(sim)) {
     sim0 = segmentSummary(sim, ids = id, addState = TRUE)
     sim = mergeAdjacent(sim0, vec = "Aut")
   }
