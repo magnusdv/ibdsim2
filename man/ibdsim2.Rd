@@ -6,8 +6,13 @@
 \title{ibdsim2: Simulation of chromosomal regions shared by family members}
 \description{
 Simulation of segments shared identical-by-descent (IBD) by pedigree members.
-Using sex specific recombination rates along the human genome (Kong et. al
-(2010) \url{doi:10.1038/nature09525}), phased chromosomes are simulated for all
-pedigree members. Additional features include calculation of realised IBD
-coefficients and IBD segment distribution plots.
+Using sex specific recombination rates along the human genome (Kong et al.,
+2010), phased chromosomes are simulated for all pedigree members. Additional
+features include calculation of realised IBD coefficients and IBD segment
+distribution plots.
+}
+\references{
+Kong et al. \emph{Fine-scale recombination rate differences between
+sexes, populations and individuals.} Nature 467, 1099--1103 (2010).
+\doi{https://doi.org/10.1038/nature09525}
 }
