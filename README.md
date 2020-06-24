@@ -36,3 +36,62 @@ if(!require(devtools)) install.packages("devtools")
 # Install pedtools from github
 devtools::install_github("magnusdv/ibdsim2")
 ```
+
+## Example: Distributions of IBD segments
+
+The plot below compares the joint distributions of counts and sizes of
+IBD segments between the following pairwise relationships:
+
+  - Grandparent/grandchild (GR)
+  - Half siblings (HS)
+  - Half uncle/nephew (HU)
+
+To produce the plot, we start by loading **ibdsim2**.
+
+``` r
+library(ibdsim2)
+```
+
+For simplicity we create a pedigree containing all the three
+relationships we are interested in.
+
+``` r
+x = addSon(halfSibPed(), parent = 5)
+plot(x)
+```
+
+<img src="man/figures/README-ibdsim2-example-ped-1.png" width="40%" style="display: block; margin: auto;" />
+
+We store the ID labels of the three relationships in a list. (The names
+of this list are used in the legend of the distribution plot below.)
+
+``` r
+ids = list(GR = c(1,7), 
+           HS = 4:5, 
+           HU = c(4,7))
+```
+
+Next, we use `ibdsim()` to produce 1000 simulations of the underlying
+IBD pattern in the entire pedigree.
+
+``` r
+s = ibdsim(x, N = 1000, map = "uniform.sex.spec")
+#> Simulation parameters:
+#> No. of sims: 1000
+#> Chromosomes: 1-22
+#> Total len  : 2864.3 Mb
+#> Rec. model : chi
+#> Target ids : 1-7
+#> Skip recomb: -
+#> Total time used: 14.8 secs
+```
+
+The `plotSegmentDistribution()` function, with the option `type =
+"ibd1"` analyses the IBD=1 segments in each simulation, and makes a nice
+plot:
+
+``` r
+plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3 )
+```
+
+<img src="man/figures/README-ibdsim2-example-distplot-1.png" style="display: block; margin: auto;" />
