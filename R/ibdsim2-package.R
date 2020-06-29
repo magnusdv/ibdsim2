@@ -23,3 +23,7 @@ NULL
 #' @importFrom Rcpp sourceCpp
 ## usethis namespace: end
 NULL
+
+.onUnload <- function (libpath) {
+  library.dynam.unload('ibdsim2', libpath)
+}
