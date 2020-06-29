@@ -61,7 +61,7 @@
 #' x = cousinPed(0, child = TRUE)
 #' rho = 0.25
 #' Nsim = 10 # Increase!
-#' estimateTwoLocusInbreeding(x, id = 5, rho = rho, Nsim = Nsim)
+#' estimateTwoLocusInbreeding(x, id = 5, rho = rho, Nsim = Nsim, seed = 123)
 #'
 #'
 #' ### Two-locus kappa: Grandparent vs half sib vs uncle ###
@@ -75,17 +75,17 @@
 #'
 #' # Grandparent/grandchild
 #' G = linearPed(2); G.ids = c(1,5); #plot(G, shaded = G.ids)
-#' estimateTwoLocusKappa(G, G.ids, rho = rho, Nsim = Nsim)[2,2]
+#' estimateTwoLocusKappa(G, G.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 #' .5*(1-rho) # exact
 #'
 #' # Half sibs
 #' H = halfSibPed(); H.ids = c(4,5); # plot(H, shaded = H.ids)
-#' estimateTwoLocusKappa(H, H.ids, rho = rho, Nsim = Nsim)[2,2]
+#' estimateTwoLocusKappa(H, H.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 #' R # exact
 #'
 #' # Uncle
 #' U = cousinPed(0, removal = 1); U.ids = c(3,6); # plot(U, shaded = U.ids)
-#' estimateTwoLocusKappa(U, U.ids, rho = rho, Nsim = Nsim)[2,2]
+#' estimateTwoLocusKappa(U, U.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 #' (1-rho) * R + rho/4 # exact
 #'
 #'
@@ -94,7 +94,7 @@
 #' rho = 0.25
 #' Nsim = 10 # (increase for more accurate estimates!)
 #'
-#' estimateTwoLocusIdentity(x, ids = 5:6, rho = rho, Nsim = Nsim)
+#' estimateTwoLocusIdentity(x, ids = 5:6, rho = rho, Nsim = Nsim, seed = 123)
 #'
 #' @name estimateCoeffs
 NULL
