@@ -5,7 +5,7 @@ stop2 = function(...) {
 }
 
 # Test that input is a positive (or similar) integer.
-is_count = function(x, minimum = 1) {
+isCount = function(x, minimum = 1) {
   isTRUE(length(x) == 1 &&
            (is.integer(x) || (is.numeric(x) && x == as.integer(x))) &&
            x >= minimum)
