@@ -15,37 +15,104 @@
 #' uniformMap(M = 1)
 #'
 #' @export
-uniformMap = function(Mb = NULL, cM = NULL, 
-                      M = NULL, cm.per.mb = 1, 
-                      chrom = 1) { # genL numeric of length 1 or 2: genetic length male & female
-    if (!is.null(cM) && !is.null(M)) 
-      stop2("Either `cM` or `M` must be NULL")
-    stopifnot(!is.null(cM) || !is.null(M) || !is.null(Mb))
+uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, 
+                      chrom = 1) {
+  
+  if (!is.null(cM) && !is.null(M)) 
+    stop2("Either `cM` or `M` must be NULL")
+  stopifnot(!is.null(cM) || !is.null(M) || !is.null(Mb))
 
-    if (is.null(cM))
-      cM = if (!is.null(M)) M * 100 else  cm.per.mb * Mb
-    if (is.null(Mb)) Mb = cM / cm.per.mb
+  if (is.null(cM))
+    cM = if (!is.null(M)) M * 100 else  cm.per.mb * Mb
+  if (is.null(Mb)) Mb = cM / cm.per.mb
 
-    if (is.character(chrom) && tolower(chrom) == "x")
-      chrom = "X"
+  if (is.character(chrom) && tolower(chrom) == "x")
+    chrom = "X"
 
-    map = switch(max(length(Mb), length(cM)), {
-      m = cbind(Mb = c(0, Mb), cM = c(0, cM))
-      list(male = m, female = m)
-    }, {
-      if (length(cM) == 1) cM = c(cM, cM)
-      if (length(Mb) == 1) Mb = c(Mb, Mb)
-      list(male = cbind(Mb = c(0, Mb[1]), cM = c(0, cM[1])), 
-           female = cbind(Mb = c(0, Mb[2]), cM = c(0, cM[2])))
-    })
-    female_phys = as.numeric(map$female[2, 1])
-    if (identical(chrom, "X"))
-      map$male = NA
-    else if (female_phys != map$male[2, 1]) 
-      stop2("Male and female chromosomes must have equal physical length")
-    
-    structure(map, length_Mb = female_phys, chrom = chrom, class = "chromosomeMap")
+  map = switch(max(length(Mb), length(cM)), {
+    m = cbind(Mb = c(0, Mb), cM = c(0, cM))
+    list(male = m, female = m)
+  }, {
+    if (length(cM) == 1) cM = c(cM, cM)
+    if (length(Mb) == 1) Mb = c(Mb, Mb)
+    list(male = cbind(Mb = c(0, Mb[1]), cM = c(0, cM[1])), 
+         female = cbind(Mb = c(0, Mb[2]), cM = c(0, cM[2])))
+  })
+  
+  female_phys = as.numeric(map$female[2, 1])
+  if (identical(chrom, "X"))
+    map$male = NA
+  else if (female_phys != map$male[2, 1]) 
+    stop2("Male and female chromosomes must have equal physical length")
+  
+  structure(map, length_Mb = female_phys, chrom = chrom, class = "chromosomeMap")
+}
+
+
+
+
+chromMap = function(male, female = male, chrom = 1) {
+  dmm = dim(male)
+  dmf = dim(female)
+  if(is.null(dmm) || dmm[2] != 2)
+    stop2("Male map does not have two columns")
+  if(is.null(dmf) || dmf[2] != 2)
+    stop2("Female map does not have two columns")
+  if(!is.numeric(male))
+    stop2("Male map is not numeric")
+  if(!is.numeric(female))
+    stop2("Female map is not numeric")
+
+  if(is.matrix(male)) 
+    male = as.data.frame(male)
+  if(is.matrix(female)) 
+    female = as.data.frame(female)
+  
+  names(male) = names(female) = c("Mb", "cM")
+  
+  physM = male$Mb
+  physF = female$Mb
+  
+  if(physM[1] != physF[1])
+    stop2("First position must be the same in male and female maps: ", physM[1], physF[1])
+  
+  if(physM[dmm[1]] != physF[dmf[1]])
+    stop2("End position must be the same in male and female maps: ", physM[dmm[1]], physF[dmf[1]])
+  
+  if(physF[dmf[1]] > 1e9) {
+    male$Mb = male$Mb / 1e6
+    female$Mb = female$Mb / 1e6
   }
+  
+  physLen = female$Mb[dmf[1]] - female$Mb[1]
+
+  structure(list(male = male, female = female), chromLen = physLen, chrom = chrom, 
+            class = "chromMap")
+}
+
+genomeMap = function(x) {
+  if(isChromMap(x))
+    x = list(x)
+  else if(!all(sapply(x, isChromMap)))
+    stop2("Input to `genomeMap()` must a list of `chromMap' objects")
+  
+  len = sum(sapply(x, chromLen))
+  
+  structure(x, genomeLen = len, class = "genomeMap")
+}
+
+isChromMap = function(x)
+  inherits(x, "chromMap")
+
+isGenomeMap = function(x)
+  inherits(x, "genomeMap")
+
+chromLen = function(x) 
+  attr(x, "chromLen") %||% attr(x, "length_Mb")
+
+genomeLen = function(x) 
+  attr(x, "genomeLen") %||% attr(x, "genome_length_Mb")
+
 
 loadMap = function(map, chrom = NULL) {
 
@@ -113,16 +180,20 @@ cm2phys = function(cM_locus, mapmat) { # mapmat matrise med kolonner 'Mb' og 'cM
   res
 }
 
-# 25.3.2014 (not used in ibdsim)
-phys2cm = function(Mb_locus, mapmat) {    # mapmat matrise med kolonner 'Mb' og 'cM'
-  if(!length(Mb_locus)) return(Mb_locus)
-  last = mapmat[nrow(mapmat), ]
-  nontriv = Mb_locus >= 0 & Mb_locus <= last[["Mb"]]
-  res = numeric(length(Mb_locus))
+
+phys2cm = function(Mb, mapmat) {    # mapmat matrise med kolonner 'Mb' og 'cM'
+  if(!length(Mb)) 
+    return(Mb)
+  
+  mapMB = mapmat$Mb
+  mapCM = mapmat$cM
+  
+  nontriv = Mb >= 0 & Mb <= mapMB[length(mapMB)]
+  res = numeric(length(Mb))
   res[!nontriv] <- NA
-  mb = Mb_locus[nontriv]
-  interv = findInterval(mb, mapmat[, "Mb"], all.inside = TRUE)
-  res[nontriv] = mapmat[interv, "cM"] + 
-    (mapmat[interv + 1, "cM"] - mapmat[interv, "cM"]) * (mb - mapmat[interv, "Mb"]) / (mapmat[interv + 1, "Mb"] - mapmat[interv, "Mb"])
+  mb = Mb[nontriv]
+  interv = findInterval(mb, mapMB, all.inside = TRUE)
+  res[nontriv] = mapCM[interv] + 
+    (mapCM[interv + 1] - mapCM[interv]) * (mb - mapMB[interv]) / (mapMB[interv + 1] - mapMB[interv])
   res
 }
