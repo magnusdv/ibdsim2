@@ -1,55 +1,3 @@
-#' Uniform recombination maps
-#'
-#' Create a uniform recombination map of a given length.
-#'
-#' @param Mb Map length in megabases.
-#' @param cM Map length in centiMorgan.
-#' @param M Map length in Morgan.
-#' @param cm.per.mb A positive number; the cM/Mb ratio.
-#' @param chrom A chromosome label.
-#'
-#' @return An object of class `chromosomeMap`, which is a list of two matrices,
-#'   named "male" and "female".
-#'
-#' @examples
-#' uniformMap(M = 1)
-#'
-#' @export
-uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, 
-                      chrom = 1) {
-  
-  if (!is.null(cM) && !is.null(M)) 
-    stop2("Either `cM` or `M` must be NULL")
-  stopifnot(!is.null(cM) || !is.null(M) || !is.null(Mb))
-
-  if (is.null(cM))
-    cM = if (!is.null(M)) M * 100 else  cm.per.mb * Mb
-  if (is.null(Mb)) Mb = cM / cm.per.mb
-
-  if (is.character(chrom) && tolower(chrom) == "x")
-    chrom = "X"
-
-  map = switch(max(length(Mb), length(cM)), {
-    m = cbind(Mb = c(0, Mb), cM = c(0, cM))
-    list(male = m, female = m)
-  }, {
-    if (length(cM) == 1) cM = c(cM, cM)
-    if (length(Mb) == 1) Mb = c(Mb, Mb)
-    list(male = cbind(Mb = c(0, Mb[1]), cM = c(0, cM[1])), 
-         female = cbind(Mb = c(0, Mb[2]), cM = c(0, cM[2])))
-  })
-  
-  female_phys = as.numeric(map$female[2, 1])
-  if (identical(chrom, "X"))
-    map$male = NA
-  else if (female_phys != map$male[2, 1]) 
-    stop2("Male and female chromosomes must have equal physical length")
-  
-  structure(map, length_Mb = female_phys, chrom = chrom, class = "chromosomeMap")
-}
-
-
-
 
 chromMap = function(male, female = male, chrom = 1) {
   dmm = dim(male)
@@ -58,26 +6,22 @@ chromMap = function(male, female = male, chrom = 1) {
     stop2("Male map does not have two columns")
   if(is.null(dmf) || dmf[2] != 2)
     stop2("Female map does not have two columns")
-  if(!is.numeric(male))
-    stop2("Male map is not numeric")
-  if(!is.numeric(female))
-    stop2("Female map is not numeric")
-
-  if(is.matrix(male)) 
-    male = as.data.frame(male)
-  if(is.matrix(female)) 
-    female = as.data.frame(female)
   
+  # Convert matrix/tibbles/etc
+  male = as.data.frame(male)
+  female = as.data.frame(female)
+  
+  # Fix names
   names(male) = names(female) = c("Mb", "cM")
   
   physM = male$Mb
   physF = female$Mb
   
   if(physM[1] != physF[1])
-    stop2("First position must be the same in male and female maps: ", physM[1], physF[1])
+    stop2("First position must be the same in male and female maps: ", c(physM[1], physF[1]))
   
   if(physM[dmm[1]] != physF[dmf[1]])
-    stop2("End position must be the same in male and female maps: ", physM[dmm[1]], physF[dmf[1]])
+    stop2("End position must be the same in male and female maps: ", c(physM[dmm[1]], physF[dmf[1]]))
   
   if(physF[dmf[1]] > 1e9) {
     male$Mb = male$Mb / 1e6
@@ -97,83 +41,239 @@ genomeMap = function(x) {
     stop2("Input to `genomeMap()` must a list of `chromMap' objects")
   
   len = sum(sapply(x, chromLen))
-  
   structure(x, genomeLen = len, class = "genomeMap")
 }
 
+#' @export
+`[.genomeMap` = function(x, i) {
+  if(!all(i %in% seq_along(x)))
+    stop2("Index out of range: ", setdiff(i, seq_along(x)))
+  
+  s = unclass(x)[i]
+  len = sum(sapply(s, chromLen))
+  structure(s, genomeLen = len, class = "genomeMap")
+}
+
+#' @export
+print.chromMap = function(x, ...) {
+  chr = attr(x, 'chrom')
+  maLen = length(x$male$Mb)
+  feLen = length(x$female$Mb)
+  nPoints = if(maLen == feLen) feLen else sprintf("%d (male); %d (female)", maLen, feLen)
+  
+  print(glue::glue("
+  Map of chromosome {chr}
+  Physical length: {round(chromLen(x), 2)} Mb
+  Physical range : {paste(round(range(x$female$Mb), 2), collapse = ' - ')} Mb 
+  Male length    : {round(chromLen(x, 'cM', sex = 'male'), 2)} cM
+  Female length  : {round(chromLen(x, 'cM', sex = 'female'), 2)} cM
+  Data points    : {nPoints}
+  "))
+}
+
+#' @export
+print.genomeMap = function(x, ...) {
+  nChr = length(x)
+  plural = if(nChr > 1) 's' else ''
+  
+  print(glue::glue("
+  Genome map consisting of {nChr} chromosome{plural}
+  Physical length: {round(genomeLen(x), 2)} Mb
+  Male length    : {round(genomeLen(x, 'cM', sex = 'male'), 2)} cM
+  Female length  : {round(genomeLen(x, 'cM', sex = 'female'), 2)} cM
+  "))
+}
+  
 isChromMap = function(x)
   inherits(x, "chromMap")
 
 isGenomeMap = function(x)
   inherits(x, "genomeMap")
 
-chromLen = function(x) 
-  attr(x, "chromLen") %||% attr(x, "length_Mb")
-
-genomeLen = function(x) 
-  attr(x, "genomeLen") %||% attr(x, "genome_length_Mb")
-
-
-loadMap = function(map, chrom = NULL) {
-
-  if (is.character(map)) {
-    if(!all(chrom %in% c(1:23, "X")))
-      stop2("Chromosome not found in the Decode map: ", setdiff(chrom, c(1:23, "X")))
-    
-    CHROM.LENGTH = cbind(male_morgan = c(1.9, 1.752, 1.512, 1.35, 1.302, 1.162, 1.238, 1.089, 1.047, 1.147, 0.992, 1.154, 0.919, 0.857, 0.825, 0.88, 0.863, 0.737, 0.708, 0.563, 0.426, 0.45, NA),
-    female_morgan = c(3.34, 3.129, 2.687, 2.6, 2.49, 2.333, 2.21, 2.042, 1.879, 2.062, 1.886, 1.974, 1.468, 1.24, 1.393, 1.494, 1.529, 1.379, 1.152, 1.109, 0.67, 0.662, 1.733),
-    Mb = c(247.2, 242.7, 199.3, 191.1, 180.6, 170.8, 158.7, 146.2, 140.1, 135.3, 134.4, 132.3, 114.1, 105.3, 100.2, 88.7, 78.6, 76.1, 63.8, 62.4, 46.9, 49.5, 154.6))
-
-    if (is.null(chrom) || identical(chrom, "AUTOSOMAL")) 
-      chromnum = 1:22
-    else if (identical(chrom, "X")) 
-      chromnum = 23
-    else if(is.numeric(chrom))
-      chromnum = chrom
-
-    maps = switch(tolower(map),
-      decode = DecodeMap[chromnum],
-      uniform.sex.spec = lapply(chromnum, function(chr) {
-        dat = as.numeric(CHROM.LENGTH[chr, ])
-        uniformMap(M = dat[1:2], Mb = dat[3], chrom = chr)
-      }),
-      uniform.sex.aver = lapply(chromnum, function(chr) {
-        dat = as.numeric(CHROM.LENGTH[chr, ])
-        uniformMap(M = mean(dat[1:2]), Mb = dat[3], chrom = chr)
-      }),
-      stop2("Invalid map name"))
-    
-    # Fix chrom attributes TODO: update DecodeMap
-    maps = lapply(maps, function(m) {
-      attrs = attributes(m)
-      chr = attrs$chromosome %||% attrs$chrom
-      attrs$chromosome = NULL
-      attrs$chrom = if(chr == 23) "X" else chr
-      attributes(m) = attrs
-      m
-    })
-    
-  }
+chromLen = function(x, unit = c("Mb", "cM"), sex = NA) {
+  if(!isChromMap(x))
+    stop2("First argument must be a `chromMap` object, not ", class(x))
+  
+  unit = match.arg(unit)
+  if(unit == "Mb")
+    res = attr(x, "chromLen") %||% attr(x, "length_Mb")
   else {
-    maps = map
-    if (inherits(maps, "chromosomeMap")) maps = list(maps)
+    if(is.na(sex)) {
+      ma = chromLen(x, 'cM', 'male')
+      fe = chromLen(x, 'cM', 'female')
+      return(c(male = ma, female = fe))
+    }
+    
+    df = x[[match.arg(sex, c('male', 'female'))]]
+    res = df$cM[nrow(df)]
   }
-  attr(maps, "length_Mb") = sum(unlist(lapply(maps, attr, "length_Mb")))
-  maps
+  if(is.null(res)) 
+    res = 0
+  
+  res
+}
+
+genomeLen = function(x, unit = c("Mb", "cM"), sex = NA) { 
+  if(!isGenomeMap(x))
+    stop2("First argument must be a `genomeMap` object, not ", class(x))
+  
+  unit = match.arg(unit)
+  if(unit == "Mb")
+    res = attr(x, "genomeLen") %||% attr(x, "length_Mb") %||% attr(x, "genome_length_Mb")
+  else {
+    lens = sapply(x, chromLen, unit = "cM", sex = sex)
+    if(is.na(sex))
+      res = rowSums(lens)
+    else 
+      res = sum(lens)
+  }
+  
+  res
 }
 
 
-cm2phys = function(cM_locus, mapmat) { # mapmat matrise med kolonner 'Mb' og 'cM'
-  if(!length(cM_locus)) 
-    return(cM_locus)
-  mapMB = mapmat[, 'Mb']
-  mapCM = mapmat[, 'cM']
+
+#' Uniform recombination maps
+#'
+#' Create a uniform recombination map of a given length.
+#'
+#' @param Mb Map length in megabases.
+#' @param cM Map length in centiMorgan.
+#' @param M Map length in Morgan.
+#' @param cm.per.mb A positive number; the cM/Mb ratio.
+#' @param chrom A chromosome label.
+#'
+#' @return An object of class `chromMap`, which is a list of two matrices,
+#'   named "male" and "female".
+#'
+#' @examples
+#' uniformMap(M = 1)
+#'
+#' m = uniformMap(Mb = 1, cM = 2:3)
+#' @export
+uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, 
+                      chrom = 1) {
   
-  res = numeric(length(cM_locus))
-  nontriv = cM_locus >= 0 & cM_locus <= mapCM[length(mapCM)]
-  res[!nontriv] <- NA
+  if (!is.null(cM) && !is.null(M)) 
+    stop2("Either `cM` or `M` must be NULL")
   
-  cm = cM_locus[nontriv]
+  stopifnot(!is.null(cM) || !is.null(M) || !is.null(Mb))
+  
+  if (is.null(cM))
+    cM = if (!is.null(M)) M * 100 else  cm.per.mb * Mb
+  
+  if (is.null(Mb)) Mb = cM / cm.per.mb
+  
+  Mb = unname(rep(Mb, length.out = 2))
+  cM = unname(rep(cM, length.out = 2))
+  
+  male = cbind(Mb = c(0, Mb[1]), cM = c(0, cM[1]))
+  female = cbind(Mb = c(0, Mb[2]), cM = c(0, cM[2]))
+  
+  if (is.character(chrom) && tolower(chrom) == "x") {
+    chrom = "X"
+    male = NULL
+  }
+  
+  chromMap(male, female, chrom = chrom)
+}
+
+
+#' Load a built-in genetic map
+#'
+#' This function loads one of the built-in genetic maps. A faster, uniform
+#' version is also available by the parameter `detailed = FALSE`.
+#'
+#' @param map The name of the wanted map. Currently, the only valid choice is
+#'   "decode19". This is also the default.
+#' @param chrom A numeric vector indicating which chromosomes to load. Default:
+#'   `1:22` (the autosomes)
+#' @param detailed A logical. If TRUE (default), the complete inhomogeneous map
+#'   is used. If FALSE, a uniform version of the same map is produced, i.e. with
+#'   the correct lengths, but constant recombination rate along each chromosome.
+#' @param sexSpecific A logical, by default TRUE. If FALSE, a sex-averaged map
+#'   is returned, equal between males and females
+#'
+#' @return An object of class `genomeMap`.
+#' 
+#' @references Halldorsson et al. _Characterizing mutagenic effects of recombination through a
+#'   sequence-level genetic map._ Science 363, no. 6425 (2019).
+#' 
+#' @examples
+#' # By default, the complete map of all 22 autosomes is returned
+#' loadMap()
+#'
+#' # Uniform version
+#' m = loadMap(detailed = FALSE)
+#'
+#' # Check chromosome 1:
+#' m1 = m[[1]]
+#' m1$male
+#' m1$female
+#' 
+#' @export
+loadMap = function(map = "decode19", chrom = 1:22, detailed = TRUE, sexSpecific = TRUE) {
+  
+  if(!is.character(map) || length(map) != 1)
+    stop2("Argument `map` must be a character of length 1")
+  
+  if(!is.logical(detailed) || length(detailed) != 1 || is.na(detailed))
+    stop2("Argument `detailed` must be either TRUE or FALSE")
+
+  if(!is.logical(sexSpecific) || length(sexSpecific) != 1 || is.na(sexSpecific))
+    stop2("Argument `sexSpecific` must be either TRUE or FALSE")
+  
+  # For now only 'decode19' is implemented
+  builtinMaps = c("decode19")
+  mapno = pmatch(map, builtinMaps)
+  if(is.na(mapno))
+    stop2("Unknown map: ", map)
+
+  map = builtinMaps[mapno]
+  genome = get(map)[chrom]
+  
+  if(detailed && sexSpecific)
+    return(genome)
+  
+  if(!detailed) {
+    chroms = lapply(genome, function(chr) {
+      chrom = attr(chr, "chrom")
+      mb = chromLen(chr, "Mb")
+      cm = chromLen(chr, "cM", sex = NA)
+      if(!sexSpecific) 
+        cm = mean(cm)
+      
+      uniformMap(Mb = mb, cM = cm, chrom = chrom)
+    })
+    
+    return(genomeMap(chroms))
+  }
+  
+  if(!sexSpecific) {
+    genome[] = lapply(genome, function(chr) {
+      if(!identical(chr$male$Mb, chr$female$Mb))
+        stop2("Sex averaging requires equal map positions in males and females")
+      
+      chr$male$cM = chr$female$cM = (chr$male$cM + chr$female$cM)/2
+      chr
+    })
+    
+    return(genome)
+  }
+}
+
+
+cm2phys = function(cM, map) { # map: columns 'Mb' and 'cM'
+  if(!length(cM)) 
+    return(cM)
+  mapMB = map$Mb
+  mapCM = map$cM
+  
+  res = numeric(length(cM))
+  nontriv = cM >= 0 & cM <= mapCM[length(mapCM)]
+  res[!nontriv] = NA
+  
+  cm = cM[nontriv]
   interv = findInterval(cm, mapCM, all.inside = TRUE)
   res[nontriv] = mapMB[interv] + (cm - mapCM[interv]) *
     (mapMB[interv + 1] - mapMB[interv]) / (mapCM[interv + 1] - mapCM[interv])
@@ -181,19 +281,20 @@ cm2phys = function(cM_locus, mapmat) { # mapmat matrise med kolonner 'Mb' og 'cM
 }
 
 
-phys2cm = function(Mb, mapmat) {    # mapmat matrise med kolonner 'Mb' og 'cM'
+phys2cm = function(Mb, map) {    # map: columns 'Mb' and 'cM'
   if(!length(Mb)) 
     return(Mb)
   
-  mapMB = mapmat$Mb
-  mapCM = mapmat$cM
+  mapMB = map$Mb
+  mapCM = map$cM
   
   nontriv = Mb >= 0 & Mb <= mapMB[length(mapMB)]
   res = numeric(length(Mb))
-  res[!nontriv] <- NA
+  res[!nontriv] = NA
+  
   mb = Mb[nontriv]
   interv = findInterval(mb, mapMB, all.inside = TRUE)
-  res[nontriv] = mapCM[interv] + 
-    (mapCM[interv + 1] - mapCM[interv]) * (mb - mapMB[interv]) / (mapMB[interv + 1] - mapMB[interv])
+  res[nontriv] = mapCM[interv] + (mb - mapMB[interv]) *
+    (mapCM[interv + 1] - mapCM[interv]) / (mapMB[interv + 1] - mapMB[interv])
   res
 }

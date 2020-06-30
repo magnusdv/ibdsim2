@@ -18,7 +18,7 @@ uniformMap(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, chrom = 1)
 \item{chrom}{A chromosome label.}
 }
 \value{
-An object of class \code{chromosomeMap}, which is a list of two matrices,
+An object of class \code{chromMap}, which is a list of two matrices,
 named "male" and "female".
 }
 \description{
@@ -27,4 +27,5 @@ Create a uniform recombination map of a given length.
 \examples{
 uniformMap(M = 1)
 
+m = uniformMap(Mb = 1, cM = 2:3)
 }

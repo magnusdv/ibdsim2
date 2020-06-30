@@ -73,10 +73,13 @@ theoretical/pedigree-based values: either inbreeding coefficients (if \code{type
 xPat = halfSibPed()
 xMat = swapSex(xPat, 1)
 
+# Map: Uniform version of the default "decode19"
+map = loadMap("decode19", detailed = FALSE)
+
 # Simulate (increase N!)
 N = 10
-simPat = ibdsim(xPat, N = N, map = "uniform.sex.spec")
-simMat = ibdsim(xMat, N = N, map = "uniform.sex.spec")
+simPat = ibdsim(xPat, N = N, map = map)
+simMat = ibdsim(xMat, N = N, map = map)
 
 # By default, the IBD segments of the "leaves" are computed and plotted
 plotSegmentDistribution(simPat, simMat, type = "ibd1", ids = 4:5,
@@ -92,7 +95,8 @@ x = addSon(halfSibPed(), 5)
 
 # Simulate
 N = 10
-s = ibdsim(x, N = N, map = "uniform.sex.spec")
+map = loadMap(detailed = FALSE)
+s = ibdsim(x, N = N, map = map)
 
 # Indicate the pairs explicitly this time.
 ids = list(HS = 4:5, HU = c(4,7), GR = c(1,7))
@@ -119,9 +123,12 @@ peds = list(G = G, HSpat = HSpat, HSmat = HSmat, QHFC = QHFC)
 plotPedList(peds, newdev = TRUE)
 dev.off()
 
+# Map
+map = loadMap(detailed = FALSE)
+
 # Simulations (increase N!))
 s = lapply(peds, function(p)
-  ibdsim(p, N = 10, ids = leaves(p), map = "uniform.sex.spec", verbose = FALSE))
+  ibdsim(p, N = 10, ids = leaves(p), verbose = FALSE, map = map))
 
 # Plot distributions
 plotSegmentDistribution(s, type = "autoz", title = "Autozygous segments")

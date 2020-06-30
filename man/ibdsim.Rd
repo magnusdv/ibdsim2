@@ -9,7 +9,6 @@ ibdsim(
   N = 1,
   ids = labels(x),
   map = "decode",
-  chrom = NULL,
   model = c("chi", "haldane"),
   skipRecomb = NULL,
   seed = NULL,
@@ -24,12 +23,15 @@ ibdsim(
 \item{ids}{A subset of pedigree members whose IBD sharing should be analysed.
 If NULL, the simulations are returned unprocessed.}
 
-\item{map}{The genetic map to be used in the simulations: One of the
-character strings "decode", "uniform.sex.spec", "uniform.sex.aver". (See
-Details.)}
+\item{map}{The genetic map to be used in the simulations: Allowed values are:
+\itemize{
+\item a \code{genomeMap} object, typically produced by \code{\link[=loadMap]{loadMap()}}
+\item a single \code{chromMap} object, for instance as produced by \code{\link[=uniformMap]{uniformMap()}}
+\item a character, which is passed on to \code{\link[=loadMap]{loadMap()}} with default parameters.
+Currently the only valid option is "decode19".
+}
 
-\item{chrom}{A numeric vector indicating chromosome numbers, or either of the
-words "AUTOSOMAL" or "X". The default is 1:22, i.e., the human autosomes.}
+Default: "decode19".}
 
 \item{model}{Either "chi" (default) or "haldane", indicating the statistical
 model for recombination. (See details.)}
@@ -88,17 +90,12 @@ four-strand bundle, with waiting times following a chi square distribution.
 }
 
 Recombination rates along each chromosome are determined by the \code{map}
-parameter, which can take on the following values:
-\itemize{
-\item \code{map = "decode"} (default): The fine-scale Decode recombination map of the
-human genome (Kong et al., 2010)
-\item \code{map = "uniform.sex.spec"}: This uses the genetic chromosome \emph{lengths} from
-the Decode map, but with constant recombination rate along each chromosome
-(i.e., no hot/cold spots).
-\item \code{map = "uniform.sex.aver"}: As the previous map, but with sex-averaged
-genetic chromosome lengths.
-\item A user-defined map, typically made with \link{uniformMap}.
-}
+parameter. The default value ("decode19") loads a thinned version of the
+recombination map of the human genome published by Halldorsson et al (2019).
+
+In many applications, the fine-scale default map is not necessary, and should
+be replaced by simpler maps with constant recombination rates. See
+\code{\link[=uniformMap]{uniformMap()}} and \code{\link[=loadMap]{loadMap()}} for ways to produce such maps.
 }
 \examples{
 

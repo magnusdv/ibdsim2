@@ -6,7 +6,7 @@ pA = function(...) plotSegmentDistribution(..., type = "aut", ellipses = F)
 
 test_that("plotSegmentDistribution(ibd1) catches input errors", {
   x = nuclearPed(2)
-  s = ibdsim(x, N=1, chrom=21, verbose=F)
+  s = ibdsim(x, N=1, map=uniformMap(1), verbose=F)
   
   expect_error(p1(s, ids = c(1,5)),
                "Unknown ID label in pedigree 1: 5")
@@ -20,7 +20,7 @@ test_that("plotSegmentDistribution(ibd1) catches input errors", {
 
 test_that("plotSegmentDistribution(aut) catches input errors", {
   x = nuclearPed(1)
-  s = ibdsim(x, N=1, chrom=21, verbose=F)
+  s = ibdsim(x, N=1, map=uniformMap(1), verbose=F)
   
   expect_error(pA(s, ids = c(1,5)),
                "Unknown ID label in pedigree 1: 5")

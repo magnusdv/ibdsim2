@@ -20,7 +20,6 @@ genedrop.singlechrom = function(x, ids, chrommap, model, skipRecomb, startData) 
   NONFOU = nonfounders(x, internal = TRUE)
   
   chrom = attr(chrommap, "chrom")
-  chromLen = attr(chrommap, "length_Mb")
   skip = x$ID %in% skipRecomb
   
   h = startData %||% distributeFounderAlleles(x, chrom)
@@ -49,7 +48,7 @@ genedrop.singlechrom = function(x, ids, chrommap, model, skipRecomb, startData) 
   if (length(sta) == 1)      # since vapply simplifies if FUN.VALUE has length 1
     dim(alleleMat) = c(1, 2 * length(IDS))
   
-  sto = c(sta[-1], chromLen)
+  sto = c(sta[-1], chromLen(chrommap))
   cbind(chrom = chrom, start = sta, end = sto, length = sto - sta, alleleMat)
 }
 

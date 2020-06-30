@@ -15,29 +15,28 @@
 #' four-strand bundle, with waiting times following a chi square distribution.
 #'
 #' Recombination rates along each chromosome are determined by the `map`
-#' parameter, which can take on the following values:
+#' parameter. The default value ("decode19") loads a thinned version of the
+#' recombination map of the human genome published by Halldorsson et al (2019).
 #'
-#' * `map = "decode"` (default): The fine-scale Decode recombination map of the
-#' human genome (Kong et al., 2010)
-#'
-#' * `map = "uniform.sex.spec"`: This uses the genetic chromosome *lengths* from
-#' the Decode map, but with constant recombination rate along each chromosome
-#' (i.e., no hot/cold spots).
-#'
-#' * `map = "uniform.sex.aver"`: As the previous map, but with sex-averaged
-#' genetic chromosome lengths.
-#'
-#' * A user-defined map, typically made with [uniformMap].
+#' In many applications, the fine-scale default map is not necessary, and should
+#' be replaced by simpler maps with constant recombination rates. See 
+#' [uniformMap()] and [loadMap()] for ways to produce such maps.
 #'
 #' @param x A [pedtools::ped()] object.
 #' @param N A positive integer indicating the number of simulations.
 #' @param ids A subset of pedigree members whose IBD sharing should be analysed.
 #'   If NULL, the simulations are returned unprocessed.
-#' @param map The genetic map to be used in the simulations: One of the
-#'   character strings "decode", "uniform.sex.spec", "uniform.sex.aver". (See
-#'   Details.)
-#' @param chrom A numeric vector indicating chromosome numbers, or either of the
-#'   words "AUTOSOMAL" or "X". The default is 1:22, i.e., the human autosomes.
+#' @param map The genetic map to be used in the simulations: Allowed values are:
+#'
+#'   * a `genomeMap` object, typically produced by [loadMap()]
+#'
+#'   * a single `chromMap` object, for instance as produced by [uniformMap()]
+#'
+#'   * a character, which is passed on to [loadMap()] with default parameters.
+#'   Currently the only valid option is "decode19".
+#'
+#'   Default: "decode19".
+#'
 #' @param model Either "chi" (default) or "haldane", indicating the statistical
 #'   model for recombination. (See details.)
 #' @param skipRecomb A vector of ID labels indicating individuals whose meioses
@@ -91,7 +90,7 @@
 #' stopifnot(setequal(s[, 'Sigma'], 1:9))
 #'
 #' @export
-ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
+ibdsim = function(x, N = 1, ids = labels(x), map = "decode",
                   model = c("chi", "haldane"), skipRecomb = NULL, 
                   seed = NULL, verbose = TRUE) {
   # Check input
@@ -111,12 +110,29 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
   # Start timer
   starttime = Sys.time()
 
-  # Load map and extract chromosome names.
-  map = loadMap(map, chrom = chrom)
-  mapchrom = attr(map, "chrom") %||% sapply(map, attr, "chrom")
+  # Load map and extract chromosome names
+  if(is.character(map) && length(map) == 1) {
+    if(map == "uniform.sex.spec") {
+      message('The option `map = "uniform.sex.spec"` is deprecated and will be removed in a future version\n',
+              "Use `map = loadMap(detailed = F, sex = T)` instead")
+      map = loadMap(detailed = FALSE, sexSpecific = TRUE)
+    }
+    else if(map == "uniform.sex.aver") {
+      message('The option `map = "uniform.sex.aver"` is deprecated and will be removed in a future version\n',
+              "Use `map = loadMap(detailed = F, sex = F)` instead")
+      map = loadMap(detailed = FALSE, sexSpecific = FALSE)
+    }   
+    else
+      map = loadMap(map)
+  }
+  else if(isChromMap(map))
+    map = genomeMap(map)
+  else if(!isGenomeMap(map))
+    stop2("Argument `map` must be either a `genomeMap`, a single `chromMap` or a single character")
+  
+  mapchrom = sapply(map, attr, "chrom")
   if(any(mapchrom == "X"))
     stop2("X chromosomal simulations are put on hold, but will be back in the near future.")
-  genomeMB = attr(map, "length_Mb")
   
   # Model: Either "chi" or "haldane"
   model = match.arg(model)
@@ -136,12 +152,12 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
   if (verbose) {
     message(glue::glue("
       Simulation parameters:
-      No. of sims: {N}
-      Chromosomes: {toString2(mapchrom)}
-      Total len  : {genomeMB} Mb
-      Rec. model : {model}
-      Target ids : {toString2(ids, ifempty = '-')}
-      Skip recomb: {toString2(skipRecomb, ifempty = '-')}"
+      # simulations: {N}
+      Chromosomes  : {toString2(mapchrom)}
+      Genome length: {genomeLen(map)} Mb
+      Recomb model : {model}
+      Target indivs: {toString2(ids, ifempty = '-')}
+      Skip recomb  : {toString2(skipRecomb, ifempty = '-')}"
     ))
   }
   
@@ -166,7 +182,7 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode", chrom = NULL,
             ids = ids, 
             skipRecomb = skipRecomb, 
             chrom = mapchrom, 
-            genome_length_Mb = genomeMB,
+            genomeLen = genomeLen(map),
             model = model, 
             class = "genomeSimList")
 }
@@ -180,7 +196,7 @@ print.genomeSimList = function(x, ...) {
   print(glue::glue("
   List of {length(x)} genome simulations.
   Chromosomes: {toString2(attrs$chrom)}
-  Total len  : {attrs$genome_length_Mb} Mb
+  Total len  : {attrs$genomeLen} Mb
   Rec. model : {attrs$model}
   Target ids : {toString2(attrs$ids)}
   Skip recomb: {toString2(attrs$skipRecomb, ifempty = '-')}
