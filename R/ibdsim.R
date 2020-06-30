@@ -75,8 +75,9 @@
 #'   individuals the states 9, 8, 7 correspond to IBD status 0, 1, 2
 #'   respectively.
 #'
-#' @references Kong et al. *Fine-scale recombination rate differences between
-#'   sexes, populations and individuals.* Nature 467, 1099–1103 (2010).
+#' @references Halldorsson et al. _Characterizing mutagenic effects of
+#'   recombination through a sequence-level genetic map._ Science 363, no. 6425
+#'   (2019).
 #'
 #' @examples
 #'

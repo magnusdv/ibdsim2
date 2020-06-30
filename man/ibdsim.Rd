@@ -113,6 +113,7 @@ stopifnot(setequal(s[, 'Sigma'], 1:9))
 
 }
 \references{
-Kong et al. \emph{Fine-scale recombination rate differences between
-sexes, populations and individuals.} Nature 467, 1099–1103 (2010).
+Halldorsson et al. \emph{Characterizing mutagenic effects of
+recombination through a sequence-level genetic map.} Science 363, no. 6425
+(2019).
 }
