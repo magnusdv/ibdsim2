@@ -3,7 +3,7 @@
 .RData
 CRAN-RELEASE
 cran-comments.md
-README_cache
+README_cache/
 notes-private
 Rprof.out
 src/*.o
