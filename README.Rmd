@@ -65,7 +65,7 @@ ids = list(GR = c(1,7),
 
 Next, we use `ibdsim()` to produce 1000 simulations of the underlying IBD pattern in the entire pedigree.
 ```{r ibdsim2-example-sim, cache = T}
-s = ibdsim(x, N = 1000, map = "uniform.sex.spec")
+s = ibdsim(x, N = 1000, map = loadMap("decode19"))
 ```
 
 The `plotSegmentDistribution()` function, with the option `type = "ibd1"` analyses the IBD segments in each simulation, and makes a nice plot. Note that the names of the `ids` list are used in the legend.

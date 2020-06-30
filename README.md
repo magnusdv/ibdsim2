@@ -81,15 +81,15 @@ Next, we use `ibdsim()` to produce 1000 simulations of the underlying
 IBD pattern in the entire pedigree.
 
 ``` r
-s = ibdsim(x, N = 1000, map = "uniform.sex.spec")
+s = ibdsim(x, N = 1000, map = loadMap("decode19"))
 #> Simulation parameters:
-#> No. of sims: 1000
-#> Chromosomes: 1-22
-#> Total len  : 2864.3 Mb
-#> Rec. model : chi
-#> Target ids : 1-7
-#> Skip recomb: -
-#> Total time used: 14.8 secs
+#> # simulations: 1000
+#> Chromosomes  : 1-22
+#> Genome length: 2753.931711 Mb
+#> Recomb model : chi
+#> Target indivs: 1-7
+#> Skip recomb  : -
+#> Total time used: 44.9 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option `type =
