@@ -137,9 +137,7 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
   simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, extract first and last rows entry of column "IBD".
-  f2 = lapply(simdata, function(a) {
-    a[1, 5] == a[1, 6] && a[nrow(a), 5] == a[nrow(a), 6] 
-  })
+  f2 = lapply(simdata, function(a) a[c(1, nrow(a)), "Aut"])
   
   # Shape list of observations into wide matrix
   f2 = unlist(f2)
@@ -161,8 +159,8 @@ estimateInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
   
-  # For each sim, check for autozygosity
-  f2 = vapply(simdata, function(a) {a[1, 5] == a[1, 6]}, FUN.VALUE = TRUE)
+  # For each sim, extract autozygosity status
+  f2 = vapply(simdata, function(a) a[[1, "Aut"]], FUN.VALUE = 1)
   
   if (verbose) 
     cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")
@@ -238,8 +236,8 @@ estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
-  # For each sim, extract first and last rows entry of column "IBD".
-  ibdres = vapply(simdata, function(a) a[, 'IBD'], FUN.VALUE = 1)
+  # For each sim, extract entry in column "IBD".
+  ibdres = vapply(simdata, function(a) a[[1, 'IBD']], FUN.VALUE = 1)
   
   # Frequency table
   res = table(factor(ibdres, levels = 0:2, labels = paste0("ibd", 0:2)))
@@ -332,8 +330,8 @@ estimateIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) 
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
-  # For each sim, extract first entry of column "Sigma".
-  ibdres = vapply(simdata, function(a) a[1, 'Sigma'], FUN.VALUE = 1)
+  # For each sim, extract entry in column "Sigma".
+  ibdres = vapply(simdata, function(a) a[[1, 'Sigma']], FUN.VALUE = 1)
   
   # Frequency table
   res = table(factor(ibdres, levels = 1:9, labels = paste0("state", 1:9)))
