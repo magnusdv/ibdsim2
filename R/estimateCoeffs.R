@@ -50,22 +50,26 @@
 #'   `estimateIdentity()`: a numeric vector of length 9, with the
 #'   estimated identity coefficients.
 #'
-#'   `estimateTwoLocusIdentity()`: symmetric, numerical 9*9 matrix, with the
-#'   estimated two-locus identity coefficients.
+#'   `estimateTwoLocusIdentity()`: a symmetric, numerical 9*9 matrix, with the
+#'   estimated values of \eqn{\Delta_{ij}}, for \eqn{i,j = 1,...,9}.
 #'
 #'
 #' @examples
-#'
+#' 
+#' ############################
 #' ### Two-locus inbreeding ###
-#'
+#' ############################
+#' 
 #' x = cousinPed(0, child = TRUE)
 #' rho = 0.25
 #' Nsim = 10 # Increase!
 #' estimateTwoLocusInbreeding(x, id = 5, rho = rho, Nsim = Nsim, seed = 123)
 #'
-#'
-#' ### Two-locus kappa: Grandparent vs half sib vs uncle ###
-#'
+#' ########################################
+#' ### Two-locus kappa:                 ###
+#' ### Grandparent vs half sib vs uncle ###
+#' ########################################
+#' 
 #' # These are indistinguishable with unlinked loci, see e.g.
 #' # pages 182-183 in Egeland, Kling and Mostad (2016).
 #' # Each simulations followed by exact counterpart.
@@ -88,8 +92,10 @@
 #' estimateTwoLocusKappa(U, U.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 #' (1-rho) * R + rho/4 # exact
 #'
-#'
+#' ##########################
 #' ### Two-locus Jacquard ###
+#' ##########################
+#' 
 #' x = fullSibMating(1)
 #' rho = 0.25
 #' Nsim = 10 # (increase for more accurate estimates!)
@@ -105,9 +111,6 @@ NULL
 estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim, 
                                       Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
-  
-  if (!id %in%  labels(x))
-    stop2("Unknown ID label: ", id)
   
   if (is.null(cM) + is.null(rho) != 1) 
     stop2("Exactly one of the parameters `cM` and `rho` must be non-NULL")
@@ -152,9 +155,6 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
 estimateInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
-  if (!id %in%  labels(x))
-    stop2("Unknown ID label: ", id)
-  
   # Define map of length 0
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
   
@@ -174,12 +174,9 @@ estimateInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 #' @rdname estimateCoeffs
 #' @export
 estimateTwoLocusKappa = function(x, ids, rho = NULL, cM = NULL, Nsim, 
-                               Xchrom = FALSE, verbose = FALSE, ...) {
+                                 Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
 
-  if (anyNA(match(ids, labels(x))))
-    stop2("Unknown ID label: ", setdiff(ids, labels(x)))
-  
   if (is.null(cM) + is.null(rho) != 1) 
     stop2("Exactly one of the parameters `cM` and `rho` must be non-NULL")
   
@@ -193,7 +190,7 @@ estimateTwoLocusKappa = function(x, ids, rho = NULL, cM = NULL, Nsim,
   if (cM == Inf) {
     if (verbose) cat("Analysing unlinked loci.\n")
     m1 = estimateKappa(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
-    m2 = estimateKappa(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE, ...) # dont repeat verbose output
+    m2 = estimateKappa(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE, ...) # don't repeat verbose output
     res = outer(m1, m2)
     return(res)
   }
@@ -235,9 +232,6 @@ estimateTwoLocusKappa = function(x, ids, rho = NULL, cM = NULL, Nsim,
 estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
-  if (anyNA(match(ids, labels(x))))
-    stop2("Unknown ID label: ", setdiff(ids, labels(x)))
-  
   # Define map of length 0
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
   
@@ -269,9 +263,6 @@ estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
 estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim, 
                                     Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
-  
-  if (anyNA(match(ids, labels(x))))
-    stop2("Unknown ID label: ", setdiff(ids, labels(x)))
   
   if (is.null(cM) + is.null(rho) != 1) 
     stop2("Exactly one of the parameters `cM` and `rho` must be non-NULL")
@@ -334,9 +325,6 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
 #' @export
 estimateIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
-  
-  if (anyNA(match(ids, labels(x))))
-    stop2("Unknown ID label: ", setdiff(ids, labels(x)))
   
   # Define map of length 0
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)

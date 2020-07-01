@@ -86,8 +86,8 @@ estimated values of \eqn{\kappa_{ij}}, for \eqn{i,j = 0,1,2}.
 \code{estimateIdentity()}: a numeric vector of length 9, with the
 estimated identity coefficients.
 
-\code{estimateTwoLocusIdentity()}: symmetric, numerical 9*9 matrix, with the
-estimated two-locus identity coefficients.
+\code{estimateTwoLocusIdentity()}: a symmetric, numerical 9*9 matrix, with the
+estimated values of \eqn{\Delta_{ij}}, for \eqn{i,j = 1,...,9}.
 }
 \description{
 Estimate by simulation various relatedness coefficients, and two-locus
@@ -115,15 +115,19 @@ identity states, see e.g., \url{https://github.com/magnusdv/ribd}.
 }
 \examples{
 
+############################
 ### Two-locus inbreeding ###
+############################
 
 x = cousinPed(0, child = TRUE)
 rho = 0.25
 Nsim = 10 # Increase!
 estimateTwoLocusInbreeding(x, id = 5, rho = rho, Nsim = Nsim, seed = 123)
 
-
-### Two-locus kappa: Grandparent vs half sib vs uncle ###
+########################################
+### Two-locus kappa:                 ###
+### Grandparent vs half sib vs uncle ###
+########################################
 
 # These are indistinguishable with unlinked loci, see e.g.
 # pages 182-183 in Egeland, Kling and Mostad (2016).
@@ -147,8 +151,10 @@ U = cousinPed(0, removal = 1); U.ids = c(3,6); # plot(U, shaded = U.ids)
 estimateTwoLocusKappa(U, U.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 (1-rho) * R + rho/4 # exact
 
-
+##########################
 ### Two-locus Jacquard ###
+##########################
+
 x = fullSibMating(1)
 rho = 0.25
 Nsim = 10 # (increase for more accurate estimates!)
