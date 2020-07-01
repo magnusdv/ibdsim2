@@ -154,15 +154,32 @@ genomeLen = function(x, unit = c("Mb", "cM"), sex = NA) {
 uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, 
                       chrom = 1) {
   
-  if (!is.null(cM) && !is.null(M)) 
+  if(is.null(cM) &&  is.null(M) && is.null(Mb))
+    stop2("No map length indicated")
+  
+  if(!is.null(cM) && !is.null(M)) 
     stop2("Either `cM` or `M` must be NULL")
   
-  stopifnot(!is.null(cM) || !is.null(M) || !is.null(Mb))
+  if(!is.null(Mb) && !(is.numeric(Mb) && length(Mb) == 1))
+    stop2("When non-NULL, `Mb` must be a numeric of length 1: ", Mb)
+  
+  if(!is.null(cM) && !(is.numeric(cM) && length(cM) < 3))
+    stop2("When non-NULL, `cM` must be a numeric of length 1 or 2: ", cM)
+  
+  if(!is.null(M) && !(is.numeric(M) && length(M) < 3))
+    stop2("When non-NULL, `M` must be a numeric of length 1 or 2: ", M)
   
   if (is.null(cM))
-    cM = if (!is.null(M)) M * 100 else  cm.per.mb * Mb
+    cM = if (!is.null(M)) M * 100 else cm.per.mb * Mb
   
-  if (is.null(Mb)) Mb = cM / cm.per.mb
+  if (is.null(Mb)) 
+    Mb = cM / cm.per.mb
+  
+  # If length 0, return early
+  if(Mb == 0) {
+    male = female = cbind(Mb = 0, cM = 0)
+    return(chromMap(male, female, chrom = chrom))
+  }
   
   Mb = unname(rep(Mb, length.out = 2))
   cM = unname(rep(cM, length.out = 2))
