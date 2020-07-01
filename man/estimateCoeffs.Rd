@@ -4,6 +4,8 @@
 \alias{estimateCoeffs}
 \alias{estimateTwoLocusInbreeding}
 \alias{estimateInbreeding}
+\alias{estimateTwoLocusKinship}
+\alias{estimateKinship}
 \alias{estimateTwoLocusKappa}
 \alias{estimateKappa}
 \alias{estimateTwoLocusIdentity}
@@ -22,6 +24,19 @@ estimateTwoLocusInbreeding(
 )
 
 estimateInbreeding(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
+
+estimateTwoLocusKinship(
+  x,
+  ids,
+  rho = NULL,
+  cM = NULL,
+  Nsim,
+  Xchrom = FALSE,
+  verbose = FALSE,
+  ...
+)
+
+estimateKinship(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 
 estimateTwoLocusKappa(
   x,
@@ -83,8 +98,8 @@ autosomal (FALSE).}
 \code{estimateTwoLocusKappa()}: a symmetric, numerical 3*3 matrix, with the
 estimated values of \eqn{\kappa_{ij}}, for \eqn{i,j = 0,1,2}.
 
-\code{estimateIdentity()}: a numeric vector of length 9, with the
-estimated identity coefficients.
+\code{estimateIdentity()}: a numeric vector of length 9, with the estimated
+identity coefficients.
 
 \code{estimateTwoLocusIdentity()}: a symmetric, numerical 9*9 matrix, with the
 estimated values of \eqn{\Delta_{ij}}, for \eqn{i,j = 1,...,9}.
@@ -92,10 +107,10 @@ estimated values of \eqn{\Delta_{ij}}, for \eqn{i,j = 1,...,9}.
 \description{
 Estimate by simulation various relatedness coefficients, and two-locus
 versions of the same coefficients, for a given recombination rate. The
-current implementation covers inbreeding coefficients, pairwise IBD (kappa)
-coefficients and pairwise condensed identity coefficients. These functions
-are primarily meant as tools for validating exact algorithms, e.g., as
-implemented in the \code{ribd} package.
+current implementation covers inbreeding coefficients, kinship coefficients,
+IBD (kappa) coefficients between noninbred individuals, and condensed
+identity coefficients. These functions are primarily meant as tools for
+validating exact algorithms, e.g., as implemented in the \code{ribd} package.
 }
 \details{
 In the following, let L1 and L2 denote two arbitrary autosomal loci with
@@ -105,9 +120,13 @@ The \emph{two-locus inbreeding coefficient} \eqn{f_2(\rho)} of a pedigree member
 is defined as the probability of being autozygous at both L1 and L2
 simultaneously.
 
+The \emph{two-locus kinship coefficient} \eqn{\phi_2(\rho)} of individuals A and B
+is defined as the probability that a random gamete emitted from A, and a
+random gamete emitted from B, contain IBD alleles at both L1 and L2.
+
 The \emph{two-locus kappa coefficients} \eqn{\kappa_{ij}(\rho)}, for \eqn{i,j =
-0,1,2}, of individuals A and B are defined by as the probability that A and B
-share i alleles IBD at L1, and j alleles IBD at L2.
+0,1,2}, of noninbred individuals A and B are defined by as the probability
+that A and B share \code{i} alleles IBD at L1, and \code{j} alleles IBD at L2.
 
 The \emph{two-locus identity coefficients} \eqn{\Delta_{ij}}, \eqn{i,j = 1,...,9}
 are defined similarly to the two-locus kappa above. For a description of the
@@ -151,14 +170,21 @@ U = cousinPed(0, removal = 1); U.ids = c(3,6); # plot(U, shaded = U.ids)
 estimateTwoLocusKappa(U, U.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 (1-rho) * R + rho/4 # exact
 
+# Exact calculations by ribd:
+# ribd::twoLocusIBD(G, G.ids, rho = rho, coefs = "k11")
+# ribd::twoLocusIBD(H, H.ids, rho = rho, coefs = "k11")
+# ribd::twoLocusIBD(U, U.ids, rho = rho, coefs = "k11")
+
 ##########################
 ### Two-locus Jacquard ###
 ##########################
 
 x = fullSibMating(1)
 rho = 0.25
-Nsim = 10 # (increase for more accurate estimates!)
+Nsim = 10 # (increase to at least 10000)
 
 estimateTwoLocusIdentity(x, ids = 5:6, rho = rho, Nsim = Nsim, seed = 123)
+
+# ribd::twoLocusIdentity(x, ids = 5:6, rho = rho)
 
 }
