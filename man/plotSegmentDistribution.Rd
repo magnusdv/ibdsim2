@@ -74,7 +74,7 @@ xPat = halfSibPed()
 xMat = swapSex(xPat, 1)
 
 # Map: Uniform version of the default "decode19"
-map = loadMap("decode19", detailed = FALSE)
+map = loadMap("decode19", uniform = TRUE)
 
 # Simulate (increase N!)
 N = 10
@@ -95,7 +95,7 @@ x = addSon(halfSibPed(), 5)
 
 # Simulate
 N = 10
-map = loadMap(detailed = FALSE)
+map = loadMap(uniform = TRUE)
 s = ibdsim(x, N = N, map = map)
 
 # Indicate the pairs explicitly this time.
@@ -124,7 +124,7 @@ plotPedList(peds, newdev = TRUE)
 dev.off()
 
 # Map
-map = loadMap(detailed = FALSE)
+map = loadMap(uniform = TRUE)
 
 # Simulations (increase N!))
 s = lapply(peds, function(p)

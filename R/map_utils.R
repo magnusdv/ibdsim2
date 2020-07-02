@@ -198,47 +198,56 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1,
 
 #' Load a built-in genetic map
 #'
-#' This function loads one of the built-in genetic maps. A faster, uniform
-#' version is also available by the parameter `detailed = FALSE`.
+#' This function loads one of the built-in genetic maps. Currently, the
+#' available map is the one published by Halldorsson et al. (2019).
+#'
+#' The built-in map is a thinned version of the published data, keeping about 60
+#' 000 data points.
+#'
+#' By setting `uniform = TRUE`, a uniform version of the map is returned, in
+#' which each chromosome has the same genetic lengths as in the original, but
+#' with constant recombination rates. This is much faster simulations, and may
+#' be preferable in some applications. 
 #'
 #' @param map The name of the wanted map. Currently, the only valid choice is
 #'   "decode19". This is also the default.
 #' @param chrom A numeric vector indicating which chromosomes to load. Default:
-#'   `1:22` (the autosomes)
-#' @param detailed A logical. If TRUE (default), the complete inhomogeneous map
-#'   is used. If FALSE, a uniform version of the same map is produced, i.e. with
+#'   `1:22` (the autosomes).
+#' @param uniform A logical. If FALSE (default), the complete inhomogeneous map
+#'   is used. If TRUE, a uniform version of the same map is produced, i.e. with
 #'   the correct lengths, but constant recombination rate along each chromosome.
-#' @param sexSpecific A logical, by default TRUE. If FALSE, a sex-averaged map
-#'   is returned, equal between males and females
+#' @param sexAverage A logical, by default FALSE. If TRUE, a sex-averaged map
+#'   is returned, equal between males and females.
 #'
 #' @return An object of class `genomeMap`.
-#' 
-#' @references Halldorsson et al. _Characterizing mutagenic effects of recombination through a
-#'   sequence-level genetic map._ Science 363, no. 6425 (2019).
-#' 
+#'
+#' @references Halldorsson et al. _Characterizing mutagenic effects of
+#'   recombination through a sequence-level genetic map._ Science 363, no. 6425
+#'   (2019).
+#'
 #' @examples
 #' # By default, the complete map of all 22 autosomes is returned
 #' loadMap()
 #'
 #' # Uniform version
-#' m = loadMap(detailed = FALSE)
+#' m = loadMap(uniform = TRUE)
 #'
 #' # Check chromosome 1:
 #' m1 = m[[1]]
 #' m1$male
 #' m1$female
-#' 
+#'
 #' @export
-loadMap = function(map = "decode19", chrom = 1:22, detailed = TRUE, sexSpecific = TRUE) {
+loadMap = function(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage = FALSE) {
   
   if(!is.character(map) || length(map) != 1)
     stop2("Argument `map` must be a character of length 1")
   
-  if(!is.logical(detailed) || length(detailed) != 1 || is.na(detailed))
-    stop2("Argument `detailed` must be either TRUE or FALSE")
+  if(!is.logical(uniform) || length(uniform) != 1 || is.na(uniform))
+    stop2("Argument `uniform` must be either TRUE or FALSE")
 
-  if(!is.logical(sexSpecific) || length(sexSpecific) != 1 || is.na(sexSpecific))
-    stop2("Argument `sexSpecific` must be either TRUE or FALSE")
+  if(!is.logical(sexAverage) || length(sexAverage) != 1 || is.na(sexAverage))
+    stop2("Argument `sexAverage` must be either TRUE or FALSE")
   
   # For now only 'decode19' is implemented
   builtinMaps = c("decode19")
@@ -249,15 +258,16 @@ loadMap = function(map = "decode19", chrom = 1:22, detailed = TRUE, sexSpecific 
   map = builtinMaps[mapno]
   genome = get(map)[chrom]
   
-  if(detailed && sexSpecific)
+  if(!uniform && !sexAverage)
     return(genome)
   
-  if(!detailed) {
+  if(uniform) {
     chroms = lapply(genome, function(chr) {
       chrom = attr(chr, "chrom")
       mb = chromLen(chr, "Mb")
       cm = chromLen(chr, "cM", sex = NA)
-      if(!sexSpecific) 
+      
+      if(sexAverage) 
         cm = mean(cm)
       
       uniformMap(Mb = mb, cM = cm, chrom = chrom)
@@ -266,7 +276,7 @@ loadMap = function(map = "decode19", chrom = 1:22, detailed = TRUE, sexSpecific 
     return(genomeMap(chroms))
   }
   
-  if(!sexSpecific) {
+  if(sexAverage) {
     genome[] = lapply(genome, function(chr) {
       if(!identical(chr$male$Mb, chr$female$Mb))
         stop2("Sex averaging requires equal map positions in males and females")

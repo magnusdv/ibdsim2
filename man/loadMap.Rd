@@ -4,35 +4,44 @@
 \alias{loadMap}
 \title{Load a built-in genetic map}
 \usage{
-loadMap(map = "decode19", chrom = 1:22, detailed = TRUE, sexSpecific = TRUE)
+loadMap(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage = FALSE)
 }
 \arguments{
 \item{map}{The name of the wanted map. Currently, the only valid choice is
 "decode19". This is also the default.}
 
 \item{chrom}{A numeric vector indicating which chromosomes to load. Default:
-\code{1:22} (the autosomes)}
+\code{1:22} (the autosomes).}
 
-\item{detailed}{A logical. If TRUE (default), the complete inhomogeneous map
-is used. If FALSE, a uniform version of the same map is produced, i.e. with
+\item{uniform}{A logical. If FALSE (default), the complete inhomogeneous map
+is used. If TRUE, a uniform version of the same map is produced, i.e. with
 the correct lengths, but constant recombination rate along each chromosome.}
 
-\item{sexSpecific}{A logical, by default TRUE. If FALSE, a sex-averaged map
-is returned, equal between males and females}
+\item{sexAverage}{A logical, by default FALSE. If TRUE, a sex-averaged map
+is returned, equal between males and females.}
 }
 \value{
 An object of class \code{genomeMap}.
 }
 \description{
-This function loads one of the built-in genetic maps. A faster, uniform
-version is also available by the parameter \code{detailed = FALSE}.
+This function loads one of the built-in genetic maps. Currently, the
+available map is the one published by Halldorsson et al. (2019).
+}
+\details{
+The built-in map is a thinned version of the published data, keeping about 60
+000 data points.
+
+By setting \code{uniform = TRUE}, a uniform version of the map is returned, in
+which each chromosome has the same genetic lengths as in the original, but
+with constant recombination rates. This is much faster simulations, and may
+be preferable in some applications.
 }
 \examples{
 # By default, the complete map of all 22 autosomes is returned
 loadMap()
 
 # Uniform version
-m = loadMap(detailed = FALSE)
+m = loadMap(uniform = TRUE)
 
 # Check chromosome 1:
 m1 = m[[1]]
@@ -41,6 +50,7 @@ m1$female
 
 }
 \references{
-Halldorsson et al. \emph{Characterizing mutagenic effects of recombination through a
-sequence-level genetic map.} Science 363, no. 6425 (2019).
+Halldorsson et al. \emph{Characterizing mutagenic effects of
+recombination through a sequence-level genetic map.} Science 363, no. 6425
+(2019).
 }
