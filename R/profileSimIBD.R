@@ -1,34 +1,45 @@
 #' Simulate markers on a given IBD pattern
 #'
-#' This function is similar to `profileSim()` but may be used to simulate
-#' genotypes for linked markers.
+#' This function simulates genotypes for a set of markers simultaneously,
+#' conditional on a specific underlying IBD pattern.
 #'
-#' @param x A `ped` object
-#' @param ibdpattern A simulation output of `ibdsim`
-#' @param markers A vector with names of indices of markers attached to `x`
+#' It should be noted that the only *random* part of this function is the
+#' selection of founder alleles for each marker. Given those, all other
+#' genotypes in the pedigree are determined by the underlying IBD pattern. 
 #'
-#' @return An object similar to `x`
+#' @param x A `ped` object.
+#' @param ibdpattern A `genomeSim()` object, typically created by [ibdsim()].
+#'   (See Examples).
+#' @param ids A vector of ID labels referring to members of `x`. If NULL, all
+#'   members are included.
+#' @param markers A vector with names of indices of markers attached to `x`.
+#' @param seed An integer seed for the random number generator.
 #'
+#' @return An object similar to `x`. but with simulated genotypes.
+#' 
+#' @seealso [ibdsim()], [forrel::profileSim()]
+#' 
 #' @examples
+#' # A pedigree with two siblings
 #' x = nuclearPed(2)
 #'
-#' # Simulation of IBD in the pedigree
-#' s = ibdsim(x, 1, ids = 3:4, map = uniformMap(M = 1), seed = 1729)[[1]]
+#' # Attach 3 linked markers on chromosome 1
+#' cm = c(20, 50, 70)   # centiMorgan positions
+#' mlist = lapply(cm, function(i) 
+#'   marker(x, alleles = letters[1:10], chrom = 1, posCm = i))
+#' x = setMarkers(x, mlist)
 #' 
-#' # Attach 3 markers on chromosome 1
-#' loci = list(
-#'  list(afreq = c(a = 0.5, b = 0.5), chrom = 1, posCm = 20),
-#'  list(afreq = c(a = 0.9, b = 0.1), chrom = 1, posCm = 30),
-#'  list(afreq = c(a = 0.2, b = 0.3, c = .5), chrom = 1, posCm = 60)
-#' )
-#' x = setMarkers(x, loc = loci)
+#' # Simulate the underlying IBD pattern in the pedigree
+#' s = ibdsim(x, 1, map = uniformMap(M = 1, chrom = 1), seed = 123)[[1]]
+#' 
+#' # Simulate genotypes for the sibs conditional on the given IBD pattern
+#' profileSimIBD(x, s, ids = 3:4, seed = 123)
 #'
-#' # Simulate genotypes on the given IBD pattern
-#' profileSimIBD(x, s)
-#' 
-#' 
+#' # With a different seed
+#' profileSimIBD(x, s, ids = 3:4, seed = 124)
+#'  
 #' @export
-profileSimIBD = function(x, ibdpattern, markers = NULL) {
+profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL) {
 
   if(!is.data.frame(ibdpattern) && is.list(ibdpattern))
     return(lapply(ibdpattern, function(patt) profileSimIBD(x, patt, markers = markers)))
@@ -37,6 +48,14 @@ profileSimIBD = function(x, ibdpattern, markers = NULL) {
     x = selectMarkers(x, markers)
 
   a = ibdpattern
+  if(is.null(ids))
+    ids = extractIdsFromSegmentSummary(a)
+  else
+    a = segmentSummary(a, ids, addState = FALSE)
+  
+  if(!all(ids %in% labels(x)))
+    stop2("ID label in `ibdpattern` not found in `x`: ", setdiff(ids, labels(x)))
+  
   achr = a[, 'chrom']
   
   nMark = nMarkers(x)
@@ -56,13 +75,9 @@ profileSimIBD = function(x, ibdpattern, markers = NULL) {
     chrrows[findInterval(mpos[i], a[chrrows, 'start'])]
   }, FUN.VALUE = 1L)
   
-  # Individuals present in simulation
-  colnms = colnames(a)
-  colnms.2 = substr(colnms, 1, nchar(colnms) - 2) # remove last 2 (e.g. ":p")
-  ids = intersect(labels(x), colnms.2)
   
   # Allele columns
-  acols = which(colnms.2 %in% ids)
+  acols = 4 + seq_len(2 * length(ids))
   
   # Number of founder alleles (i.e,. "different colours")
   nA = 2 * length(founders(x))
@@ -70,16 +85,20 @@ profileSimIBD = function(x, ibdpattern, markers = NULL) {
   # Create empty allele matrix
   alsMat.transp = matrix("0", nrow = 2*nMark, ncol = length(ids))
   
+  # Set seed if given
+  if(!is.null(seed))
+    set.seed(seed)
+  
   # Fill in allele matrix one marker at a time
   for(i in seq_len(nMark)) {
     # IBD pattern for this marker
     ibdpatt = a[arows[i], acols]
-    
+
     # Sample founder allele labels
     frqvec = afreq(x, i)
     als = names(frqvec)
     founderAlleles = sample(als, size = nA, replace = TRUE, prob = frqvec)
-    
+
     # Distribute alleles according to IBD pattern
     allAlleles = founderAlleles[ibdpatt]
     

@@ -4,38 +4,53 @@
 \alias{profileSimIBD}
 \title{Simulate markers on a given IBD pattern}
 \usage{
-profileSimIBD(x, ibdpattern, markers = NULL)
+profileSimIBD(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
 }
 \arguments{
-\item{x}{A \code{ped} object}
+\item{x}{A \code{ped} object.}
 
-\item{ibdpattern}{A simulation output of \code{ibdsim}}
+\item{ibdpattern}{A \code{genomeSim()} object, typically created by \code{\link[=ibdsim]{ibdsim()}}.
+(See Examples).}
 
-\item{markers}{A vector with names of indices of markers attached to \code{x}}
+\item{ids}{A vector of ID labels referring to members of \code{x}. If NULL, all
+members are included.}
+
+\item{markers}{A vector with names of indices of markers attached to \code{x}.}
+
+\item{seed}{An integer seed for the random number generator.}
 }
 \value{
-An object similar to \code{x}
+An object similar to \code{x}. but with simulated genotypes.
 }
 \description{
-This function is similar to \code{profileSim()} but may be used to simulate
-genotypes for linked markers.
+This function simulates genotypes for a set of markers simultaneously,
+conditional on a specific underlying IBD pattern.
+}
+\details{
+It should be noted that the only \emph{random} part of this function is the
+selection of founder alleles for each marker. Given those, all other
+genotypes in the pedigree are determined by the underlying IBD pattern.
 }
 \examples{
+# A pedigree with two siblings
 x = nuclearPed(2)
 
-# Simulation of IBD in the pedigree
-s = ibdsim(x, 1, ids = 3:4, map = uniformMap(M = 1), seed = 1729)[[1]]
+# Attach 3 linked markers on chromosome 1
+cm = c(20, 50, 70)   # centiMorgan positions
+mlist = lapply(cm, function(i) 
+  marker(x, alleles = letters[1:10], chrom = 1, posCm = i))
+x = setMarkers(x, mlist)
 
-# Attach 3 markers on chromosome 1
-loci = list(
- list(afreq = c(a = 0.5, b = 0.5), chrom = 1, posCm = 20),
- list(afreq = c(a = 0.9, b = 0.1), chrom = 1, posCm = 30),
- list(afreq = c(a = 0.2, b = 0.3, c = .5), chrom = 1, posCm = 60)
-)
-x = setMarkers(x, loc = loci)
+# Simulate the underlying IBD pattern in the pedigree
+s = ibdsim(x, 1, map = uniformMap(M = 1, chrom = 1), seed = 123)[[1]]
 
-# Simulate genotypes on the given IBD pattern
-profileSimIBD(x, s)
+# Simulate genotypes for the sibs conditional on the given IBD pattern
+profileSimIBD(x, s, ids = 3:4, seed = 123)
 
-
+# With a different seed
+profileSimIBD(x, s, ids = 3:4, seed = 124)
+ 
+}
+\seealso{
+\code{\link[=ibdsim]{ibdsim()}}, \code{\link[forrel:profileSim]{forrel::profileSim()}}
 }
