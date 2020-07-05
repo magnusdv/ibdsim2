@@ -44,6 +44,70 @@ genomeMap = function(x) {
   structure(x, genomeLen = len, class = "genomeMap")
 }
 
+
+#' Custom recombination map
+#'
+#' Create custom recombination maps for use in [ibdsim()].
+#'
+#' @param x A data frame (or matrix), whose column names must include "chrom",
+#'   "mb", and either "cm" or both "male" and "female". (See Examples.)
+#'
+#' @return An object of class `genomeMap`
+#' @seealso [uniformMap()], [loadMap()]
+#'
+#' @examples
+#' # A map including two chromosomes.
+#' df1 = data.frame(chrom = c(1, 1, 2, 2),
+#'                  mb = c(0, 2, 0, 5),
+#'                  cm = c(0, 3, 0, 6))
+#' map1 = customMap(df1)
+#' map1
+#'
+#' # Use columns "male" and "female" to make sex specific maps
+#' df2 = data.frame(chrom = c(1, 1, 2, 2),
+#'                  mb = c(0, 2, 0, 5),
+#'                  male = c(0, 3, 0, 6),
+#'                  female = c(0, 4, 0, 7))
+#' map2 = customMap(df2)
+#' map2
+#'
+#'
+#' @export
+customMap = function(x) {
+  if(is.matrix(x))
+    x = as.data.frame(x)
+  
+  if(!is.data.frame(x))
+    stop2("Argument `x` must be a data frame or matrix. Received: ", class(x))
+  
+  nms = names(x)
+  nmsSmall = tolower(nms)
+  if(!"chrom" %in% nmsSmall) stop2('`x` must have a column named "chrom". See `?customMap`')
+  if(!"mb" %in% nmsSmall) stop2('`x` must have a column named "mb". See `?customMap`')
+  sexEq = "cm" %in% nmsSmall
+  sexSpec = "male" %in% nmsSmall && "female" %in% nmsSmall
+  if(!(sexEq || sexSpec))
+    stop2('`x` must either have a colum named "cm", or two columns named "male" and "female". See `?customMap`')
+  
+  names(x) = nmsSmall
+  
+  # Split by chromosome
+  chrList = split(x, x$chrom)
+  
+  chroms = lapply(chrList, function(chr) {
+    if(sexEq) {
+      male = female = chr[c("mb", "cm")]
+    }
+    else {
+      male = chr[c("mb", "male")]
+      female = chr[c("mb", "female")]
+    }
+    chromMap(male, female, chrom = chr$chrom[1])
+  })
+  
+  genomeMap(chroms)
+}
+
 #' @export
 `[.genomeMap` = function(x, i) {
   if(!all(i %in% seq_along(x)))
