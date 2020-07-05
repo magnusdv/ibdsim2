@@ -52,3 +52,25 @@ test_that("loadMap() options work", {
   expect_equal(nrow(m[[1]]$male), nrow(ms[[1]]$male))
 })
 
+test_that("customMap() results in a genomeMap", {
+  expect_is(customMap(data.frame(CHROM = 30, MB = 0, CM = 0, blabla = NA)), "genomeMap")
+})
+
+test_that("customMap() catches errors", {
+  expect_error(customMap(list(chrom = 30, foo = 0, bar = 0)), 
+               "Argument `x` must be a data frame or matrix.")
+  expect_error(customMap(data.frame(foo_chrom = 30, foo = 0, bar = 0)), 
+               '`x` must have a column named "chrom"')
+  expect_error(customMap(data.frame(chrom = 30, foo = 0, bar = 0)), 
+               '`x` must have a column named "mb"')
+  expect_error(customMap(data.frame(chrom = 30, mb = 0, male = 0)), 
+               '`x` must either have a colum named "cm", or two columns named "male" and "female".')
+})
+
+test_that("customMap() assigns male/female columns correctly", {
+  m1 = customMap(data.frame(chrom = 1, mb = 0:1, male = c(0,2), female = c(0,3)))
+  expect_equal(genomeLen(m1, "cM"), c(male = 2, female = 3))
+  
+  m2 = customMap(data.frame(chrom = 1, mb = 0:1, female = c(0,3), male = c(0,2)))
+  expect_equal(genomeLen(m2, "cM"), c(male = 2, female = 3))
+})
