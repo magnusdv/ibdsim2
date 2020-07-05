@@ -1,13 +1,28 @@
 segmentSummary = function(x, ids, addState = TRUE) {
-  if(ncol(x) == 4 + 2 * length(ids) + 2 * (length(ids) == 2))
-    return(x)
+  if(!inherits(x, "genomeSim"))
+    stop2("Argument `x` must be a `genomeSim` object. Received: ", class(x))
+  
+  xids = extractIdsFromSegmentSummary(x)
+  if(!all(ids %in% xids))
+    stop2("Unknown ID label: ", setdiff(ids, xids))
+  
+  n = length(ids)
+  
+  if(setequal(ids, xids)) {
+    if(n > 2 || !addState) 
+      return(x)
+    if(n == 1 && "Aut" %in% colnames(x))
+      return(x)
+    if(n == 2 && "Sigma" %in% colnames(x))
+      return(x)
+  }
   
   # Allele columns of selected ids
   colnms = paste(rep(ids, each = 2), c("p", "m"), sep = ":")
   
   # Merge identical rows
   y = mergeAdjacent(x, vec = apply(x[, colnms], 1, paste, collapse = " "))
-  y = y[, c(1:4, match(colnms, colnames(x)))]
+  y = y[, c(1:4, match(colnms, colnames(x))), drop = FALSE]
   
   if(addState)
     y = addStates(y)
