@@ -1,6 +1,6 @@
 #' Scatter plots of IBD segment distributions
 #'
-#' Visualise and compare count/size distributions of IBD segments. Two types are
+#' Visualise and compare count/length distributions of IBD segments. Two types are
 #' currently implemented: Segments of autozygosity (for a single person) and
 #' segments with (pairwise) IBD state 1.
 #'
@@ -12,8 +12,8 @@
 #' theoretical/pedigree-based values: either inbreeding coefficients (if `type =
 #' "autozygosity"`) or \eqn{\kappa_1} (if `type = "ibd1"`).
 #'
-#' @param \dots One or several objects of class `genomeSimList`, i.e. outputs of
-#'   [ibdsim()]. They can be entered separately or as a list.
+#' @param \dots One or several objects of class `genomeSimList`, typically created by
+#'   [ibdsim()]. They can be entered separately or as a `list`.
 #' @param type A string indicating which segments should be plotted. Currently,
 #'   the allowed entries are "autozygosity" and "ibd1".
 #' @param ids A list of the same length as `...`, where each entry contains one
@@ -47,7 +47,7 @@
 #' map = loadMap("decode19", uniform = TRUE)
 #' 
 #' # Simulate (increase N!)
-#' N = 10
+#' N = 5
 #' simPat = ibdsim(xPat, N = N, map = map)
 #' simMat = ibdsim(xMat, N = N, map = map)
 #'
@@ -63,8 +63,8 @@
 #' # Only one pedigree needed here
 #' x = addSon(halfSibPed(), 5)
 #'
-#' # Simulate
-#' N = 10
+#' # Simulate (increase N!)
+#' N = 5
 #' map = loadMap(uniform = TRUE)
 #' s = ibdsim(x, N = N, map = map)
 #'
@@ -98,7 +98,7 @@
 #' 
 #' # Simulations (increase N!))
 #' s = lapply(peds, function(p)
-#'   ibdsim(p, N = 10, ids = leaves(p), verbose = FALSE, map = map))
+#'   ibdsim(p, N = 3, ids = leaves(p), verbose = FALSE, map = map))
 #'
 #' # Plot distributions
 #' plotSegmentDistribution(s, type = "autoz", title = "Autozygous segments")
@@ -230,10 +230,9 @@ plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha 
       message("Warning: Simulation list ", i, " includes IBD = 2 segments. Expected 'kappa_1 curve' will be wrong!")
     
     L = attr(s, "genomeLen")
-    data.frame(nSeg = real$nSeg1,
-               meanLen = real$k1 * L / real$nSeg1, 
-               relation = labs[i])
-    
+    nSeg = real$nSeg1
+    meanLen = ifelse(nSeg > 0, real$k1 * L / nSeg, 0)
+    data.frame(nSeg = nSeg,  meanLen = meanLen, relation = labs[i])
   })
   
   plotDat = do.call(rbind, plotDatList)

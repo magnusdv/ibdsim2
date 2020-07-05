@@ -52,12 +52,12 @@ pair of individuals:
 
 # Realised IBD coefficients between full siblings
 x = nuclearPed(2)
-s = ibdsim(x, N = 10) # increase N
+s = ibdsim(x, N = 2) # increase N
 realisedKappa(s, ids = 3:4)
 
 # Realised inbreeding coefficients, child of first cousins
 x = cousinPed(1, child = TRUE)
-s = ibdsim(x, N = 10) # increase N
+s = ibdsim(x, N = 2) # increase N
 realisedInbreeding(s, id = 9)
 
 # Same data: realised kinship coefficients between the parents

@@ -2,16 +2,18 @@
 % Please edit documentation in R/estimateCoeffs.R
 \name{estimateCoeffs}
 \alias{estimateCoeffs}
-\alias{estimateTwoLocusInbreeding}
 \alias{estimateInbreeding}
-\alias{estimateTwoLocusKinship}
+\alias{estimateTwoLocusInbreeding}
 \alias{estimateKinship}
-\alias{estimateTwoLocusKappa}
+\alias{estimateTwoLocusKinship}
 \alias{estimateKappa}
-\alias{estimateTwoLocusIdentity}
+\alias{estimateTwoLocusKappa}
 \alias{estimateIdentity}
+\alias{estimateTwoLocusIdentity}
 \title{Estimation of one- and two-locus relatedness coefficients}
 \usage{
+estimateInbreeding(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
+
 estimateTwoLocusInbreeding(
   x,
   id,
@@ -23,7 +25,7 @@ estimateTwoLocusInbreeding(
   ...
 )
 
-estimateInbreeding(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
+estimateKinship(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 
 estimateTwoLocusKinship(
   x,
@@ -36,7 +38,7 @@ estimateTwoLocusKinship(
   ...
 )
 
-estimateKinship(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
+estimateKappa(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 
 estimateTwoLocusKappa(
   x,
@@ -49,7 +51,7 @@ estimateTwoLocusKappa(
   ...
 )
 
-estimateKappa(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
+estimateIdentity(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 
 estimateTwoLocusIdentity(
   x,
@@ -61,22 +63,11 @@ estimateTwoLocusIdentity(
   verbose = FALSE,
   ...
 )
-
-estimateIdentity(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped()}} object.}
 
 \item{id, ids}{A vector of one or two ID labels.}
-
-\item{rho}{A scalar in the interval \verb{[0, 0.5]}: the recombination fraction
-between the two loci, converted to centiMorgan using Haldanes map function:
-cM = -50 * log(1 - 2*rho). Either \code{rho} or \code{cM} (but not both) must be
-non-NULL.}
-
-\item{cM}{A non-negative number: the genetic distance between the two loci,
-given in centiMorgans. Either \code{rho} or \code{cM} (but not both) must be
-non-NULL.}
 
 \item{Nsim}{The number of simulations.}
 
@@ -86,6 +77,15 @@ autosomal (FALSE).}
 \item{verbose}{A logical.}
 
 \item{...}{Further arguments passed on to \code{\link[=ibdsim]{ibdsim()}}, e.g. \code{seed}.}
+
+\item{rho}{A scalar in the interval \verb{[0, 0.5]}: the recombination fraction
+between the two loci, converted to centiMorgan using Haldanes map function:
+cM = -50 * log(1 - 2*rho). Either \code{rho} or \code{cM} (but not both) must be
+non-NULL.}
+
+\item{cM}{A non-negative number: the genetic distance between the two loci,
+given in centiMorgans. Either \code{rho} or \code{cM} (but not both) must be
+non-NULL.}
 }
 \value{
 \code{estimateInbreeding()}: a single probability.
@@ -114,23 +114,25 @@ validating exact algorithms, e.g., as implemented in the \code{ribd} package.
 }
 \details{
 In the following, let L1 and L2 denote two arbitrary autosomal loci with
-recombination rate \eqn{\rho}.
+recombination rate \eqn{\rho}, and let A and B be members of the pedigree
+\code{x}.
 
-The \emph{two-locus inbreeding coefficient} \eqn{f_2(\rho)} of a pedigree member
-is defined as the probability of being autozygous at both L1 and L2
-simultaneously.
+The \emph{two-locus inbreeding coefficient} \eqn{f_2(\rho)} of A is defined as the
+probability that A is autozygous at both L1 and L2 simultaneously.
 
-The \emph{two-locus kinship coefficient} \eqn{\phi_2(\rho)} of individuals A and B
-is defined as the probability that a random gamete emitted from A, and a
-random gamete emitted from B, contain IBD alleles at both L1 and L2.
+The \emph{two-locus kinship coefficient} \eqn{\phi_2(\rho)} of A and B is defined
+as the probability that a random gamete emitted from A, and a random gamete
+emitted from B, contain IBD alleles at both L1 and L2.
 
-The \emph{two-locus kappa coefficients} \eqn{\kappa_{ij}(\rho)}, for \eqn{i,j =
-0,1,2}, of noninbred individuals A and B are defined by as the probability
-that A and B share \code{i} alleles IBD at L1, and \code{j} alleles IBD at L2.
+The \emph{two-locus kappa coefficient} \eqn{\kappa_{ij}(\rho)}, for \eqn{i,j =
+0,1,2}, of noninbred A and B, is the probability that A and B share exactly
+\code{i} alleles IBD at L1, and exactly \code{j} alleles IBD at L2.
 
-The \emph{two-locus identity coefficients} \eqn{\Delta_{ij}}, \eqn{i,j = 1,...,9}
-are defined similarly to the two-locus kappa above. For a description of the
-identity states, see e.g., \url{https://github.com/magnusdv/ribd}.
+The \emph{two-locus identity coefficient} \eqn{\Delta_{ij}}, \eqn{i,j = 1,...,9}
+is defined for any (possibly inbred) A and B, as the probability that A and B
+are in identity state \code{i} at L1, and state \code{j} at L2. This uses the
+conventional ordering of the nine condensed identity states. For details, see e.g.,
+\url{https://github.com/magnusdv/ribd}.
 }
 \examples{
 
@@ -150,13 +152,14 @@ estimateTwoLocusInbreeding(x, id = 5, rho = rho, Nsim = Nsim, seed = 123)
 
 # These are indistinguishable with unlinked loci, see e.g.
 # pages 182-183 in Egeland, Kling and Mostad (2016).
-# Each simulations followed by exact counterpart.
+# In the following, each simulation approximation is followed
+# by its exact counterpart.
 
 rho = 0.25; R = .5 * (rho^2 + (1-rho)^2)
 Nsim = 10 # Should be increased to at least 10000
 
 # Grandparent/grandchild
-G = linearPed(2); G.ids = c(1,5); #plot(G, shaded = G.ids)
+G = linearPed(2); G.ids = c(1,5); # plot(G, shaded = G.ids)
 estimateTwoLocusKappa(G, G.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 .5*(1-rho) # exact
 

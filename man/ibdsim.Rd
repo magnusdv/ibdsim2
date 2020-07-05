@@ -21,7 +21,7 @@ ibdsim(
 \item{N}{A positive integer indicating the number of simulations.}
 
 \item{ids}{A subset of pedigree members whose IBD sharing should be analysed.
-If NULL, the simulations are returned unprocessed.}
+If NULL, all members are included.}
 
 \item{map}{The genetic map to be used in the simulations: Allowed values are:
 \itemize{

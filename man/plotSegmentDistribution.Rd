@@ -20,8 +20,8 @@ plotSegmentDistribution(
 )
 }
 \arguments{
-\item{\dots}{One or several objects of class \code{genomeSimList}, i.e. outputs of
-\code{\link[=ibdsim]{ibdsim()}}. They can be entered separately or as a list.}
+\item{\dots}{One or several objects of class \code{genomeSimList}, typically created by
+\code{\link[=ibdsim]{ibdsim()}}. They can be entered separately or as a \code{list}.}
 
 \item{type}{A string indicating which segments should be plotted. Currently,
 the allowed entries are "autozygosity" and "ibd1".}
@@ -50,7 +50,7 @@ NULL, the labels are taken from \code{names(...)}.}
 \item{legendInside}{A logical controlling the legend placement.}
 }
 \description{
-Visualise and compare count/size distributions of IBD segments. Two types are
+Visualise and compare count/length distributions of IBD segments. Two types are
 currently implemented: Segments of autozygosity (for a single person) and
 segments with (pairwise) IBD state 1.
 }
@@ -77,7 +77,7 @@ xMat = swapSex(xPat, 1)
 map = loadMap("decode19", uniform = TRUE)
 
 # Simulate (increase N!)
-N = 10
+N = 5
 simPat = ibdsim(xPat, N = N, map = map)
 simMat = ibdsim(xMat, N = N, map = map)
 
@@ -93,8 +93,8 @@ plotSegmentDistribution(simPat, simMat, type = "ibd1", ids = 4:5,
 # Only one pedigree needed here
 x = addSon(halfSibPed(), 5)
 
-# Simulate
-N = 10
+# Simulate (increase N!)
+N = 5
 map = loadMap(uniform = TRUE)
 s = ibdsim(x, N = N, map = map)
 
@@ -128,7 +128,7 @@ map = loadMap(uniform = TRUE)
 
 # Simulations (increase N!))
 s = lapply(peds, function(p)
-  ibdsim(p, N = 10, ids = leaves(p), verbose = FALSE, map = map))
+  ibdsim(p, N = 3, ids = leaves(p), verbose = FALSE, map = map))
 
 # Plot distributions
 plotSegmentDistribution(s, type = "autoz", title = "Autozygous segments")

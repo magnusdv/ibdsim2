@@ -25,7 +25,7 @@
 #' @param x A [pedtools::ped()] object.
 #' @param N A positive integer indicating the number of simulations.
 #' @param ids A subset of pedigree members whose IBD sharing should be analysed.
-#'   If NULL, the simulations are returned unprocessed.
+#'   If NULL, all members are included.
 #' @param map The genetic map to be used in the simulations: Allowed values are:
 #'
 #'   * a `genomeMap` object, typically produced by [loadMap()]

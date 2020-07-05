@@ -8,23 +8,25 @@
 #' validating exact algorithms, e.g., as implemented in the `ribd` package.
 #'
 #' In the following, let L1 and L2 denote two arbitrary autosomal loci with
-#' recombination rate \eqn{\rho}.
+#' recombination rate \eqn{\rho}, and let A and B be members of the pedigree
+#' `x`.
 #'
-#' The *two-locus inbreeding coefficient* \eqn{f_2(\rho)} of a pedigree member
-#' is defined as the probability of being autozygous at both L1 and L2
-#' simultaneously.
+#' The *two-locus inbreeding coefficient* \eqn{f_2(\rho)} of A is defined as the
+#' probability that A is autozygous at both L1 and L2 simultaneously.
 #'
-#' The *two-locus kinship coefficient* \eqn{\phi_2(\rho)} of individuals A and B
-#' is defined as the probability that a random gamete emitted from A, and a
-#' random gamete emitted from B, contain IBD alleles at both L1 and L2.
+#' The *two-locus kinship coefficient* \eqn{\phi_2(\rho)} of A and B is defined
+#' as the probability that a random gamete emitted from A, and a random gamete
+#' emitted from B, contain IBD alleles at both L1 and L2.
 #'
-#' The *two-locus kappa coefficients* \eqn{\kappa_{ij}(\rho)}, for \eqn{i,j =
-#' 0,1,2}, of noninbred individuals A and B are defined by as the probability
-#' that A and B share `i` alleles IBD at L1, and `j` alleles IBD at L2.
+#' The *two-locus kappa coefficient* \eqn{\kappa_{ij}(\rho)}, for \eqn{i,j =
+#' 0,1,2}, of noninbred A and B, is the probability that A and B share exactly
+#' `i` alleles IBD at L1, and exactly `j` alleles IBD at L2.
 #'
-#' The *two-locus identity coefficients* \eqn{\Delta_{ij}}, \eqn{i,j = 1,...,9}
-#' are defined similarly to the two-locus kappa above. For a description of the
-#' identity states, see e.g., <https://github.com/magnusdv/ribd>.
+#' The *two-locus identity coefficient* \eqn{\Delta_{ij}}, \eqn{i,j = 1,...,9}
+#' is defined for any (possibly inbred) A and B, as the probability that A and B
+#' are in identity state `i` at L1, and state `j` at L2. This uses the
+#' conventional ordering of the nine condensed identity states. For details, see e.g.,
+#' <https://github.com/magnusdv/ribd>.
 #'
 #' @param x A pedigree in the form of a [pedtools::ped()] object.
 #' @param id,ids A vector of one or two ID labels.
@@ -76,13 +78,14 @@
 #'
 #' # These are indistinguishable with unlinked loci, see e.g.
 #' # pages 182-183 in Egeland, Kling and Mostad (2016).
-#' # Each simulations followed by exact counterpart.
+#' # In the following, each simulation approximation is followed
+#' # by its exact counterpart.
 #'
 #' rho = 0.25; R = .5 * (rho^2 + (1-rho)^2)
 #' Nsim = 10 # Should be increased to at least 10000
 #'
 #' # Grandparent/grandchild
-#' G = linearPed(2); G.ids = c(1,5); #plot(G, shaded = G.ids)
+#' G = linearPed(2); G.ids = c(1,5); # plot(G, shaded = G.ids)
 #' estimateTwoLocusKappa(G, G.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 #' .5*(1-rho) # exact
 #'
@@ -95,12 +98,12 @@
 #' U = cousinPed(0, removal = 1); U.ids = c(3,6); # plot(U, shaded = U.ids)
 #' estimateTwoLocusKappa(U, U.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 #' (1-rho) * R + rho/4 # exact
-#' 
+#'
 #' # Exact calculations by ribd:
 #' # ribd::twoLocusIBD(G, G.ids, rho = rho, coefs = "k11")
 #' # ribd::twoLocusIBD(H, H.ids, rho = rho, coefs = "k11")
 #' # ribd::twoLocusIBD(U, U.ids, rho = rho, coefs = "k11")
-#' 
+#'
 #' ##########################
 #' ### Two-locus Jacquard ###
 #' ##########################
@@ -112,10 +115,30 @@
 #' estimateTwoLocusIdentity(x, ids = 5:6, rho = rho, Nsim = Nsim, seed = 123)
 #'
 #' # ribd::twoLocusIdentity(x, ids = 5:6, rho = rho)
-#' 
+#'
 #' @name estimateCoeffs
 NULL
 
+
+#' @rdname estimateCoeffs
+#' @export
+estimateInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
+  st = proc.time()
+  
+  # Define map of length 0
+  map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
+  
+  # Simulate data
+  simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
+  
+  # For each sim, extract autozygosity status
+  f2 = vapply(simdata, function(a) a[[1, "Aut"]], FUN.VALUE = 1)
+  
+  if (verbose) 
+    cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")
+  
+  mean(f2)
+}
 
 #' @rdname estimateCoeffs
 #' @export
@@ -156,24 +179,28 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
   mean(f2)
 }
 
+
 #' @rdname estimateCoeffs
 #' @export
-estimateInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
+estimateKinship = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   # Define map of length 0
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
-  simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
-  # For each sim, extract autozygosity status
-  f2 = vapply(simdata, function(a) a[[1, "Aut"]], FUN.VALUE = 1)
+  # For each sim, extract entry in column "Sigma".
+  jacq = vapply(simdata, function(a) a[[1, 'Sigma']], FUN.VALUE = 1)
   
   if (verbose) 
     cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")
   
-  mean(f2)
+  # Coefficients in the relation phi = weights * jacq
+  wei = c(1, 0, .5, 0, .5, 0, .5, .25, 0)
+  
+  mean(wei[jacq])
 }
 
 
@@ -214,9 +241,10 @@ estimateTwoLocusKinship = function(x, ids, rho = NULL, cM = NULL, Nsim,
   # TODO: Finish this. Needs coefficient matrix expressed by rho, 1-rho, R = rho^2 + (1-rho)^2 
 }
 
+
 #' @rdname estimateCoeffs
 #' @export
-estimateKinship = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
+estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   # Define map of length 0
@@ -225,18 +253,24 @@ estimateKinship = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
-  # For each sim, extract entry in column "Sigma".
-  jacq = vapply(simdata, function(a) a[[1, 'Sigma']], FUN.VALUE = 1)
+  # For each sim, extract entry in column "IBD".
+  ibdres = vapply(simdata, function(a) a[[1, 'IBD']], FUN.VALUE = 1)
+  
+  # Frequency table
+  res = table(factor(ibdres, levels = 0:2, labels = paste0("ibd", 0:2)))
+  
+  # table -> vector
+  res = structure(as.vector(res), names = names(res))
+  
+  # If X & male(s), set IBD2 = NA
+  if (Xchrom && any(getSex(x, ids) == 1)) 
+    res['ibd2'] = NA
   
   if (verbose) 
     cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")
   
-  # Coefficients in the relation phi = weights * jacq
-  wei = c(1, 0, .5, 0, .5, 0, .5, .25, 0)
-  
-  mean(wei[jacq])
+  res / Nsim
 }
-
 
 
 #' @rdname estimateCoeffs
@@ -295,9 +329,10 @@ estimateTwoLocusKappa = function(x, ids, rho = NULL, cM = NULL, Nsim,
   res / Nsim
 }
 
+
 #' @rdname estimateCoeffs
 #' @export
-estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
+estimateIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   # Define map of length 0
@@ -306,18 +341,25 @@ estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   # Simulate data
   simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
   
-  # For each sim, extract entry in column "IBD".
-  ibdres = vapply(simdata, function(a) a[[1, 'IBD']], FUN.VALUE = 1)
+  # For each sim, extract entry in column "Sigma".
+  ibdres = vapply(simdata, function(a) a[[1, 'Sigma']], FUN.VALUE = 1)
   
   # Frequency table
-  res = table(factor(ibdres, levels = 0:2, labels = paste0("ibd", 0:2)))
+  res = table(factor(ibdres, levels = 1:9, labels = paste0("state", 1:9)))
   
   # table -> vector
   res = structure(as.vector(res), names = names(res))
   
-  # If X & male(s), set IBD2 = NA
-  if (Xchrom && any(getSex(x, ids) == 1)) 
-    res['ibd2'] = NA
+  # If X & male(s)
+  if (Xchrom) {
+    sex = getSex(x, ids)
+    if(sex[1] == 1 && sex[2] == 1)
+      res[3:9] = NA
+    else if(sex[1] == 1 && sex[2] == 2)
+      res[5:9] = NA
+    else if(sex[1] == 2 && sex[2] == 1)
+      res[c(3:4, 7:9)] = NA  
+  }
   
   if (verbose) 
     cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")
@@ -388,42 +430,3 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
   
   res / Nsim
 }
-
-#' @rdname estimateCoeffs
-#' @export
-estimateIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
-  st = proc.time()
-  
-  # Define map of length 0
-  map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
-  
-  # Simulate data
-  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
-  
-  # For each sim, extract entry in column "Sigma".
-  ibdres = vapply(simdata, function(a) a[[1, 'Sigma']], FUN.VALUE = 1)
-  
-  # Frequency table
-  res = table(factor(ibdres, levels = 1:9, labels = paste0("state", 1:9)))
-  
-  # table -> vector
-  res = structure(as.vector(res), names = names(res))
-  
-  # If X & male(s)
-  if (Xchrom) {
-    sex = getSex(x, ids)
-    if(sex[1] == 1 && sex[2] == 1)
-      res[3:9] = NA
-    else if(sex[1] == 1 && sex[2] == 2)
-      res[5:9] = NA
-    else if(sex[1] == 2 && sex[2] == 1)
-      res[c(3:4, 7:9)] = NA  
-  }
-  
-  if (verbose) 
-    cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")
-  
-  res / Nsim
-}
-
-
