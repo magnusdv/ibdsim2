@@ -1,43 +1,42 @@
 #' Simulate markers on a given IBD pattern
 #'
-#' This function simulates genotypes for a set of markers simultaneously,
-#' conditional on a specific underlying IBD pattern.
+#' This function simulates genotypes for a set of markers, conditional on a
+#' specific underlying IBD pattern.
 #'
 #' It should be noted that the only *random* part of this function is the
 #' selection of founder alleles for each marker. Given those, all other
-#' genotypes in the pedigree are determined by the underlying IBD pattern. 
+#' genotypes in the pedigree are determined by the underlying IBD pattern.
 #'
 #' @param x A `ped` object.
 #' @param ibdpattern A `genomeSim()` object, typically created by [ibdsim()].
 #'   (See Examples).
-#' @param ids A vector of ID labels referring to members of `x`. If NULL, all
-#'   members are included.
+#' @param ids A vector of ID labels. If NULL, all members of `x` are included.
 #' @param markers A vector with names of indices of markers attached to `x`.
 #' @param seed An integer seed for the random number generator.
 #'
 #' @return An object similar to `x`. but with simulated genotypes.
-#' 
-#' @seealso [ibdsim()], [forrel::profileSim()]
-#' 
+#'
+#' @seealso [ibdsim()]
+#'
 #' @examples
 #' # A pedigree with two siblings
 #' x = nuclearPed(2)
 #'
 #' # Attach 3 linked markers on chromosome 1
-#' cm = c(20, 50, 70)   # centiMorgan positions
-#' mlist = lapply(cm, function(i) 
-#'   marker(x, alleles = letters[1:10], chrom = 1, posCm = i))
+#' pos = c(20, 50, 70)   # marker positions in megabases
+#' mlist = lapply(pos, function(i)
+#'   marker(x, alleles = letters[1:10], chrom = 1, posMb = i))
 #' x = setMarkers(x, mlist)
-#' 
+#'
 #' # Simulate the underlying IBD pattern in the pedigree
 #' s = ibdsim(x, 1, map = uniformMap(M = 1, chrom = 1), seed = 123)[[1]]
-#' 
+#'
 #' # Simulate genotypes for the sibs conditional on the given IBD pattern
 #' profileSimIBD(x, s, ids = 3:4, seed = 123)
 #'
 #' # With a different seed
 #' profileSimIBD(x, s, ids = 3:4, seed = 124)
-#'  
+#'
 #' @export
 profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL) {
 
@@ -61,7 +60,7 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
   nMark = nMarkers(x)
   mname = name(x, 1:nMark)
   mchr  = chrom(x, 1:nMark)
-  mpos  = posCm(x, 1:nMark)
+  mpos  = posMb(x, 1:nMark)
   
   if(any(is.na(mpos) | is.na(mchr)))
     stop2("All markers must have defined chromosome and position attributes")

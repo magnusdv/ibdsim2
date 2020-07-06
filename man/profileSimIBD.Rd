@@ -12,8 +12,7 @@ profileSimIBD(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
 \item{ibdpattern}{A \code{genomeSim()} object, typically created by \code{\link[=ibdsim]{ibdsim()}}.
 (See Examples).}
 
-\item{ids}{A vector of ID labels referring to members of \code{x}. If NULL, all
-members are included.}
+\item{ids}{A vector of ID labels. If NULL, all members of \code{x} are included.}
 
 \item{markers}{A vector with names of indices of markers attached to \code{x}.}
 
@@ -23,8 +22,8 @@ members are included.}
 An object similar to \code{x}. but with simulated genotypes.
 }
 \description{
-This function simulates genotypes for a set of markers simultaneously,
-conditional on a specific underlying IBD pattern.
+This function simulates genotypes for a set of markers, conditional on a
+specific underlying IBD pattern.
 }
 \details{
 It should be noted that the only \emph{random} part of this function is the
@@ -36,9 +35,9 @@ genotypes in the pedigree are determined by the underlying IBD pattern.
 x = nuclearPed(2)
 
 # Attach 3 linked markers on chromosome 1
-cm = c(20, 50, 70)   # centiMorgan positions
-mlist = lapply(cm, function(i) 
-  marker(x, alleles = letters[1:10], chrom = 1, posCm = i))
+pos = c(20, 50, 70)   # marker positions in megabases
+mlist = lapply(pos, function(i)
+  marker(x, alleles = letters[1:10], chrom = 1, posMb = i))
 x = setMarkers(x, mlist)
 
 # Simulate the underlying IBD pattern in the pedigree
@@ -49,8 +48,8 @@ profileSimIBD(x, s, ids = 3:4, seed = 123)
 
 # With a different seed
 profileSimIBD(x, s, ids = 3:4, seed = 124)
- 
+
 }
 \seealso{
-\code{\link[=ibdsim]{ibdsim()}}, \code{\link[forrel:profileSim]{forrel::profileSim()}}
+\code{\link[=ibdsim]{ibdsim()}}
 }
