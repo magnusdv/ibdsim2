@@ -9,12 +9,10 @@
 #'   haplotypes should be drawn relative to the pedigree symbols: 0 = no
 #'   haplotypes; 1 = below; 2 = left; 3 = above; 4 = right.
 #' @param cols A colour vector corresponding to the alleles in `ibd`.
-#' @param height,width Positive numbers; the height/width of a haplotype
-#'   rectangle
-#' @param sep The separation between haplotypes within a pair.
-#' @param dist The distance between pedigree symbols and the closest haplotype.
-#' @param verbose A logical. If TRUE, plotting parameters are printed to the
-#'   screen. This may be useful for reproducing plots made interactively.
+#' @param height The haplotype height divided by the height of a pedigree symbol.
+#' @param width The haplotype width divided by the width of a pedigree symbol.
+#' @param sep The separation between haplotypes within a pair, given as a fraction of `width`.
+#' @param dist The distance between pedigree symbols and the closest haplotype, given as a fraction of `width`.
 #' @param ... Arguments passed on to `plot.ped()`.
 #'
 #' @return None.
@@ -45,17 +43,16 @@
 #'
 #' # Gray colour (8) for irrelevant founder alleles
 #' haploDraw(x, s[[1]], pos = c(1,0,2,0,4,4),
-#'           cols = c(2,4,8,8,8,8), margin = c(2, 2, 2, 2))
+#'           cols = c(3,7,8,8,8,8), margin = c(2, 2, 2, 2))
 #'
 #'
 #' # Restore graphics parameters
 #' par(op)
 #'
 #' @importFrom graphics rect
-#' @importFrom grDevices dev.size
 #' @export
-haploDraw = function(x, ibd, pos, cols = NULL, height = NA, width = NA, 
-                     sep = 0.75*width, dist = 1.5*width, verbose = FALSE, ...) {
+haploDraw = function(x, ibd, pos, cols = NULL, height = 4, width = 0.5, 
+                     sep = 0.75, dist = 1.5, ...) {
   
   if(!is.ped(x))
     stop2("Argument `x` must be a `ped` object")
@@ -77,22 +74,10 @@ haploDraw = function(x, ibd, pos, cols = NULL, height = NA, width = NA,
   symh = p$boxh
   symw = p$boxw
 
-  if(is.na(height)) height = 4 * symh
-  if(is.na(width)) width = .5 * symw
-  if(verbose) {
-    dev = dev.size()
-    r = 4
-    cat(glue::glue("
-      Haplotype rectangles:
-       width  = {round(width, r)}
-       height = {round(height, r)}
-       sep    = {round(sep, r)}
-       dist   = {round(dist, r)}
-      
-      Device (inches):
-       width  = {round(dev[1], r)}
-       height = {round(dev[2], r)}"))
-  }
+  H = height * symh
+  W = width  * symw
+  SEP = sep * W
+  DIST = dist * W
   
   # Loop through all individuals in pedigree
   for(i in 1:pedsize(x)) {
@@ -102,18 +87,18 @@ haploDraw = function(x, ibd, pos, cols = NULL, height = NA, width = NA,
     # Center of haplo-pair
     if(pos[i] == 1) {
       X = p$x[i]
-      Y = p$y[i] + symh + dist + height/2
+      Y = p$y[i] + symh + DIST + H/2
     }
     else if(pos[i] == 2) {
-      X = p$x[i] - symw/2 - dist - width - sep/2
+      X = p$x[i] - symw/2 - DIST - W - SEP/2
       Y = p$y[i] + symh/2
     }
     else if(pos[i] == 3) {
       X = p$x[i]
-      Y = p$y[i] - dist - height/2
+      Y = p$y[i] - DIST - H/2
     }
     else if(pos[i] == 4) {
-      X = p$x[i] + symw/2 + dist + width + sep/2
+      X = p$x[i] + symw/2 + DIST + W + SEP/2
       Y = p$y[i] + symh/2
     }
     
@@ -122,13 +107,13 @@ haploDraw = function(x, ibd, pos, cols = NULL, height = NA, width = NA,
     # Paternal haplotype
     patCol = paste0(id, ":p")
     segsPat = mergeAdjacent(ibd, patCol)
-    addRect(X - sep/2 - width/2, Y, width = width, height = height, 
+    addRect(X - SEP/2 - W/2, Y, width = W, height = H, 
             sta = segsPat[, 'start']/L, col = cols[segsPat[, patCol]])
 
     # Paternal haplotype
     matCol = paste0(id, ":m")
     segsMat = mergeAdjacent(ibd, matCol)
-    addRect(X + sep/2 + width/2, Y, width = width, height = height, 
+    addRect(X + SEP/2 + W/2, Y, width = W, height = H, 
             sta = segsMat[, 'start']/L, col = cols[segsMat[, matCol]])
   }
 }
