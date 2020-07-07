@@ -21,7 +21,8 @@ segmentSummary = function(x, ids, addState = TRUE) {
   colnms = paste(rep(ids, each = 2), c("p", "m"), sep = ":")
   
   # Merge identical rows
-  y = mergeAdjacent(x, vec = apply(x[, colnms], 1, paste, collapse = " "))
+  alsCombo = apply(x[, colnms, drop = FALSE], 1, paste, collapse = "-")
+  y = mergeAdjacent(x, vec = alsCombo)
   y = y[, c(1:4, match(colnms, colnames(x))), drop = FALSE]
   
   if(addState)
@@ -33,6 +34,8 @@ segmentSummary = function(x, ids, addState = TRUE) {
 # Merge adjacent segments with equal `vec` entry and equal chrom
 mergeAdjacent = function(x, vec) {
   k = nrow(x)
+  if(k < 2)
+    return(x)
   
   if(length(vec) == 1 && is.character(vec))
     vec = x[, vec]
