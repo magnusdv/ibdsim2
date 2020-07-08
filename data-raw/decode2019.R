@@ -13,6 +13,7 @@ all = mraw %>%
   full_join(fraw, by=c("Chr", "Begin", "End")) %>% 
   select(-matches("cMper")) %>%
   arrange(suppressWarnings(as.numeric(sub("chr", "", Chr))), Begin) %>%
+  mutate(Chr = fct_inorder(Chr)) %>%
   print
 
 # Thin: Preserve all jumps bigger than 0.05 cM in either males or females
@@ -47,8 +48,12 @@ maps = chroms %>%
 maps[[23]]$male = NULL
 attr(maps[[23]], 'chrom') = "X"
 
-decode19 = genomeMap(maps)
+decode19 = ibdsim2:::genomeMap(maps)
 
+usethis::use_data(decode19, internal = TRUE, overwrite = T)
+
+
+### QC ###
 # Check max error
 test1 = mraw %>% 
   filter(Chr =="chr1") %>% 
@@ -56,5 +61,5 @@ test1 = mraw %>%
          err = cM - approx)
 test1 %>% pull(err) %>% summary
 
-
-usethis::use_data(decode19, internal = TRUE, overwrite = T)
+# Check chrom order
+barplot(sapply(decode19, ibdsim2:::chromLen))
