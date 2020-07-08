@@ -1,8 +1,8 @@
 #' Realised relatedness
 #'
 #' Compute the realised values of various pedigree coefficients, from simulated
-#' data. The current implementation covers realised inbreeding coefficients for
-#' single pedigree members, and realised kinship and kappa coefficients for
+#' data. The current implementation covers inbreeding coefficients for single
+#' pedigree members, and kinship, kappa and condensed identity coefficients for
 #' pairwise relationships.
 #'
 #' The inbreeding coefficient \eqn{f} of a pedigree member is defined as the
@@ -11,23 +11,24 @@
 #' coefficient is the *expected* autozygous proportion of the autosomal
 #' chromosomes.
 #'
-#' The *realised* inbreeding coefficient \eqn{f_real} in a given individual is
-#' the actual fraction of the autosomes covered by autozygous segments. Because
-#' of the stochastic nature of meiotic recombination, this may deviate
+#' The *realised* inbreeding coefficient \eqn{f_R} in a given individual is the
+#' actual fraction of the autosomes covered by autozygous segments. Because of
+#' the stochastic nature of meiotic recombination, this may deviate
 #' substantially from the pedigree-based expectation.
 #'
-#' Similarly, the pedigree-based IBD coefficients \eqn{\kappa = (\kappa_0,
-#' \kappa_1, \kappa_2)} have realised counterparts, when looking at a specific
-#' pair of individuals:
+#' Similarly, the pedigree-based IBD coefficients \eqn{\kappa_0, \kappa_1,
+#' \kappa_2} of noninbred pairs of individuals have realised counterparts. For
+#' any given pair of individuals we define \eqn{k_i} to be the actual fraction
+#' of the autosome where the individuals share exactly \eqn{i} alleles IBD,
+#' where \eqn{i = 0,1,2}.
 #'
-#' * \eqn{k_0}: The actual fraction of the autosome where the individuals share
-#' 0 alleles IBD
-#'
-#' * \eqn{k_1}: The actual fraction of the autosome where the individuals share
-#' 1 alleles IBD
-#'
-#' * \eqn{k_2}: The actual fraction of the autosome where the individuals share
-#' 2 alleles IBD
+#' Finally, we can do the same thing for each of the nine condensed identity
+#' coefficients of Jacquard. For each \eqn{i = 1,...,9} we define \eqn{D_i} the
+#' be the fraction of the autosome where a given pair of individuals are in
+#' identity state \eqn{i}. This uses the conventional ordering of the nine
+#' condensed identity states; see for instance the [`ribd` GitHub
+#' page](https://github.com/magnusdv/ribd).
+
 #'
 #' @param sims A list of genome simulations, as output by [ibdsim()].
 #' @param id,ids A vector with one or two ID labels.
@@ -39,14 +40,23 @@
 #' s = ibdsim(x, N = 2) # increase N
 #' realisedKappa(s, ids = 3:4)
 #'
+#' ###########
+#' 
 #' # Realised inbreeding coefficients, child of first cousins
 #' x = cousinPed(1, child = TRUE)
 #' s = ibdsim(x, N = 2) # increase N
 #' realisedInbreeding(s, id = 9)
 #'
 #' # Same data: realised kinship coefficients between the parents
-#'  realisedKinship(s, ids = parents(x, 9))
+#' realisedKinship(s, ids = parents(x, 9))
 #'
+#' ###########
+#' 
+#' # Realised identity coefficients after full sib mating
+#' x = fullSibMating(1)
+#' s = ibdsim(x, N = 2) # increase N
+#' realisedIdentity(s, ids = 5:6)
+#' 
 #' @name realised
 NULL
 
@@ -129,9 +139,9 @@ realisedKinship = function(sims, ids = NULL) {
   
   resList = vapply(sims, function(s) {
     
-    if(length(idsims) > 2 || !"Sigma" %in% colnames(s)) {
+    if(!"Sigma" %in% colnames(s)) {
       s0 = segmentSummary(s, ids = ids, addState = TRUE)
-      s = mergeAdjacent(s0, vec = "IBD")
+      s = mergeAdjacent(s0, vec = "Sigma")
     }
     
     len = s[, 'length']  
@@ -175,7 +185,7 @@ realisedKappa = function(sims, ids = NULL) {
   
   resList = lapply(sims, function(s) {
     
-    if(length(idsims) > 2 || !"IBD" %in% colnames(s)) {
+    if(!"IBD" %in% colnames(s)) {
       s0 = segmentSummary(s, ids = ids, addState = TRUE)
       s = mergeAdjacent(s0, vec = "IBD")
     }
@@ -202,6 +212,70 @@ realisedKappa = function(sims, ids = NULL) {
   
   list(perSimulation = resDf, meanCoef = colMeans(resDf[, 1:3]), stDev = apply(resDf[,1:3], 2, sd))
 }
+
+
+#' @rdname realised
+#' @importFrom stats sd
+#' @export
+realisedIdentity = function(sims, ids = NULL) {
+  
+  # IDs present in sims
+  idsims = extractIdsFromSegmentSummary(sims)
+  
+  if(is.null(ids))
+    ids = idsims
+  
+  if(length(ids) != 2)
+    stop2("Argument `ids` must contain exactly two ID labels: ", ids)
+  
+  if(!all(ids %in% idsims))
+    stop2("Target ID not found in segment input:", setdiff(ids, idsims))
+  
+  if(!is.list(sims))
+    sims = list(sims)
+  
+  resList = lapply(sims, function(s) {
+    
+    if(!"Sigma" %in% colnames(s)) {
+      s0 = segmentSummary(s, ids = ids, addState = TRUE)
+      s = mergeAdjacent(s0, vec = "Sigma")
+    }
+    
+    len = s[, 'length']  
+    j = s[, 'Sigma']  
+    
+    c(D1 = sum(len[j == 1]), 
+      D2 = sum(len[j == 2]), 
+      D3 = sum(len[j == 3]),
+      D4 = sum(len[j == 4]), 
+      D5 = sum(len[j == 5]), 
+      D6 = sum(len[j == 6]),
+      D7 = sum(len[j == 7]), 
+      D8 = sum(len[j == 8]), 
+      D9 = sum(len[j == 9]),
+      nSeg1 = sum(j == 1), 
+      nSeg2 = sum(j == 2), 
+      nSeg3 = sum(j == 3),
+      nSeg4 = sum(j == 4), 
+      nSeg5 = sum(j == 5), 
+      nSeg6 = sum(j == 6),
+      nSeg7 = sum(j == 7), 
+      nSeg8 = sum(j == 8), 
+      nSeg9 = sum(j == 9))
+  })
+  
+  # Bind row-wise
+  resDf = as.data.frame(do.call(rbind, resList))
+  
+  # Total genome length (assume same for all!)
+  L = sum(sims[[1]][, 'length'])
+  
+  resDf[1:9] = resDf[1:9]/L
+  resDf[10:18] = lapply(resDf[10:18], as.integer)
+  
+  list(perSimulation = resDf, meanCoef = colMeans(resDf[1:9]), stDev = apply(resDf[1:9], 2, sd))
+}
+
 
 
 # Utility for deducing ID labels present in an output of `ibdsim()` simulation

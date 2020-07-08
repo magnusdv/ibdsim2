@@ -5,6 +5,7 @@
 \alias{realisedInbreeding}
 \alias{realisedKinship}
 \alias{realisedKappa}
+\alias{realisedIdentity}
 \title{Realised relatedness}
 \usage{
 realisedInbreeding(sims, id = NULL)
@@ -12,6 +13,8 @@ realisedInbreeding(sims, id = NULL)
 realisedKinship(sims, ids = NULL)
 
 realisedKappa(sims, ids = NULL)
+
+realisedIdentity(sims, ids = NULL)
 }
 \arguments{
 \item{sims}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
@@ -20,8 +23,8 @@ realisedKappa(sims, ids = NULL)
 }
 \description{
 Compute the realised values of various pedigree coefficients, from simulated
-data. The current implementation covers realised inbreeding coefficients for
-single pedigree members, and realised kinship and kappa coefficients for
+data. The current implementation covers inbreeding coefficients for single
+pedigree members, and kinship, kappa and condensed identity coefficients for
 pairwise relationships.
 }
 \details{
@@ -31,22 +34,22 @@ descent) in a random autosomal locus. Equivalently, the inbreeding
 coefficient is the \emph{expected} autozygous proportion of the autosomal
 chromosomes.
 
-The \emph{realised} inbreeding coefficient \eqn{f_real} in a given individual is
-the actual fraction of the autosomes covered by autozygous segments. Because
-of the stochastic nature of meiotic recombination, this may deviate
+The \emph{realised} inbreeding coefficient \eqn{f_R} in a given individual is the
+actual fraction of the autosomes covered by autozygous segments. Because of
+the stochastic nature of meiotic recombination, this may deviate
 substantially from the pedigree-based expectation.
 
-Similarly, the pedigree-based IBD coefficients \eqn{\kappa = (\kappa_0,
-\kappa_1, \kappa_2)} have realised counterparts, when looking at a specific
-pair of individuals:
-\itemize{
-\item \eqn{k_0}: The actual fraction of the autosome where the individuals share
-0 alleles IBD
-\item \eqn{k_1}: The actual fraction of the autosome where the individuals share
-1 alleles IBD
-\item \eqn{k_2}: The actual fraction of the autosome where the individuals share
-2 alleles IBD
-}
+Similarly, the pedigree-based IBD coefficients \eqn{\kappa_0, \kappa_1,
+\kappa_2} of noninbred pairs of individuals have realised counterparts. For
+any given pair of individuals we define \eqn{k_i} to be the actual fraction
+of the autosome where the individuals share exactly \eqn{i} alleles IBD,
+where \eqn{i = 0,1,2}.
+
+Finally, we can do the same thing for each of the nine condensed identity
+coefficients of Jacquard. For each \eqn{i = 1,...,9} we define \eqn{D_i} the
+be the fraction of the autosome where a given pair of individuals are in
+identity state \eqn{i}. This uses the conventional ordering of the nine
+condensed identity states; see for instance the \href{https://github.com/magnusdv/ribd}{\code{ribd} GitHub page}.
 }
 \examples{
 
@@ -55,12 +58,21 @@ x = nuclearPed(2)
 s = ibdsim(x, N = 2) # increase N
 realisedKappa(s, ids = 3:4)
 
+###########
+
 # Realised inbreeding coefficients, child of first cousins
 x = cousinPed(1, child = TRUE)
 s = ibdsim(x, N = 2) # increase N
 realisedInbreeding(s, id = 9)
 
 # Same data: realised kinship coefficients between the parents
- realisedKinship(s, ids = parents(x, 9))
+realisedKinship(s, ids = parents(x, 9))
+
+###########
+
+# Realised identity coefficients after full sib mating
+x = fullSibMating(1)
+s = ibdsim(x, N = 2) # increase N
+realisedIdentity(s, ids = 5:6)
 
 }
