@@ -25,8 +25,9 @@
 #' The *two-locus identity coefficient* \eqn{\Delta_{ij}}, \eqn{i,j = 1,...,9}
 #' is defined for any (possibly inbred) A and B, as the probability that A and B
 #' are in identity state `i` at L1, and state `j` at L2. This uses the
-#' conventional ordering of the nine condensed identity states. For details, see e.g.,
-#' <https://github.com/magnusdv/ribd>.
+#' conventional ordering of the nine condensed identity states. For details, see
+#' for instance the [GitHub page of the `ribd`
+#' package](https://github.com/magnusdv/ribd).
 #'
 #' @param x A pedigree in the form of a [pedtools::ped()] object.
 #' @param id,ids A vector of one or two ID labels.

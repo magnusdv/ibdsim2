@@ -131,8 +131,8 @@ The \emph{two-locus kappa coefficient} \eqn{\kappa_{ij}(\rho)}, for \eqn{i,j =
 The \emph{two-locus identity coefficient} \eqn{\Delta_{ij}}, \eqn{i,j = 1,...,9}
 is defined for any (possibly inbred) A and B, as the probability that A and B
 are in identity state \code{i} at L1, and state \code{j} at L2. This uses the
-conventional ordering of the nine condensed identity states. For details, see e.g.,
-\url{https://github.com/magnusdv/ribd}.
+conventional ordering of the nine condensed identity states. For details, see
+for instance the \href{https://github.com/magnusdv/ribd}{GitHub page of the \code{ribd} package}.
 }
 \examples{
 
