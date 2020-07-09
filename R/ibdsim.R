@@ -19,7 +19,7 @@
 #' recombination map of the human genome published by Halldorsson et al (2019).
 #'
 #' In many applications, the fine-scale default map is not necessary, and should
-#' be replaced by simpler maps with constant recombination rates. See 
+#' be replaced by simpler maps with constant recombination rates. See
 #' [uniformMap()] and [loadMap()] for ways to produce such maps.
 #'
 #' @param x A [pedtools::ped()] object.
@@ -37,8 +37,8 @@
 #'
 #'   Default: "decode19".
 #'
-#' @param model Either "chi" or "haldane", indicating the statistical
-#'   model for recombination (see details). Default: "chi".
+#' @param model Either "chi" or "haldane", indicating the statistical model for
+#'   recombination (see details). Default: "chi".
 #' @param skipRecomb A vector of ID labels indicating individuals whose meioses
 #'   should be simulated without recombination. (Each child will then receive a
 #'   random strand of each chromosome.) The default action is to skip
@@ -152,9 +152,11 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode",
   if (verbose) {
     message(glue::glue("
       Simulation parameters:
-      # simulations: {N}
+      Simulations  : {N}
       Chromosomes  : {toString2(mapchrom)}
-      Genome length: {genomeLen(map)} Mb
+      Genome length: {round(genomeLen(map), 2)} Mb
+                     {round(genomeLen(map, 'cM', 'male'), 2)} cM (male)
+                     {round(genomeLen(map, 'cM', 'female'), 2)} cM (female)
       Recomb model : {model}
       Target indivs: {toString2(ids, ifempty = '-')}
       Skip recomb  : {toString2(skipRecomb, ifempty = '-')}"
@@ -196,7 +198,7 @@ print.genomeSimList = function(x, ...) {
   print(glue::glue("
   List of {length(x)} genome simulations.
   Chromosomes: {toString2(attrs$chrom)}
-  Total len  : {attrs$genomeLen} Mb
+  Total len  : {round(attrs$genomeLen, 2)} Mb
   Rec. model : {attrs$model}
   Target ids : {toString2(attrs$ids)}
   Skip recomb: {toString2(attrs$skipRecomb, ifempty = '-')}
