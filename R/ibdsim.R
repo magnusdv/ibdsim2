@@ -33,12 +33,12 @@
 #'   * a single `chromMap` object, for instance as produced by [uniformMap()]
 #'
 #'   * a character, which is passed on to [loadMap()] with default parameters.
-#'   Currently the only valid option is "decode19".
+#'   Currently the only valid option is "decode19" (or abbreviations of this).
 #'
 #'   Default: "decode19".
 #'
-#' @param model Either "chi" (default) or "haldane", indicating the statistical
-#'   model for recombination. (See details.)
+#' @param model Either "chi" or "haldane", indicating the statistical
+#'   model for recombination (see details). Default: "chi".
 #' @param skipRecomb A vector of ID labels indicating individuals whose meioses
 #'   should be simulated without recombination. (Each child will then receive a
 #'   random strand of each chromosome.) The default action is to skip
