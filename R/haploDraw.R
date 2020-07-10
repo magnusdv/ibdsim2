@@ -2,17 +2,23 @@
 #'
 #' Visualise the IBD pattern of a single chromosome, by drawing haplotypes onto
 #' the pedigree.
-#' 
+#'
 #' @param x A `ped` object.
 #' @param ibd A `genomeSim` object.
-#' @param pos A vector of the same length as `labels(x)`, indicating where
+#' @param chrom A chromosome number, needed if `ibd` contains data from multiple
+#'   chromosomes.
+#' @param pos A vector recycled to the length of `labels(x)`, indicating where
 #'   haplotypes should be drawn relative to the pedigree symbols: 0 = no
-#'   haplotypes; 1 = below; 2 = left; 3 = above; 4 = right.
+#'   haplotypes; 1 = below; 2 = left; 3 = above; 4 = right. By default, all are
+#'   placed below.
 #' @param cols A colour vector corresponding to the alleles in `ibd`.
-#' @param height The haplotype height divided by the height of a pedigree symbol.
+#' @param height The haplotype height divided by the height of a pedigree
+#'   symbol.
 #' @param width The haplotype width divided by the width of a pedigree symbol.
-#' @param sep The separation between haplotypes within a pair, given as a fraction of `width`.
-#' @param dist The distance between pedigree symbols and the closest haplotype, given as a fraction of `width`.
+#' @param sep The separation between haplotypes within a pair, given as a
+#'   fraction of `width`.
+#' @param dist The distance between pedigree symbols and the closest haplotype,
+#'   given as a fraction of `width`.
 #' @param ... Arguments passed on to `plot.ped()`.
 #'
 #' @return None.
@@ -51,8 +57,8 @@
 #'
 #' @importFrom graphics rect
 #' @export
-haploDraw = function(x, ibd, pos, cols = NULL, height = 4, width = 0.5, 
-                     sep = 0.75, dist = 1.5, ...) {
+haploDraw = function(x, ibd, chrom = NULL, pos = 1, cols = NULL, 
+                     height = 4, width = 0.5, sep = 0.75, dist = 1.5, ...) {
   
   if(!is.ped(x))
     stop2("Argument `x` must be a `ped` object")
@@ -63,6 +69,20 @@ haploDraw = function(x, ibd, pos, cols = NULL, height = 4, width = 0.5,
   idsIBD = extractIdsFromSegmentSummary(ibd)
   if(!all(labs[pos > 0] %in% idsIBD))
     stop2("ID not found in `ibd` matrix: ", setdiff(labs[pos > 0], idsIBD))
+  
+  # Check for multiple chromosomes
+  chrvec = ibd[, 'chrom']
+  if(length(unique.default(chrvec)) > 1) {
+    if(is.null(chrom))
+      stop2("`ibd` contains data from multiple chromosomes. Use `chrom` to select one.")
+    if(!chrom %in% chrvec)
+      stop2("Unknown chromosome: ", chrom)
+    ibd = ibd[chrvec == chrom, , drop = FALSE]
+  }
+  
+  pos = rep(pos, length.out = pedsize(x))
+  if(is.null(cols))
+    cols = seq_len(2*length(founders(x)))
   
   # Basic pedigree plot
   p = plot(x, labs = "", keep.par = TRUE, ...)

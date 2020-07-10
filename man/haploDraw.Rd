@@ -7,7 +7,8 @@
 haploDraw(
   x,
   ibd,
-  pos,
+  chrom = NULL,
+  pos = 1,
   cols = NULL,
   height = 4,
   width = 0.5,
@@ -21,19 +22,26 @@ haploDraw(
 
 \item{ibd}{A \code{genomeSim} object.}
 
-\item{pos}{A vector of the same length as \code{labels(x)}, indicating where
+\item{chrom}{A chromosome number, needed if \code{ibd} contains data from multiple
+chromosomes.}
+
+\item{pos}{A vector recycled to the length of \code{labels(x)}, indicating where
 haplotypes should be drawn relative to the pedigree symbols: 0 = no
-haplotypes; 1 = below; 2 = left; 3 = above; 4 = right.}
+haplotypes; 1 = below; 2 = left; 3 = above; 4 = right. By default, all are
+placed below.}
 
 \item{cols}{A colour vector corresponding to the alleles in \code{ibd}.}
 
-\item{height}{The haplotype height divided by the height of a pedigree symbol.}
+\item{height}{The haplotype height divided by the height of a pedigree
+symbol.}
 
 \item{width}{The haplotype width divided by the width of a pedigree symbol.}
 
-\item{sep}{The separation between haplotypes within a pair, given as a fraction of \code{width}.}
+\item{sep}{The separation between haplotypes within a pair, given as a
+fraction of \code{width}.}
 
-\item{dist}{The distance between pedigree symbols and the closest haplotype, given as a fraction of \code{width}.}
+\item{dist}{The distance between pedigree symbols and the closest haplotype,
+given as a fraction of \code{width}.}
 
 \item{...}{Arguments passed on to \code{plot.ped()}.}
 }

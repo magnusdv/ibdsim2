@@ -33,8 +33,8 @@ Currently the only valid option is "decode19" (or abbreviations of this).
 
 Default: "decode19".}
 
-\item{model}{Either "chi" or "haldane", indicating the statistical
-model for recombination (see details). Default: "chi".}
+\item{model}{Either "chi" or "haldane", indicating the statistical model for
+recombination (see details). Default: "chi".}
 
 \item{skipRecomb}{A vector of ID labels indicating individuals whose meioses
 should be simulated without recombination. (Each child will then receive a
