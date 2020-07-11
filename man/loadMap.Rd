@@ -7,8 +7,8 @@
 loadMap(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage = FALSE)
 }
 \arguments{
-\item{map}{The name of the wanted map. Currently, the only valid choice is
-"decode19". This is also the default.}
+\item{map}{The name of the wanted map, possibly abbreviated. Currently, the
+only valid choice is "decode19" (default).}
 
 \item{chrom}{A numeric vector indicating which chromosomes to load. Default:
 \code{1:22} (the autosomes).}
@@ -17,23 +17,24 @@ loadMap(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage = FALSE)
 is used. If TRUE, a uniform version of the same map is produced, i.e. with
 the correct lengths, but constant recombination rate along each chromosome.}
 
-\item{sexAverage}{A logical, by default FALSE. If TRUE, a sex-averaged map
-is returned, equal between males and females.}
+\item{sexAverage}{A logical, by default FALSE. If TRUE, a sex-averaged map is
+returned, with equal recombination rates for males and females.}
 }
 \value{
 An object of class \code{genomeMap}.
 }
 \description{
 This function loads one of the built-in genetic maps. Currently, the
-available map is the one published by Halldorsson et al. (2019).
+available map is based on the publication by Halldorsson et al. (2019).
 }
 \details{
-The built-in map is a thinned version of the published data, keeping about 60
-000 data points.
+For reasons of speed and efficiency, the built-in map is a thinned version of
+the published map (Halldorsson et al., 2019), keeping around 60 000 data
+points.
 
 By setting \code{uniform = TRUE}, a uniform version of the map is returned, in
 which each chromosome has the same genetic lengths as in the original, but
-with constant recombination rates. This is much faster simulations, and may
+with constant recombination rates. This gives much faster simulations and may
 be preferable in some applications.
 }
 \examples{
@@ -53,4 +54,7 @@ m1$female
 Halldorsson et al. \emph{Characterizing mutagenic effects of
 recombination through a sequence-level genetic map.} Science 363, no. 6425
 (2019).
+}
+\seealso{
+\code{\link[=uniformMap]{uniformMap()}}, \code{\link[=customMap]{customMap()}}
 }

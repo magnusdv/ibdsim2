@@ -4,7 +4,7 @@
 \alias{uniformMap}
 \title{Uniform recombination maps}
 \usage{
-uniformMap(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, chrom = 1)
+uniformMap(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1, chrom = 1)
 }
 \arguments{
 \item{Mb}{Map length in megabases.}
@@ -13,7 +13,7 @@ uniformMap(Mb = NULL, cM = NULL, M = NULL, cm.per.mb = 1, chrom = 1)
 
 \item{M}{Map length in Morgan.}
 
-\item{cm.per.mb}{A positive number; the cM/Mb ratio.}
+\item{cmPerMb}{A positive number; the cM/Mb ratio.}
 
 \item{chrom}{A chromosome label.}
 }
@@ -28,4 +28,7 @@ Create a uniform recombination map of a given length.
 uniformMap(M = 1)
 
 m = uniformMap(Mb = 1, cM = 2:3)
+}
+\seealso{
+\code{\link[=loadMap]{loadMap()}}, \code{\link[=customMap]{customMap()}}
 }
