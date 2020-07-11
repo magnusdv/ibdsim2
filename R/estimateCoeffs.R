@@ -32,8 +32,8 @@
 #' @param x A pedigree in the form of a [pedtools::ped()] object.
 #' @param id,ids A vector of one or two ID labels.
 #' @param rho A scalar in the interval `[0, 0.5]`: the recombination fraction
-#'   between the two loci, converted to centiMorgan using Haldanes map function:
-#'   cM = -50 * log(1 - 2*rho). Either `rho` or `cM` (but not both) must be
+#'   between the two loci, converted to centiMorgans using Haldane's map function:
+#'   cM = -50 * log(1 - 2 * rho). Either `rho` or `cM` (but not both) must be
 #'   non-NULL.
 #' @param cM A non-negative number: the genetic distance between the two loci,
 #'   given in centiMorgans. Either `rho` or `cM` (but not both) must be
@@ -115,6 +115,7 @@
 #'
 #' estimateTwoLocusIdentity(x, ids = 5:6, rho = rho, Nsim = Nsim, seed = 123)
 #'
+#' # Exact by ribd:
 #' # ribd::twoLocusIdentity(x, ids = 5:6, rho = rho)
 #'
 #' @name estimateCoeffs

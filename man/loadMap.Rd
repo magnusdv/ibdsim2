@@ -44,7 +44,7 @@ loadMap()
 # Uniform version
 m = loadMap(uniform = TRUE)
 
-# Check chromosome 1:
+# Check chromosome 1
 m1 = m[[1]]
 m1$male
 m1$female
