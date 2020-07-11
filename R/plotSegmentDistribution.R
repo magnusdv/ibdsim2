@@ -33,6 +33,16 @@
 #' @param title,xlab,ylab Title and axis labels.
 #'
 #' @examples
+#' 
+#' # Simulation parameters used in the below examples.
+#' map = uniformMap(M = 10)   # recombination map
+#' N = 5                      # number of sims
+#' 
+#' # For more realistic results, replace with e.g.:
+#' # map = loadMap("decode19")
+#' # N = 1000
+#' 
+#' 
 #' #################################################################
 #' # EXAMPLE 1
 #' # Comparison of IBD segment distributions
@@ -43,11 +53,6 @@
 #' xPat = halfSibPed()
 #' xMat = swapSex(xPat, 1)
 #'
-#' # Map: Uniform version of the default "decode19"
-#' map = loadMap("decode19", uniform = TRUE)
-#' 
-#' # Simulate (increase N!)
-#' N = 5
 #' simPat = ibdsim(xPat, N = N, map = map)
 #' simMat = ibdsim(xMat, N = N, map = map)
 #'
@@ -63,9 +68,6 @@
 #' # Only one pedigree needed here
 #' x = addSon(halfSibPed(), 5)
 #'
-#' # Simulate (increase N!)
-#' N = 5
-#' map = loadMap(uniform = TRUE)
 #' s = ibdsim(x, N = N, map = map)
 #'
 #' # Indicate the pairs explicitly this time.
@@ -93,12 +95,9 @@
 #' plotPedList(peds, newdev = TRUE)
 #' dev.off()
 #'
-#' # Map
-#' map = loadMap(uniform = TRUE)
-#' 
-#' # Simulations (increase N!))
+#' # Simulations
 #' s = lapply(peds, function(p)
-#'   ibdsim(p, N = 3, ids = leaves(p), verbose = FALSE, map = map))
+#'   ibdsim(p, N = N, ids = leaves(p), verbose = FALSE, map = map))
 #'
 #' # Plot distributions
 #' plotSegmentDistribution(s, type = "autoz", title = "Autozygous segments")
