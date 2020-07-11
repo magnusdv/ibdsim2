@@ -9,6 +9,8 @@ the published map, keeping around 60 000 data points.
 
 ## New features
 
+* New function `haploDraw()` for visualising IBD patterns
+
 * The internal data structure for genetic maps has been rewritten. 
 
 * New functions `loadMap()` and `customMap()` for loading built-in and 
