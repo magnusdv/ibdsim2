@@ -55,7 +55,7 @@
 #' # Restore graphics parameters
 #' par(op)
 #'
-#' @importFrom graphics rect
+#' @importFrom graphics rect plot
 #' @export
 haploDraw = function(x, ibd, chrom = NULL, pos = 1, cols = NULL, 
                      height = 4, width = 0.5, sep = 0.75, dist = 1.5, ...) {
