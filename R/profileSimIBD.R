@@ -109,6 +109,9 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
   alsMat = t.default(alsMat.transp)
   
   # Attach and return
-  setAlleles(x, ids = ids, alleles = alsMat)
+  y = setAlleles(x, ids = ids, alleles = alsMat)
+  y = sortGenotypes(y)
+  
+  y
 }
 
