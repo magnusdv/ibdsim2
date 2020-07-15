@@ -369,38 +369,71 @@ genomeLen = function(x, unit = c("Mb", "cM"), sex = NA) {
 }
 
 
-cm2phys = function(cM, map) { # map: columns 'Mb' and 'cM'
-  if(!length(cM)) 
-    return(cM)
-  mapMB = map$Mb
-  mapCM = map$cM
-  
-  res = numeric(length(cM))
-  nontriv = cM >= 0 & cM <= mapCM[length(mapCM)]
-  res[!nontriv] = NA
-  
-  cm = cM[nontriv]
-  interv = findInterval(cm, mapCM, all.inside = TRUE)
-  res[nontriv] = mapMB[interv] + (cm - mapCM[interv]) *
-    (mapMB[interv + 1] - mapMB[interv]) / (mapCM[interv + 1] - mapCM[interv])
-  res
-}
 
 
-phys2cm = function(Mb, map) {    # map: columns 'Mb' and 'cM'
-  if(!length(Mb)) 
-    return(Mb)
+#' Conversion of genetic map positions
+#'
+#' Convert between physical position (in megabases) and genetic position
+#' (centiMorgan) given a chromosome map. Linear extrapolation is used to convert
+#' positions between map points.
+#'
+#' @param Mb A vector of physical positions (in Mb), or NULL.
+#' @param cM A vector of genetic positions (in cM), or NULL.
+#' @param map A data frame with columns `Mb` and `cM`.
+#'
+#' @return A vector of the same length as the input.
+#'
+#' @examples
+#' # Chromosome 1 of the built-in recombination map
+#' map = loadMap(chrom = 1)[[1]]
+#' head(map$male)
+#'
+#' # Conversion Mb -> cM
+#' phys = 1:5
+#' gen = convertPos(Mb = phys, map = map$male)
+#' gen
+#'
+#' # Convert back (note the first position, which was outside of map)
+#' convertPos(cM = gen, map = map$male)
+#'
+#' @export
+convertPos = function(Mb = NULL, cM = NULL, map) {
+  if(is.null(Mb) + is.null(cM) != 1)
+    stop2("Exactly one of `Mb` and `cM` must be NULL")
   
-  mapMB = map$Mb
-  mapCM = map$cM
+  if(is.null(Mb)) {
+    from = cM
+    fromUnit = "cM"
+    toUnit = "Mb"
+  } else {
+    from = Mb
+    fromUnit = "Mb"
+    toUnit = "cM"
+  }
   
-  nontriv = Mb >= 0 & Mb <= mapMB[length(mapMB)]
-  res = numeric(length(Mb))
-  res[!nontriv] = NA
+  # Output vector
+  res = numeric(length(from))
   
-  mb = Mb[nontriv]
-  interv = findInterval(mb, mapMB, all.inside = TRUE)
-  res[nontriv] = mapCM[interv] + (mb - mapMB[interv]) *
-    (mapCM[interv + 1] - mapCM[interv]) / (mapMB[interv + 1] - mapMB[interv])
+  mapFrom = map[[fromUnit]]
+  mapTo = map[[toUnit]]
+  mapN = nrow(map)
+  
+  # Deal with values outside of map
+  before = from < mapFrom[1]
+  after =  from > mapFrom[mapN]
+  res[before] = 0
+  res[after] = if(toUnit == "Mb") NA else mapTo[mapN]
+  
+  # Locate inside values
+  inside = !before & !after
+  src = from[inside]
+  idx = findInterval(src, mapFrom, all.inside = TRUE)
+  
+  # Rate of change
+  rate = (mapTo[idx + 1] - mapTo[idx]) / (mapFrom[idx + 1] - mapFrom[idx])
+  
+  # Extrapolate
+  res[inside] = mapTo[idx] + (src - mapFrom[idx]) * rate
+  
   res
 }

@@ -57,7 +57,7 @@ usethis::use_data(decode19, internal = TRUE, overwrite = T)
 # Check max error
 test1 = mraw %>% 
   filter(Chr =="chr1") %>% 
-  mutate(approx = ibdsim2:::phys2cm(End/1e6, maps[[1]]$male),
+  mutate(approx = ibdsim2::convertPos(Mb = End/1e6, maps[[1]]$male),
          err = cM - approx)
 test1 %>% pull(err) %>% summary
 

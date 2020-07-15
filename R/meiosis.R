@@ -24,7 +24,7 @@ meiosis = function(parent, map, model = "chi", skipRecomb = FALSE) {
       Cx = Cx.bundle[as.logical(sample.int(2, length(Cx.bundle), replace = TRUE) %% 2)]    # thinning. Each survive with prob=1/2
   })
   
-  cpos = cm2phys(cM = Cx, map = map) # crossover positions
+  cpos = convertPos(cM = Cx, map = map) # crossover positions
   
   # Recombine!
   child = recombine(parent[[startStrand]], parent[[3 - startStrand]], cpos)
