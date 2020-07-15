@@ -14,7 +14,7 @@ profileSimIBD(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
 
 \item{ids}{A vector of ID labels. If NULL, all members of \code{x} are included.}
 
-\item{markers}{A vector with names of indices of markers attached to \code{x}.}
+\item{markers}{A vector with names or indices of markers attached to \code{x}.}
 
 \item{seed}{An integer seed for the random number generator.}
 }

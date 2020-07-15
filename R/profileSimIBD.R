@@ -11,7 +11,7 @@
 #' @param ibdpattern A `genomeSim()` object, typically created by [ibdsim()].
 #'   (See Examples).
 #' @param ids A vector of ID labels. If NULL, all members of `x` are included.
-#' @param markers A vector with names of indices of markers attached to `x`.
+#' @param markers A vector with names or indices of markers attached to `x`.
 #' @param seed An integer seed for the random number generator.
 #'
 #' @return An object similar to `x`. but with simulated genotypes.
