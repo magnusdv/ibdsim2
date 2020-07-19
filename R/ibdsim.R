@@ -154,9 +154,9 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode",
       Simulation parameters:
       Simulations  : {N}
       Chromosomes  : {toString2(mapchrom)}
-      Genome length: {round(genomeLen(map), 2)} Mb
-                     {round(genomeLen(map, 'cM', 'male'), 2)} cM (male)
-                     {round(genomeLen(map, 'cM', 'female'), 2)} cM (female)
+      Genome length: {round(physRange(map), 2)} Mb
+                     {round(mapLen(map, 'male'), 2)} cM (male)
+                     {round(mapLen(map, 'female'), 2)} cM (female)
       Recomb model : {model}
       Target indivs: {toString2(ids, ifempty = '-')}
       Skip recomb  : {toString2(skipRecomb, ifempty = '-')}"
@@ -184,7 +184,8 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode",
             ids = ids, 
             skipRecomb = skipRecomb, 
             chrom = mapchrom, 
-            genomeLen = genomeLen(map),
+            physRange = physRange(map),
+            mapLen = mapLen(map),
             model = model, 
             class = "genomeSimList")
 }
@@ -194,11 +195,13 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode",
 #' @export
 print.genomeSimList = function(x, ...) {
   attrs = attributes(x)
+  len = attrs$mapLen
   
   print(glue::glue("
   List of {length(x)} genome simulations.
   Chromosomes: {toString2(attrs$chrom)}
-  Total len  : {round(attrs$genomeLen, 2)} Mb
+  Total range: {round(attrs$physRange, 2)} Mb
+  Map length : {len[[1]]} cM (male), {len[[2]]} cM (female)
   Rec. model : {attrs$model}
   Target ids : {toString2(attrs$ids)}
   Skip recomb: {toString2(attrs$skipRecomb, ifempty = '-')}

@@ -41,14 +41,14 @@ chroms = thinned %>%
 
 # Make chromosome maps
 maps = chroms %>%
-  imap(~ibdsim2:::chromMap(male = select(.x, Mb, male), 
-                          female = select(.x, Mb, female),
-                          chrom = .y))
+  imap(~chromMap(male = select(.x, Mb, male), 
+                 female = select(.x, Mb, female),
+                 chrom = .y))
 # Fix X
 maps[[23]]$male = NULL
 attr(maps[[23]], 'chrom') = "X"
 
-decode19 = ibdsim2:::genomeMap(maps)
+decode19 = genomeMap(maps)
 
 usethis::use_data(decode19, internal = TRUE, overwrite = T)
 
@@ -57,9 +57,9 @@ usethis::use_data(decode19, internal = TRUE, overwrite = T)
 # Check max error
 test1 = mraw %>% 
   filter(Chr =="chr1") %>% 
-  mutate(approx = ibdsim2::convertPos(Mb = End/1e6, maps[[1]]$male),
+  mutate(approx = ibdsim2::convertPos(Mb = End/1e6, map = maps[[1]]$male),
          err = cM - approx)
 test1 %>% pull(err) %>% summary
 
 # Check chrom order
-barplot(sapply(decode19, ibdsim2:::chromLen))
+barplot(sapply(decode19, mapLen))

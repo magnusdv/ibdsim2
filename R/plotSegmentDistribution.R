@@ -199,7 +199,7 @@ plotSegmentDistribution.autoz = function(sims, ids, col = NULL, shape = 1, alpha
     inbreeding(attr(sims[[i]], "pedigree"), id = as.character(ids[[i]])))
   
   expect.args = list(values = fPed, 
-                     genomeLen = attr(sims[[1]], "genomeLen"),
+                     physRange = attr(sims[[1]], "physRange"),
                      label = expression(Expected~italic(f)))
   
   # Create the plot
@@ -228,7 +228,7 @@ plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha 
     if(any(real$nSeg2 > 0)) 
       message("Warning: Simulation list ", i, " includes IBD = 2 segments. Expected 'kappa_1 curve' will be wrong!")
     
-    L = attr(s, "genomeLen")
+    L = attr(s, "physRange")
     nSeg = real$nSeg1
     meanLen = ifelse(nSeg > 0, real$k1 * L / nSeg, 0)
     data.frame(nSeg = nSeg,  meanLen = meanLen, relation = labs[i])
@@ -242,7 +242,7 @@ plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha 
     4 * kinship(attr(sims[[i]], "pedigree"), as.character(ids[[i]])))
   
   expect.args = list(values = kappa1, 
-                     genomeLen = attr(sims[[1]], "genomeLen"),
+                     physRange = attr(sims[[1]], "physRange"),
                      label = expression(Expected~kappa[1]))
   
   # Create the plot
@@ -281,7 +281,7 @@ plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha 
   if(length(vals)) {
     max.x = max(plotDat$nSeg)
     max.y = max(plotDat$meanLen)
-    L = expect.args$genomeLen
+    L = expect.args$physRange
     
     curveDat = do.call(rbind, lapply(vals, function(v) {
       xmin = if(max.y > 0) L * v / max.y else 0

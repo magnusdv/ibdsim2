@@ -6,10 +6,10 @@ test_that("uniformMap() returns a chromMap of correct length", {
   expect_true(isChromMap(m))
   expect_true(is.data.frame(m$male))
   expect_true(is.data.frame(m$female))
-  expect_equal(chromLen(m), 1)
-  expect_equal(chromLen(m, "cM"), c(male=2, female=3))
-  expect_equal(chromLen(m, "cM", "male"), 2)
-  expect_equal(chromLen(m, "cM", "female"), 3)
+  expect_equal(physRange(m), 1)
+  expect_equal(mapLen(m,), c(male=2, female=3))
+  expect_equal(mapLen(m, "male"), 2)
+  expect_equal(mapLen(m, "female"), 3)
 })
 
 test_that("genomeMap() returns a genomeMap of correct length", {
@@ -18,10 +18,10 @@ test_that("genomeMap() returns a genomeMap of correct length", {
   expect_s3_class(g, "genomeMap")
   expect_true(isGenomeMap(g))
   expect_equal(g[[1]], m)
-  expect_equal(genomeLen(g), 1)
-  expect_equal(genomeLen(g, "cM"), c(male=2, female=3))
-  expect_equal(genomeLen(g, "cM", "male"), 2)
-  expect_equal(genomeLen(g, "cM", "female"), 3)
+  expect_equal(physRange(g), 1)
+  expect_equal(mapLen(g), c(male=2, female=3))
+  expect_equal(mapLen(g, "male"), 2)
+  expect_equal(mapLen(g, "female"), 3)
 })
 
 test_that("loadMap() catches errors", {
@@ -42,11 +42,12 @@ test_that("loadMap() options work", {
   mus = loadMap(chrom = 13, uniform = T, sexAver = T)
   
   expect_length(m, 1)
-  expect_equal(genomeLen(m), genomeLen(mu))
-  expect_equal(genomeLen(m, "cM"), genomeLen(mu, "cM"))
-  expect_equal(genomeLen(ms), genomeLen(mus))
-  expect_equal(genomeLen(ms, "cM"), genomeLen(mus, "cM"))
-  expect_equal(genomeLen(ms, "cM", "male"), mean(genomeLen(m, "cM")))
+  expect_equal(physRange(mu), physRange(m))
+  expect_equal(physRange(ms), physRange(m))
+  expect_equal(physRange(mus), physRange(m))
+  expect_equal(mapLen(mu), mapLen(m))
+  expect_equal(mapLen(ms), mapLen(m))
+  expect_equal(mapLen(mus, "male"), mean(mapLen(m)))
   expect_equal(nrow(mu[[1]]$male), 2)
   expect_equal(nrow(mus[[1]]$male), 2)
   expect_equal(nrow(m[[1]]$male), nrow(ms[[1]]$male))
@@ -69,8 +70,8 @@ test_that("customMap() catches errors", {
 
 test_that("customMap() assigns male/female columns correctly", {
   m1 = customMap(data.frame(chrom = 1, mb = 0:1, male = c(0,2), female = c(0,3)))
-  expect_equal(genomeLen(m1, "cM"), c(male = 2, female = 3))
+  expect_equal(mapLen(m1), c(male = 2, female = 3))
   
   m2 = customMap(data.frame(chrom = 1, mb = 0:1, female = c(0,3), male = c(0,2)))
-  expect_equal(genomeLen(m2, "cM"), c(male = 2, female = 3))
+  expect_equal(mapLen(m2), c(male = 2, female = 3))
 })
