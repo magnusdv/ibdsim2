@@ -70,7 +70,7 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
   # Pick rows (indices) in `a` corresponding to marker positions
   arows = vapply(seq_len(nMark), function(i) {
     chrrows = which(achr == mchr[i])
-    chrrows[findInterval(mpos[i], a[chrrows, 'start'])]
+    chrrows[findInterval(mpos[i], a[chrrows, 'start'], all.inside = TRUE)]
   }, FUN.VALUE = 1L)
   
   
