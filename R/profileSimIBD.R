@@ -58,7 +58,6 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
   achr = a[, 'chrom']
   
   nMark = nMarkers(x)
-  mname = name(x, 1:nMark)
   mchr  = chrom(x, 1:nMark)
   mpos  = posMb(x, 1:nMark)
   
