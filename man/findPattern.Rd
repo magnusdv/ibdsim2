@@ -13,7 +13,7 @@ findPattern(sims, pattern)
 \item{pattern}{A list of two vectors names \code{carriers} and \code{noncarriers}.}
 }
 \value{
-A matrix (if \code{sims} is a single \code{genomeSim} object), 7or a list of
+A matrix (if \code{sims} is a single \code{genomeSim} object), or a list of
 matrices.
 }
 \description{
