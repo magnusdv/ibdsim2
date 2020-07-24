@@ -11,7 +11,7 @@
 #'   [ibdsim()].
 #' @param pattern A list of two vectors names `carriers` and `noncarriers`.
 #'
-#' @return A matrix (if `sims` is a single `genomeSim` object), 7or a list of
+#' @return A matrix (if `sims` is a single `genomeSim` object), or a list of
 #'   matrices.
 #'
 #' @examples

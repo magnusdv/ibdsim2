@@ -47,7 +47,7 @@
 #'            skipRecomb = spouses(x, 1), seed = 19499)
 #' s[[1]]
 #'
-#' # Gray colour (8) for irrelevant founder alleles
+#' # Grey colour (8) for irrelevant founder alleles
 #' haploDraw(x, s[[1]], pos = c(1,0,2,0,4,4),
 #'           cols = c(3,7,8,8,8,8), margin = c(2, 2, 2, 2))
 #'
