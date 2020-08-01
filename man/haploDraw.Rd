@@ -53,7 +53,7 @@ Visualise the IBD pattern of a single chromosome, by drawing haplotypes onto
 the pedigree.
 }
 \examples{
-op = par()
+op = par(no.readonly = TRUE)
 
 ###############################
 # Example 1: A family quartet #
@@ -63,8 +63,8 @@ x = nuclearPed(2)
 s = ibdsim(x, N = 1, map = uniformMap(M = 1), seed = 4276)
 s[[1]]
 
-haploDraw(x, s[[1]], pos = c(2,4,1,1), cols = c(3,7,2,4),
-          margin = c(3, 5, 3, 5), cex = 1.2)
+haploDraw(x, s[[1]], pos = c(2,4,2,4), cols = c(3,7,2,4),
+          margins = c(2, 5, 5, 5), cex = 1.2)
 
 
 ###########################
@@ -73,12 +73,12 @@ haploDraw(x, s[[1]], pos = c(2,4,1,1), cols = c(3,7,2,4),
 
 x = halfCousinPed(0, child = TRUE)
 s = ibdsim(x, N = 1, map = uniformMap(M = 1),
-           skipRecomb = spouses(x, 1), seed = 19499)
+           skipRecomb = spouses(x, 2), seed = 19499)
 s[[1]]
 
 # Grey colour (8) for irrelevant founder alleles
-haploDraw(x, s[[1]], pos = c(1,0,2,0,4,4),
-          cols = c(3,7,8,8,8,8), margin = c(2, 2, 2, 2))
+haploDraw(x, s[[1]], pos = c(0,1,0,2,4,4),
+          cols = c(8,8,3,7,8,8), margin = c(2, 2, 2, 2))
 
 
 # Restore graphics parameters
