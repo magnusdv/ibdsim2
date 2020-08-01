@@ -173,7 +173,7 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
   simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
   
   # For each sim, check if autozygous at both ends
-  f2 = lapply(simdata, function(a) a[[1, "Aut"]] == 1 && a[[nrow(a), "Aut"]] == 1)
+  f2 = vapply(simdata, function(a) a[[1, "Aut"]] == 1 && a[[nrow(a), "Aut"]] == 1, FUN.VALUE = FALSE)
   
   if (verbose) 
     cat("Total time used:", (proc.time() - st)[["elapsed"]], "seconds.\n")
