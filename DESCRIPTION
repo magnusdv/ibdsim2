@@ -15,7 +15,7 @@ Encoding: UTF-8
 Language: en-GB
 LazyData: true
 Depends: R (>= 3.5.0),
-    pedtools (>= 0.9.4)
+    pedtools (>= 0.9.5)
 Imports:
     Rcpp,
     ggplot2,
