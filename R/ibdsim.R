@@ -125,7 +125,7 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode",
     else
       map = loadMap(map)
   }
-  else if(isChromMap(map))
+  else if(isChromMap(map) || (is.list(map) && all(sapply(map, isChromMap))))
     map = genomeMap(map)
   else if(!isGenomeMap(map))
     stop2("Argument `map` must be either a `genomeMap`, a single `chromMap` or a single character")
