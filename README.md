@@ -89,7 +89,7 @@ Here are the first few rows of the single simulation we just made:
 ``` r
 head(sim[[1]])
 #>      chrom     start       end     length 1:p 1:m 2:p 2:m 3:p 3:m 4:p 4:m
-#> [1,]     1  0.000000  6.386532  6.3865323   1   2   3   4   2   4   2   4
+#> [1,]     1  1.431813  6.386532  4.9547193   1   2   3   4   2   4   2   4
 #> [2,]     1  6.386532 19.733718 13.3471854   1   2   3   4   2   4   2   3
 #> [3,]     1 19.733718 20.220621  0.4869035   1   2   3   4   1   4   2   3
 #> [4,]     1 20.220621 58.236210 38.0155893   1   2   3   4   1   4   2   4
@@ -141,24 +141,26 @@ plot(x)
 We store the ID labels of the three relationships in a list.
 
 ``` r
-ids = list(GR = c(1,7), 
+ids = list(GR = c(2,7), 
            HS = 4:5, 
            HU = c(4,7))
 ```
 
-Next, we use `ibdsim()` to produce 1000 simulations of the underlying
-IBD pattern in the entire pedigree.
+Next, we use `ibdsim()` to produce 500 simulations of the underlying IBD
+pattern in the entire pedigree.
 
 ``` r
-s = ibdsim(x, N = 1000, map = loadMap("decode19"))
+s = ibdsim(x, N = 500, map = "decode19")
 #> Simulation parameters:
-#> # simulations: 1000
+#> Simulations  : 500
 #> Chromosomes  : 1-22
-#> Genome length: 2753.931711 Mb
+#> Genome length: 2753.93 Mb
+#>                2602.29 cM (male)
+#>                4180.42 cM (female)
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 43.6 secs
+#> Total time used: 11.7 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option `type =
@@ -166,12 +168,11 @@ The `plotSegmentDistribution()` function, with the option `type =
 plot. Note that the names of the `ids` list are used in the legend.
 
 ``` r
-plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3 )
+plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
 ```
 
 <img src="man/figures/README-ibdsim2-example-distplot-1.png" style="display: block; margin: auto;" />
 
 We conclude that the three distributions are almost completely disjoint.
-In particular, this suggests that GR and HS relationships are separable
-on the basis of their IBD segments, if these can be determined
-accurately enough.
+In particular, GR and HS are separable on the basis of their IBD
+segments, if these can be determined accurately enough.

@@ -57,7 +57,7 @@ chr1 = loadMap("decode19", chrom = 1)
 ```
 
 Now run the simulation! The `seed` argument ensures reproducibility.
-```{r quartet-sim, cache = T}
+```{r quartet-sim}
 sim = ibdsim(x, N = 1, map = chr1, seed = 1234, verbose = F)
 ```
 
@@ -97,19 +97,19 @@ plot(x, margin = c(1,1,1,1), cex = 1.3)
 
 We store the ID labels of the three relationships in a list.
 ```{r ibdsim2-example-ids}
-ids = list(GR = c(1,7), 
+ids = list(GR = c(2,7), 
            HS = 4:5, 
            HU = c(4,7))
 ```
 
-Next, we use `ibdsim()` to produce 1000 simulations of the underlying IBD pattern in the entire pedigree.
-```{r ibdsim2-example-sim, cache = T}
-s = ibdsim(x, N = 1000, map = loadMap("decode19"))
+Next, we use `ibdsim()` to produce 500 simulations of the underlying IBD pattern in the entire pedigree.
+```{r ibdsim2-example-sim}
+s = ibdsim(x, N = 500, map = "decode19")
 ```
 
 The `plotSegmentDistribution()` function, with the option `type = "ibd1"` analyses the IBD segments in each simulation, and makes a nice plot. Note that the names of the `ids` list are used in the legend.
 ```{r ibdsim2-example-distplot, fig.height=6, fig.width=7}
-plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3 )
+plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
 ```
 
-We conclude that the three distributions are almost completely disjoint. In particular, this suggests that GR and HS relationships are separable on the basis of their IBD segments, if these can be determined accurately enough.
+We conclude that the three distributions are almost completely disjoint. In particular, GR and HS are separable on the basis of their IBD segments, if these can be determined accurately enough.
