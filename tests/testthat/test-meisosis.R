@@ -1,4 +1,3 @@
-context("meiosis")
 
 test_that("meiosis results in matrix", {
   pat = cbind(0,1); mat = cbind(0,2)

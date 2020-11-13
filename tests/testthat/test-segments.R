@@ -1,4 +1,3 @@
-context("plot segment distributions")
 
 x = nuclearPed(1)
 s = ibdsim(x, N = 1, map = uniformMap(M=1), seed = 123, verbose = F)[[1]]

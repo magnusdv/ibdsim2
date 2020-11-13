@@ -1,4 +1,3 @@
-context("plot segment distributions")
 
 test_that("uniformMap() returns a chromMap of correct length", {
   m = uniformMap(Mb = 1, cM = 2:3)

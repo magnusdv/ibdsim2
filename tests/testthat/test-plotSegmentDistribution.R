@@ -1,4 +1,3 @@
-context("plot segment distributions")
 
 p1 = function(...) plotSegmentDistribution(..., type = "ibd1", ellipses = F)
 

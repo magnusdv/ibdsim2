@@ -1,4 +1,3 @@
-context("Rcpp recombine")
 
 test_that("recombinations of pure strands", {
   recombine = ibdsim2:::recombine

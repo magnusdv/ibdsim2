@@ -1,4 +1,3 @@
-context("inbred founders")
 
 quickSim = function(x, N=1, map=uniformMap(10), model="haldane")
   ibdsim(x, N=N, verbose=F, map=map, model=model)

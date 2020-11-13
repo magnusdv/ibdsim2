@@ -1,4 +1,3 @@
-context("ibdsim")
 
 test_that("ibdsim() returns objects of correct class", {
   x = nuclearPed(1)
