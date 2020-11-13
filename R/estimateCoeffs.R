@@ -86,17 +86,17 @@
 #' Nsim = 10 # Should be increased to at least 10000
 #'
 #' # Grandparent/grandchild
-#' G = linearPed(2); G.ids = c(1,5); # plot(G, shaded = G.ids)
+#' G = linearPed(2); G.ids = c(1,5); # plot(G, hatched = G.ids)
 #' estimateTwoLocusKappa(G, G.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 #' .5*(1-rho) # exact
 #'
 #' # Half sibs
-#' H = halfSibPed(); H.ids = c(4,5); # plot(H, shaded = H.ids)
+#' H = halfSibPed(); H.ids = c(4,5); # plot(H, hatched = H.ids)
 #' estimateTwoLocusKappa(H, H.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 #' R # exact
 #'
 #' # Uncle
-#' U = cousinPed(0, removal = 1); U.ids = c(3,6); # plot(U, shaded = U.ids)
+#' U = cousinPed(0, removal = 1); U.ids = c(3,6); # plot(U, hatched = U.ids)
 #' estimateTwoLocusKappa(U, U.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 #' (1-rho) * R + rho/4 # exact
 #'

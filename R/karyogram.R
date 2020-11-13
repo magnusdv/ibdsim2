@@ -146,9 +146,10 @@ karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, sepa
                         alpha = 1, bgcol = "gray95", title = NULL, legendTitle = "IBD", 
                         prefix = "chr") {
   
-  map = loadMap("Decode", chrom = chrom)
-  chrlen = sapply(map, attr, 'length')
+  map = loadMap("decode19", chrom = chrom)
+  chrlen = sapply(map, physRange)
   seqnames = paste0(prefix, sapply(map, attr, 'chrom'))
+  
   genome = data.frame(chr = factor(seqnames, levels = seqnames), 
                       Mb = chrlen)
   
