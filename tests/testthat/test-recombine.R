@@ -1,4 +1,4 @@
-skip_on_cran("Local test")
+skip_on_cran()
 
 test_that("recombinations of pure strands", {
   recombine = ibdsim2:::recombine

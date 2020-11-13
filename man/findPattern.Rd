@@ -22,7 +22,7 @@ IBD simulations
 }
 \details{
 For each simulation, this function extracts the subset of rows satisfying the
-allele sharing specifyed by \code{pattern}. That is, segments where some allele
+allele sharing specified by \code{pattern}. That is, segments where some allele
 occur in all of \code{pattern$carriers}, but in none of \code{pattern$noncarriers}.
 }
 \examples{

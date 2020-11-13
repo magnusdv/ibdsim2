@@ -4,7 +4,7 @@
 #' IBD simulations
 #'
 #' For each simulation, this function extracts the subset of rows satisfying the
-#' allele sharing specifyed by `pattern`. That is, segments where some allele
+#' allele sharing specified by `pattern`. That is, segments where some allele
 #' occur in all of `pattern$carriers`, but in none of `pattern$noncarriers`.
 #'
 #' @param sims A `genomeSim` object, or a list of such. Typically made by
