@@ -87,7 +87,7 @@ mergeConsecutiveSegments = function(df, mergeBy, segStart = "start",
   newdf[, segEnd] = df[ends, segEnd]
   
   # Fix lengths if present
-  if(!is.null(segLength) && segLength %in% names(df))
+  if(!is.null(segLength) && segLength %in% colnames(df))
     newdf[, segLength] = newdf[, segEnd] - newdf[, segStart] 
   
   newdf
