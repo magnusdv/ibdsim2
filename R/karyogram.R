@@ -186,7 +186,7 @@ karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, sepa
     facet_grid(chr ~ ., switch = "y") + 
     scale_x_continuous(expand = c(0.01, 0.01)) +
     scale_fill_manual(values = color) + 
-    guides(fill = if(is.na(colorBy)) NULL else guide_legend(legendTitle)) +
+    guides(fill = if(is.na(colorBy)) "none" else guide_legend(legendTitle)) +
     theme_void(base_size = 16) + 
     theme(plot.margin = margin(4, 4, 4, 4),
           plot.title = element_text(size = 16, 

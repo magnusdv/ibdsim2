@@ -195,8 +195,7 @@ plotSegmentDistribution.autoz = function(sims, ids, col = NULL, shape = 1, alpha
   plotDat$relation = factor(plotDat$relation, levels = unique.default(plotDat$relation))
   
   ### Theoretical expectation curves
-  fPed = sapply(1:N, function(i) 
-    inbreeding(attr(sims[[i]], "pedigree"), id = as.character(ids[[i]])))
+  fPed = sapply(1:N, function(i) inbreeding(attr(sims[[i]], "pedigree"), ids = ids[[i]]))
   
   expect.args = list(values = fPed, 
                      physRange = attr(sims[[1]], "physRange"),
@@ -225,6 +224,7 @@ plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha 
     s = sims[[i]]
     ids = ids[[i]]
     real = realisedKappa(s, ids = ids)$perSimulation
+    
     if(any(real$nSeg2 > 0)) 
       message("Warning: Simulation list ", i, " includes IBD = 2 segments. Expected 'kappa_1 curve' will be wrong!")
     
@@ -261,9 +261,10 @@ plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha 
     theme_bw(base_size = 15) + 
     scale_color_manual(values = col) +
     scale_shape_manual(values = rep(shape, length.out = nRel)) +
-    guides(color = if(nRel > 1) guide_legend(order = 1, 
-                                             override.aes = list(size = 2, alpha = 1)) else FALSE,
-           shape = if(nRel > 1) guide_legend(order = 1) else FALSE) + 
+    guides(color = if(nRel > 1) guide_legend(order = 1, override.aes = list(size = 2, alpha = 1)) 
+                   else "none",
+           shape = if(nRel > 1) guide_legend(order = 1) 
+                   else "none") + 
     theme(legend.key.width = unit(0.9, "cm"))
   
   if(legendInside)
