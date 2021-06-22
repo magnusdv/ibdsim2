@@ -1,3 +1,5 @@
+# ibdsim2 (development version)
+
 # ibdsim2 1.3
 
 ## New features
