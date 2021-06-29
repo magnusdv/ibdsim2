@@ -50,7 +50,7 @@ attr(maps[[23]], 'chrom') = "X"
 
 decode19 = genomeMap(maps)
 
-usethis::use_data(decode19, internal = TRUE, overwrite = T)
+usethis::use_data(decode19, internal = TRUE, overwrite = TRUE)
 
 
 ### QC ###

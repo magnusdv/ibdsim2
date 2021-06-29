@@ -4,13 +4,16 @@
 \alias{findPattern}
 \title{Find specific IBD patterns}
 \usage{
-findPattern(sims, pattern)
+findPattern(sims, pattern, cutoff = 0)
 }
 \arguments{
 \item{sims}{A \code{genomeSim} object, or a list of such. Typically made by
 \code{\link[=ibdsim]{ibdsim()}}.}
 
 \item{pattern}{A list of two vectors names \code{carriers} and \code{noncarriers}.}
+
+\item{cutoff}{A non-negative number. Segments shorter than this are excluded
+from the output. Default: 0.}
 }
 \value{
 A matrix (if \code{sims} is a single \code{genomeSim} object), or a list of
@@ -33,6 +36,9 @@ s1 = s[[1]]
 # Segments where some allele is shared by 3 and 4, but not 5
 pattern = list(carriers = 3:4, noncarriers = 5)
 findPattern(s1, pattern)
+
+# Exclude segments less than 7 cM
+findPattern(s1, pattern, cutoff = 7)
 
 # Visual confirmation:
 haploDraw(x, s1, margin = c(5,3,3,3))

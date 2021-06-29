@@ -10,6 +10,8 @@
 #' @param sims A `genomeSim` object, or a list of such. Typically made by
 #'   [ibdsim()].
 #' @param pattern A list of two vectors names `carriers` and `noncarriers`.
+#' @param cutoff A non-negative number. Segments shorter than this are excluded
+#'   from the output. Default: 0.
 #'
 #' @return A matrix (if `sims` is a single `genomeSim` object), or a list of
 #'   matrices.
@@ -18,16 +20,19 @@
 #' x = nuclearPed(3)
 #' s = ibdsim(x, N = 1, map = uniformMap(M = 1), seed = 1729)
 #' s1 = s[[1]]
-#' 
+#'
 #' # Segments where some allele is shared by 3 and 4, but not 5
 #' pattern = list(carriers = 3:4, noncarriers = 5)
 #' findPattern(s1, pattern)
-#' 
+#'
+#' # Exclude segments less than 7 cM
+#' findPattern(s1, pattern, cutoff = 7)
+#'
 #' # Visual confirmation:
 #' haploDraw(x, s1, margin = c(5,3,3,3))
-#' 
+#'
 #' @export
-findPattern = function(sims, pattern) {
+findPattern = function(sims, pattern, cutoff = 0) {
   
   if(single <- is.matrix(sims))
     sims = list(sims)
@@ -46,7 +51,12 @@ findPattern = function(sims, pattern) {
   
   res = lapply(sims, function(s) {
     s = segmentSummary(s, allids)
-    eq1 = eq2 = rep(T, length = nrow(s))
+    
+    # Apply length cutoff
+    if(cutoff > 0)
+      s = s[s[, 'length'] > cutoff, , drop = FALSE]
+    
+    eq1 = eq2 = rep(TRUE, length = nrow(s))
     
     # The possible alleles to be shared
     a1 = s[, ca1[1]]
@@ -62,11 +72,12 @@ findPattern = function(sims, pattern) {
     
     s = s[eq1 | eq2, , drop = FALSE]
     
+    # If no `noncarriers`: return
     if(length(nc) == 0)
       return(s)
     
     ### Test noncarriers (reduce first)
-    keep = rep(T, nrow(s))
+    keep = rep(TRUE, nrow(s))
     
     # which rows used a1 vs a2
     keep1 = eq1[eq1 | eq2]
