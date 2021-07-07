@@ -1,15 +1,26 @@
 #' Find specific IBD patterns
 #'
 #' Find segments satisfying a particular pattern of IBD sharing, in a list of
-#' IBD simulations
+#' IBD simulations.
 #'
 #' For each simulation, this function extracts the subset of rows satisfying the
-#' allele sharing specified by `pattern`. That is, segments where some allele
-#' occur in all of `pattern$carriers`, but in none of `pattern$noncarriers`.
+#' allele sharing specified by `pattern`. That is, segments where, for some allele,
+#'
+#' * all of `pattern$autozygous` are autozygous
+#' 
+#' * all of `pattern$heterozygous` have exactly one copy
+#' 
+#' * all of `pattern$carriers` have at least one copy
+#' 
+#' * none of `pattern$noncarriers` carry the allele.
+#' 
 #'
 #' @param sims A `genomeSim` object, or a list of such. Typically made by
 #'   [ibdsim()].
-#' @param pattern A list of two vectors names `carriers` and `noncarriers`.
+#' @param pattern A named list of vectors containing ID labels. Allowed names
+#'   are `autozygous`, `heterozygous`, `carriers`, `noncarriers`.
+#' @param merge A logical, indicating if adjacent segments should be merged.
+#'   Default: TRUE.
 #' @param cutoff A non-negative number. Segments shorter than this are excluded
 #'   from the output. Default: 0.
 #'
@@ -32,72 +43,128 @@
 #' haploDraw(x, s1, margin = c(5,3,3,3))
 #'
 #' @export
-findPattern = function(sims, pattern, cutoff = 0) {
+findPattern = function(sims, pattern, merge = TRUE, cutoff = 0) {
   
   if(single <- is.matrix(sims))
     sims = list(sims)
   
-  allids = c(pattern$carriers, pattern$noncarriers)
+  names(pattern) = match.arg(names(pattern), 
+                             c("autozygous", "heterozygous", "carriers", "noncarriers"), 
+                             several.ok = TRUE)
   
-  # id columns of carriers
-  ca = lapply(pattern$carriers, paste0, c(":p", ":m"))
-  nc = lapply(pattern$noncarriers, paste0, c(":p", ":m"))
+  pattern = lapply(pattern, as.character)
   
-  if(length(ca) == 0) 
+  aut = pattern$autozygous
+  het = pattern$heterozygous
+  car = setdiff(pattern$carriers, c(aut, het))
+  non = pattern$noncarriers
+  
+  # All individuals involved
+  allids = c(aut, het, car, non)
+  
+  # All carriers
+  allcarr = c(aut, het, car)
+  
+  # If no carriers, return. TODO: Why return all of sims???
+  if(!length(allcarr)) 
     return(sims)
+
+  if(length(err <- intersect(non, allcarr)))
+    stop2("Individuals indicated as both carrier and noncarrier: ", err)
   
-  # Columns names of first carrier
-  ca1 = ca[[1]]
+  if(length(err <- intersect(aut, het)))
+    stop2("Individuals indicated as both autozygous and heterozygous: ", err)
   
-  res = lapply(sims, function(s) {
-    s = segmentSummary(s, allids)
+  # First carrier (which group is irrelevant)
+  id1 = allcarr[1]
+  
+  # List of allele columns of each individual
+  cols = lapply(allids, paste0, c(":p", ":m"))
+  names(cols) = allids
+  
+  # Utils extracting alleles
+  pat = function(sim, id) sim[, cols[[id]][1]]
+  mat = function(sim, id) sim[, cols[[id]][2]]
+  
+  # Loop over simulations
+  res = lapply(sims, function(sim) {
+    s = segmentSummary(sim, allids, addState = FALSE)
+    
+    # The possible alleles to be shared
+    a1 = pat(s, id1)
+    a2 = mat(s, id1)
+    
+    # Initialise logical vectors indicating matching rows
+    eq1 = eq2 = rep(TRUE, length = nrow(s))
+    
+    ### Find rows satisfying pattern
+    
+    # Autozygous carriers
+    for(id in aut) {
+      p = pat(s, id)
+      isAut = p == mat(s, id)
+      eq1 = eq1 & isAut & a1 == p
+      eq2 = eq2 & isAut & a2 == p
+    }
+    
+    # Heterozygous carriers
+    for(id in het) {
+      p = pat(s, id)
+      m = mat(s, id)
+      diff = p != m
+      eq1 = eq1 & diff & (a1 == p | a1 == m)
+      eq2 = eq2 & diff & (a2 == p | a2 == m)
+    }
+    
+    # Remaining carriers
+    for(id in car) {
+      p = pat(s, id)
+      m = mat(s, id)
+      eq1 = eq1 & (a1 == p | a1 == m)
+      eq2 = eq2 & (a2 == p | a2 == m)
+    }
+    
+    # Reduce sim matrix
+    s = s[eq1 | eq2, , drop = FALSE]
+    
+    # Noncarriers (TODO: can probably be optimised)
+    if(length(non)) {
+      keep = rep(TRUE, nrow(s))
+        
+      # Which rows used a1 vs a2
+      keep1 = eq1[eq1 | eq2]
+      keep2 = eq2[eq1 | eq2]
+      
+      s1 = s[keep1, , drop = FALSE]
+      s2 = s[keep2, , drop = FALSE]
+
+      # shared alleles
+      a1 = pat(s1, id1)
+      a2 = mat(s2, id1)
+      
+      for(id in non) {
+        p1 = pat(s1, id)
+        m1 = mat(s1, id)
+        p2 = pat(s2, id)
+        m2 = mat(s2, id)
+        
+        keep[keep1] = keep[keep1] & a1 != p1 & a1 != m1
+        keep[keep2] = keep[keep2] & a2 != p2 & a2 != m2
+      }
+      
+      s = s[keep, , drop = FALSE]
+    }
+    
+    # Merge identified segments
+    if(merge)
+      s = mergeConsecutiveSegments(s, "chrom")
     
     # Apply length cutoff
     if(cutoff > 0)
       s = s[s[, 'length'] > cutoff, , drop = FALSE]
     
-    eq1 = eq2 = rep(TRUE, length = nrow(s))
-    
-    # The possible alleles to be shared
-    a1 = s[, ca1[1]]
-    a2 = s[, ca1[2]]
-    
-    # Find rows satisfying carriers
-    for(idcols in ca[-1]) {
-      patcol = s[, idcols[1]]
-      matcol = s[, idcols[2]]
-      eq1 = eq1 & (a1 == patcol | a1 == matcol)
-      eq2 = eq2 & (a2 == patcol | a2 == matcol)
-    }
-    
-    s = s[eq1 | eq2, , drop = FALSE]
-    
-    # If no `noncarriers`: return
-    if(length(nc) == 0)
-      return(s)
-    
-    ### Test noncarriers (reduce first)
-    keep = rep(TRUE, nrow(s))
-    
-    # which rows used a1 vs a2
-    keep1 = eq1[eq1 | eq2]
-    keep2 = eq2[eq1 | eq2]
-    
-    # shared alleles
-    a1 = s[keep1, ca1[1]]
-    a2 = s[keep2, ca1[2]]
-    
-    for(idcols in nc) {
-      pat1 = s[keep1, idcols[1]]
-      mat1 = s[keep1, idcols[2]]
-      pat2 = s[keep2, idcols[1]]
-      mat2 = s[keep2, idcols[2]]
-      
-      keep[keep1] = keep[keep1] & a1 != pat1 & a1 != mat1
-      keep[keep2] = keep[keep2] & a2 != pat2 & a2 != mat2
-    }
-    
-    s[keep, , drop = FALSE]
+    # Result for this sim
+    s
   })
   
   if(single) 

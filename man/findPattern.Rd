@@ -4,13 +4,17 @@
 \alias{findPattern}
 \title{Find specific IBD patterns}
 \usage{
-findPattern(sims, pattern, cutoff = 0)
+findPattern(sims, pattern, merge = TRUE, cutoff = 0)
 }
 \arguments{
 \item{sims}{A \code{genomeSim} object, or a list of such. Typically made by
 \code{\link[=ibdsim]{ibdsim()}}.}
 
-\item{pattern}{A list of two vectors names \code{carriers} and \code{noncarriers}.}
+\item{pattern}{A named list of vectors containing ID labels. Allowed names
+are \code{autozygous}, \code{heterozygous}, \code{carriers}, \code{noncarriers}.}
+
+\item{merge}{A logical, indicating if adjacent segments should be merged.
+Default: TRUE.}
 
 \item{cutoff}{A non-negative number. Segments shorter than this are excluded
 from the output. Default: 0.}
@@ -21,12 +25,17 @@ matrices.
 }
 \description{
 Find segments satisfying a particular pattern of IBD sharing, in a list of
-IBD simulations
+IBD simulations.
 }
 \details{
 For each simulation, this function extracts the subset of rows satisfying the
-allele sharing specified by \code{pattern}. That is, segments where some allele
-occur in all of \code{pattern$carriers}, but in none of \code{pattern$noncarriers}.
+allele sharing specified by \code{pattern}. That is, segments where, for some allele,
+\itemize{
+\item all of \code{pattern$autozygous} are autozygous
+\item all of \code{pattern$heterozygous} have exactly one copy
+\item all of \code{pattern$carriers} have at least one copy
+\item none of \code{pattern$noncarriers} carry the allele.
+}
 }
 \examples{
 x = nuclearPed(3)
