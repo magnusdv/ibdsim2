@@ -90,10 +90,10 @@ realisedInbreeding = function(sims, id = NULL) {
     }
 
     # Which segments are autozygous
-    aut = as.logical(s[, "Aut"])
+    isAut = as.logical(s[, "Aut"])
     
     # Summary stats on autoz segs
-    segLen = s[aut, 'length']
+    segLen = s[isAut, 'length']
     nSeg = length(segLen)
     totLen = sum(segLen)
     
