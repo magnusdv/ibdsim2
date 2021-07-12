@@ -82,7 +82,7 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1,
 #' @param chrom A numeric vector indicating which chromosomes to load. Default:
 #'   `1:22` (the autosomes).
 #' @param uniform A logical. If FALSE (default), the complete inhomogeneous map
-#'   is used. If TRUE, a uniform version of the same map is produced, i.e. with
+#'   is used. If TRUE, a uniform version of the same map is produced, i.e., with
 #'   the correct lengths, but constant recombination rate along each chromosome.
 #' @param sexAverage A logical, by default FALSE. If TRUE, a sex-averaged map is
 #'   returned, with equal recombination rates for males and females.
@@ -90,7 +90,7 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1,
 #' @return An object of class `genomeMap`.
 #'
 #' @seealso [uniformMap()], [customMap()]
-#' 
+#'
 #' @references Halldorsson et al. _Characterizing mutagenic effects of
 #'   recombination through a sequence-level genetic map._ Science 363, no. 6425
 #'   (2019).
@@ -152,7 +152,13 @@ loadMap = function(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage =
       if(!identical(chr$male$Mb, chr$female$Mb))
         stop2("Sex averaging requires equal map positions in males and females")
       
+      # Average each data point
       chr$male$cM = chr$female$cM = (chr$male$cM + chr$female$cM)/2
+      
+      # Chromosome map length attribute
+      meanLen = mean(attr(chr, "mapLen"))
+      attr(chr, "mapLen") = c(male = meanLen, female = meanLen)
+      
       chr
     })
     

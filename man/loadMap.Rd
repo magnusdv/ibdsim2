@@ -14,7 +14,7 @@ only valid choice is "decode19" (default).}
 \code{1:22} (the autosomes).}
 
 \item{uniform}{A logical. If FALSE (default), the complete inhomogeneous map
-is used. If TRUE, a uniform version of the same map is produced, i.e. with
+is used. If TRUE, a uniform version of the same map is produced, i.e., with
 the correct lengths, but constant recombination rate along each chromosome.}
 
 \item{sexAverage}{A logical, by default FALSE. If TRUE, a sex-averaged map is

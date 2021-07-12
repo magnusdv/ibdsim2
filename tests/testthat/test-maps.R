@@ -45,7 +45,7 @@ test_that("loadMap() options work", {
   expect_equal(physRange(ms), physRange(m))
   expect_equal(physRange(mus), physRange(m))
   expect_equal(mapLen(mu), mapLen(m))
-  expect_equal(mapLen(ms), mapLen(m))
+  expect_equal(mapLen(ms), mapLen(mus))
   expect_equal(mapLen(mus, "male"), mean(mapLen(m)))
   expect_equal(nrow(mu[[1]]$male), 2)
   expect_equal(nrow(mus[[1]]$male), 2)
