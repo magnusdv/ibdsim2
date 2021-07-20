@@ -86,7 +86,7 @@ realisedInbreeding = function(sims, id = NULL) {
     
     if(length(idsims) > 1 || !"Aut" %in% colnames(s)) {
       s0 = segmentSummary(s, ids = id, addState = TRUE)
-      s = mergeAdjacent(s0, vec = "Aut")
+      s = mergeSegments(s0, by = "Aut")
     }
 
     # Which segments are autozygous
@@ -141,7 +141,7 @@ realisedKinship = function(sims, ids = NULL) {
     
     if(!"Sigma" %in% colnames(s)) {
       s0 = segmentSummary(s, ids = ids, addState = TRUE)
-      s = mergeAdjacent(s0, vec = "Sigma")
+      s = mergeSegments(s0, by = "Sigma")
     }
     
     len = s[, 'length']  
@@ -187,7 +187,7 @@ realisedKappa = function(sims, ids = NULL) {
     
     if(!"IBD" %in% colnames(s)) {
       s0 = segmentSummary(s, ids = ids, addState = TRUE)
-      s = mergeAdjacent(s0, vec = "IBD")
+      s = mergeSegments(s0, by = "IBD")
     }
     
     len = s[, 'length']  
@@ -238,7 +238,7 @@ realisedIdentity = function(sims, ids = NULL) {
     
     if(!"Sigma" %in% colnames(s)) {
       s0 = segmentSummary(s, ids = ids, addState = TRUE)
-      s = mergeAdjacent(s0, vec = "Sigma")
+      s = mergeSegments(s0, by = "Sigma")
     }
     
     len = s[, 'length']  

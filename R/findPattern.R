@@ -155,9 +155,9 @@ findPattern = function(sims, pattern, merge = TRUE, cutoff = 0) {
       s = s[keep, , drop = FALSE]
     }
     
-    # Merge identified segments
+    # Merge adjacent segments
     if(merge)
-      s = mergeConsecutiveSegments(s, "chrom")
+      s = mergeSegments(s, checkAdjacency = TRUE)
     
     # Apply length cutoff
     if(cutoff > 0)
@@ -172,3 +172,4 @@ findPattern = function(sims, pattern, merge = TRUE, cutoff = 0) {
   
   res
 }
+

@@ -126,13 +126,13 @@ haploDraw = function(x, ibd, chrom = NULL, pos = 1, cols = NULL,
     
     # Paternal haplotype
     patCol = paste0(id, ":p")
-    segsPat = mergeAdjacent(ibd, patCol)
+    segsPat = mergeSegments(ibd, by = patCol)
     addRect(X - SEP/2 - W/2, Y, width = W, height = H, 
             sta = segsPat[, 'start']/L, col = cols[segsPat[, patCol]])
 
     # Paternal haplotype
     matCol = paste0(id, ":m")
-    segsMat = mergeAdjacent(ibd, matCol)
+    segsMat = mergeSegments(ibd, by = matCol)
     addRect(X + SEP/2 + W/2, Y, width = W, height = H, 
             sta = segsMat[, 'start']/L, col = cols[segsMat[, matCol]])
   }

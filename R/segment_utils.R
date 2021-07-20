@@ -1,3 +1,4 @@
+
 segmentSummary = function(x, ids, addState = TRUE) {
   if(!inherits(x, "genomeSim"))
     stop2("Argument `x` must be a `genomeSim` object. Received: ", class(x))
@@ -18,12 +19,13 @@ segmentSummary = function(x, ids, addState = TRUE) {
   }
   
   # Allele columns of selected ids
-  colnms = paste(rep(ids, each = 2), c("p", "m"), sep = ":")
   
-  # Merge identical rows
-  alsCombo = apply(x[, colnms, drop = FALSE], 1, paste, collapse = "-")
-  y = mergeAdjacent(x, vec = alsCombo)
-  y = y[, c(1:4, match(colnms, colnames(x))), drop = FALSE]
+  # Merge segments with identical alleles
+  cols = paste(rep(ids, each = 2), c("p", "m"), sep = ":")
+  y = mergeSegments(x, by = cols)
+  
+  # Keep only allele columns of selected ids
+  y = y[, c(1:4, which(colnames(x) %in% cols)), drop = FALSE]
   
   if(addState)
     y = addStates(y)
@@ -31,29 +33,46 @@ segmentSummary = function(x, ids, addState = TRUE) {
   y
 }
 
-# Merge adjacent segments with equal `vec` entry and equal chrom
-mergeAdjacent = function(x, vec) {
+# Merge segments (on the same chrom) with equal entries in `by` (single vector or column names)
+mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
   k = nrow(x)
   if(k < 2)
     return(x)
   
-  if(length(vec) == 1 && is.character(vec))
-    vec = x[, vec]
-  else if(length(vec) != k)
-    stop2("Incompatible input")
+  # Rows where chromosome is unchanged
+  chrEq = x[-1, 'chrom'] == x[-k, 'chrom']
+  mergeRow = chrEq
   
-  chr = x[, 'chrom']
+  # Rows where `by` elements don't change
+  if(!is.null(by)) {
+    byLen = length(by)
+    
+    if(is.character(by) && all(by %in% colnames(x))) { # Interpret as column names
+      if(byLen == 1)
+        byEq = x[-1, by] == x[-k, by]
+      else
+        byEq = rowSums(x[-1, by] == x[-k, by]) == byLen
+    }
+    else if(byLen == k && (is.numeric(by) || is.character(by))) {
+      byEq = by[-1] == by[-k]
+    }
+    else
+      stop2("Wrong format or length of argument `by`")
+    
+    mergeRow = chrEq & byEq
+  }
   
-  vecEq = vec[-1] == vec[-k]
-  chrEq = chr[-1] == chr[-k]
+  # Segment adjacency
+  if(checkAdjacency) {
+    adjac = x[-1, 'start'] == x[-k, 'end']
+    mergeRow = mergeRow & adjac
+  }
   
-  mergeRow = vecEq & chrEq
   if(!any(mergeRow))
     return(x)
   
   fromRow = which(c(TRUE, !mergeRow))
   toRow = c(fromRow[-1] - 1, k)
-  
   
   y = x[fromRow, , drop = FALSE]
   y[, 'end'] = x[toRow, 'end']
@@ -61,7 +80,7 @@ mergeAdjacent = function(x, vec) {
   y
 }
 
-
+# TODO: Remove. Superseded by the new `mergeSegments()`
 mergeConsecutiveSegments = function(df, mergeBy, segStart = "start", 
                                     segEnd = "end", segLength = "length") {
   N = nrow(df)

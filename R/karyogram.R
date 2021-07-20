@@ -37,7 +37,7 @@ karyogram2 = function(sim, ids = NULL, verbose = TRUE, ...) {
   
   if(length(simids) > 2 || !"IBD" %in% colnames(sim)) {
     sim0 = segmentSummary(sim, ids = ids, addState = TRUE)
-    sim = mergeAdjacent(sim0, vec = "IBD")
+    sim = mergeSegments(sim0, by = "IBD")
   }
   
   ibd = sim[, 'IBD']
@@ -86,7 +86,7 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
   
   if(length(simids) > 2 || !"Aut" %in% colnames(sim)) {
     sim0 = segmentSummary(sim, ids = id, addState = TRUE)
-    sim = mergeAdjacent(sim0, vec = "Aut")
+    sim = mergeSegments(sim0, by = "Aut")
   }
 }
 

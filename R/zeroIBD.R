@@ -59,7 +59,7 @@ zeroIBD = function(sims, ids = NULL, threshold = 0) {
     
     if(length(idsims) > 2 || !"IBD" %in% colnames(s)) {
       s0 = segmentSummary(s, ids = ids, addState = TRUE)
-      s = mergeAdjacent(s0, vec = "IBD")
+      s = mergeSegments(s0, by = "IBD")
     }
     
     ibdstate = s[, 'IBD']
