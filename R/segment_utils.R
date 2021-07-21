@@ -19,8 +19,6 @@ segmentSummary = function(x, ids, addState = TRUE) {
   }
   
   # Allele columns of selected ids
-  
-  # Merge segments with identical alleles
   cols = paste(rep(ids, each = 2), c("p", "m"), sep = ":")
   y = mergeSegments(x, by = cols)
   
@@ -79,6 +77,72 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
   y[, 'length'] = y[, 'end'] - y[, 'start'] 
   y
 }
+
+
+#' Summary statistics for identified segments
+#'
+#' Compute summary statistics for segments identified by [findPattern()].
+#'
+#' @param x A list of matrices, whose column names must include `length`.
+#' @param quantiles A vector of quantiles to include in the summary.
+#'
+#' @return A list of two numeric matrices, named `perSim` and `summary`. The row
+#'   names of both matrices are as follows:
+#'
+#'   * `Count`: The total number of segments in a simulation
+#'
+#'   * `Total`: The total sum of the segment lengths in a simulation
+#'
+#'   * `Average`: The average segment lengths in a simulation
+#'
+#'   * `Shortest`: The length of the shortest segment in a simulation
+#'
+#'   * `Longest`: The length of the longest segment in a simulation
+#'
+#'   * `Overall`: (Only in `summary`) This summarises the lengths of all
+#'   segments from all simulations
+#'
+#' @seealso [findPattern()]
+#' 
+#' @examples
+#' x = nuclearPed(3)
+#' sims = ibdsim(x, N = 10, map = uniformMap(M = 1), model = "haldane", seed = 1729)
+#'
+#' # Segments where all siblings carry the same allele
+#' segs = findPattern(sims, pattern = list(carriers = 3:5))
+#'
+#' # Summarise
+#' segmentStats(segs)
+#'
+#' @export
+segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975)) {
+  
+  if(is.matrix(x))
+    x = list(x)
+  
+  # List of lengths
+  lenDat = lapply(x, function(m) m[, 'length'])
+  
+  # Collect data for each sim
+  perSim = list(`Count`    = lengths(lenDat),
+                `Total`    = vapply(lenDat, sum, FUN.VALUE = numeric(1)), 
+                `Average`  = vapply(lenDat, function(v) if(length(v)) mean(v) else 0, FUN.VALUE = numeric(1)), 
+                `Shortest` = vapply(lenDat, function(v) if(length(v)) min(v) else 0, FUN.VALUE = numeric(1)),
+                `Longest`  = vapply(lenDat, function(v) if(length(v)) max(v) else 0, FUN.VALUE = numeric(1)))
+  
+  # Summarising function
+  sumfun = function(v) c(mean = mean(v), sd = sd(v), min = min(v), quantile(v, quantiles), max = max(v))
+  
+  # Summary
+  sumList = lapply(perSim, sumfun)
+  
+  # Add stats of overall lengths
+  sumList$Overall = sumfun(unlist(lenDat, use.names = FALSE))
+  
+  # Return as data frames
+  list(perSim = do.call(rbind, perSim), summary = do.call(rbind, sumList))
+}
+
 
 # TODO: Remove. Superseded by the new `mergeSegments()`
 mergeConsecutiveSegments = function(df, mergeBy, segStart = "start", 

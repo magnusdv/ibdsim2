@@ -27,6 +27,8 @@
 #' @return A matrix (if `sims` is a single `genomeSim` object), or a list of
 #'   matrices.
 #'
+#' @seealso [segmentStats()]
+#' 
 #' @examples
 #' x = nuclearPed(3)
 #' s = ibdsim(x, N = 1, map = uniformMap(M = 1), seed = 1729)

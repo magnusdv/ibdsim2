@@ -53,3 +53,6 @@ findPattern(s1, pattern, cutoff = 7)
 haploDraw(x, s1, margin = c(5,3,3,3))
 
 }
+\seealso{
+\code{\link[=segmentStats]{segmentStats()}}
+}
