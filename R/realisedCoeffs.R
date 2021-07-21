@@ -278,9 +278,19 @@ realisedIdentity = function(sims, ids = NULL) {
 
 
 
-# Utility for deducing ID labels present in an output of `ibdsim()` simulation
-extractIds = function(sims) {
-  clnms = colnames(sims) %||% colnames(sims[[1]])
+#' Extract ID labels from simulation output
+#'
+#' @param sim Output from [ibdsim()]
+#'
+#' @return A character vector
+#'
+#' @examples
+#' s = ibdsim(nuclearPed(2), N=1, ids = 3:4)
+#' stopifnot(all(extractIds(s) == c("3", "4")))
+#' 
+#' @export
+extractIds = function(sim) {
+  clnms = colnames(sim) %||% colnames(sim[[1]])
   if(is.null(clnms))
     stop2("Cannot deduce ID labels from simulation data")
   
