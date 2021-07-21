@@ -4,16 +4,21 @@
 \alias{segmentStats}
 \title{Summary statistics for identified segments}
 \usage{
-segmentStats(x, quantiles = c(0.025, 0.5, 0.975))
+segmentStats(x, quantiles = c(0.025, 0.5, 0.975), returnAll = FALSE)
 }
 \arguments{
 \item{x}{A list of matrices, whose column names must include \code{length}.}
 
 \item{quantiles}{A vector of quantiles to include in the summary.}
+
+\item{returnAll}{A logical, by default FALSE. If TRUE, the output includes a
+vector \code{allSegs} containing the lengths of all segments in all simulations.}
 }
 \value{
-A list of two numeric matrices, named \code{perSim} and \code{summary}. The row
-names of both matrices are as follows:
+A list containing a data frame \code{perSim}, a matrix \code{summary} and (if
+\code{returnAll} is TRUE) a vector \code{allSegs}.
+
+Variables used in the output:
 \itemize{
 \item \code{Count}: The total number of segments in a simulation
 \item \code{Total}: The total sum of the segment lengths in a simulation
@@ -29,7 +34,7 @@ Compute summary statistics for segments identified by \code{\link[=findPattern]{
 }
 \examples{
 x = nuclearPed(3)
-sims = ibdsim(x, N = 10, map = uniformMap(M = 1), model = "haldane", seed = 1729)
+sims = ibdsim(x, N = 2, map = uniformMap(M = 2), model = "haldane", seed = 1729)
 
 # Segments where all siblings carry the same allele
 segs = findPattern(sims, pattern = list(carriers = 3:5))

@@ -85,9 +85,13 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
 #'
 #' @param x A list of matrices, whose column names must include `length`.
 #' @param quantiles A vector of quantiles to include in the summary.
+#' @param returnAll A logical, by default FALSE. If TRUE, the output includes a
+#'   vector `allSegs` containing the lengths of all segments in all simulations.
 #'
-#' @return A list containing a data frame `perSim` and a matrix `summary`. Both
-#'   of these contain the following variables:
+#' @return A list containing a data frame `perSim`, a matrix `summary` and (if
+#'   `returnAll` is TRUE) a vector `allSegs`.
+#'
+#'   Variables used in the output:
 #'
 #'   * `Count`: The total number of segments in a simulation
 #'
@@ -106,7 +110,7 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
 #'
 #' @examples
 #' x = nuclearPed(3)
-#' sims = ibdsim(x, N = 10, map = uniformMap(M = 1), model = "haldane", seed = 1729)
+#' sims = ibdsim(x, N = 2, map = uniformMap(M = 2), model = "haldane", seed = 1729)
 #'
 #' # Segments where all siblings carry the same allele
 #' segs = findPattern(sims, pattern = list(carriers = 3:5))
@@ -116,7 +120,7 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
 #'
 #' @importFrom stats quantile
 #' @export
-segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975)) {
+segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975), returnAll = FALSE) {
   
   if(is.matrix(x))
     x = list(x)
@@ -139,10 +143,15 @@ segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975)) {
   sumList = lapply(perSim, sumfun)
   
   # Add stats of overall lengths
-  sumList$Overall = sumfun(unlist(lenDat, use.names = FALSE))
+  allSegs = unlist(lenDat, use.names = FALSE)
+  sumList$Overall = sumfun(allSegs)
   
   # Return as data frames
-  list(perSim = perSim, summary = do.call(rbind, sumList))
+  res = list(perSim = perSim, summary = do.call(rbind, sumList))
+  if(returnAll)
+    res$allSegs = allSegs
+  
+  res
 }
 
 
