@@ -114,6 +114,7 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
 #' # Summarise
 #' segmentStats(segs)
 #'
+#' @importFrom stats quantile
 #' @export
 segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975)) {
   
