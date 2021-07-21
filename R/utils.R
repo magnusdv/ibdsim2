@@ -71,6 +71,10 @@ pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks -
   else x
 }
 
+# Safe versions of mean/min/max
+safeMean = function(v, default = 0) if(length(v)) mean(v) else default
+safeMin = function(v, default = 0) if(length(v)) min(v) else default
+safeMax = function(v, default = 0) if(length(v)) max(v) else default
 
 # Private version of `toString`
 #  * Converts sequences to ranges: 1,2,3,5,6,7 -> "1-3, 5-7"

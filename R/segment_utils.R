@@ -128,12 +128,12 @@ segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975)) {
   perSim = data.frame(
     `Count`    = lengths(lenDat),
     `Total`    = vapply(lenDat, sum, FUN.VALUE = numeric(1)), 
-    `Average`  = vapply(lenDat, function(v) if(length(v)) mean(v) else 0, FUN.VALUE = numeric(1)), 
-    `Shortest` = vapply(lenDat, function(v) if(length(v)) min(v) else 0, FUN.VALUE = numeric(1)),
-    `Longest`  = vapply(lenDat, function(v) if(length(v)) max(v) else 0, FUN.VALUE = numeric(1)))
+    `Average`  = vapply(lenDat, safeMean, FUN.VALUE = numeric(1)), 
+    `Shortest` = vapply(lenDat, safeMin, FUN.VALUE = numeric(1)),
+    `Longest`  = vapply(lenDat, safeMax, FUN.VALUE = numeric(1)))
   
   # Summarising function
-  sumfun = function(v) c(mean = mean(v), sd = sd(v), min = min(v), quantile(v, quantiles), max = max(v))
+  sumfun = function(v) c(mean = safeMean(v), sd = sd(v), min = safeMin(v), quantile(v, quantiles), max = safeMax(v))
   
   # Summary
   sumList = lapply(perSim, sumfun)
