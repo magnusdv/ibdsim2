@@ -41,7 +41,7 @@ zeroIBD = function(sims, ids = NULL, threshold = 0) {
     stop2("`threshold` must be a nonnegative number")
   
   # IDs present in sims
-  idsims = extractIdsFromSegmentSummary(sims)
+  idsims = extractIds(sims)
   
   if(is.null(ids))
     ids = idsims
@@ -58,7 +58,7 @@ zeroIBD = function(sims, ids = NULL, threshold = 0) {
   ibdCount = lapply(sims, function(s) {
     
     if(length(idsims) > 2 || !"IBD" %in% colnames(s)) {
-      s0 = segmentSummary(s, ids = ids, addState = TRUE)
+      s0 = alleleFlow(s, ids = ids, addState = TRUE)
       s = mergeSegments(s0, by = "IBD")
     }
     

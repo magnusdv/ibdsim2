@@ -21,7 +21,7 @@
 karyogram2 = function(sim, ids = NULL, verbose = TRUE, ...) {
   
   # IDs present in sim
-  simids = extractIdsFromSegmentSummary(sim)
+  simids = extractIds(sim)
   
   if(is.null(ids)) {
     ids = simids
@@ -36,7 +36,7 @@ karyogram2 = function(sim, ids = NULL, verbose = TRUE, ...) {
     stop2("Target ID not found in input data:", setdiff(ids, simids))
   
   if(length(simids) > 2 || !"IBD" %in% colnames(sim)) {
-    sim0 = segmentSummary(sim, ids = ids, addState = TRUE)
+    sim0 = alleleFlow(sim, ids = ids, addState = TRUE)
     sim = mergeSegments(sim0, by = "IBD")
   }
   
@@ -70,7 +70,7 @@ karyogram2 = function(sim, ids = NULL, verbose = TRUE, ...) {
 karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = TRUE, ...) {
   
   # IDs present in sim
-  simids = extractIdsFromSegmentSummary(sim)
+  simids = extractIds(sim)
   
   if(is.null(id)) {
     id = simids
@@ -85,7 +85,7 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
     stop2("Target ID not found in input data:", id)
   
   if(length(simids) > 2 || !"Aut" %in% colnames(sim)) {
-    sim0 = segmentSummary(sim, ids = id, addState = TRUE)
+    sim0 = alleleFlow(sim, ids = id, addState = TRUE)
     sim = mergeSegments(sim0, by = "Aut")
   }
 }

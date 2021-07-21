@@ -90,7 +90,7 @@ findPattern = function(sims, pattern, merge = TRUE, cutoff = 0) {
   
   # Loop over simulations
   res = lapply(sims, function(sim) {
-    s = segmentSummary(sim, allids, addState = FALSE)
+    s = alleleFlow(sim, allids, addState = FALSE)
     
     # The possible alleles to be shared
     a1 = pat(s, id1)

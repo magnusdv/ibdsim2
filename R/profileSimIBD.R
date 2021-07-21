@@ -48,9 +48,9 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
 
   a = ibdpattern
   if(is.null(ids))
-    ids = extractIdsFromSegmentSummary(a)
+    ids = extractIds(a)
   else
-    a = segmentSummary(a, ids, addState = FALSE)
+    a = alleleFlow(a, ids, addState = FALSE)
   
   if(!all(ids %in% labels(x)))
     stop2("ID label in `ibdpattern` not found in `x`: ", setdiff(ids, labels(x)))

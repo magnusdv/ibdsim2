@@ -1,9 +1,9 @@
 
-segmentSummary = function(x, ids, addState = TRUE) {
+alleleFlow = function(x, ids, addState = TRUE) {
   if(!inherits(x, "genomeSim"))
     stop2("Argument `x` must be a `genomeSim` object. Received: ", class(x))
   
-  xids = extractIdsFromSegmentSummary(x)
+  xids = extractIds(x)
   if(!all(ids %in% xids))
     stop2("Unknown ID label: ", setdiff(ids, xids))
   

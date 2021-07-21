@@ -66,7 +66,7 @@ haploDraw = function(x, ibd, chrom = NULL, pos = 1, cols = NULL,
   labs = labels(x)
   
   # Check that ids to be included are covered in `ibd`
-  idsIBD = extractIdsFromSegmentSummary(ibd)
+  idsIBD = extractIds(ibd)
   if(!all(labs[pos > 0] %in% idsIBD))
     stop2("ID not found in `ibd` matrix: ", setdiff(labs[pos > 0], idsIBD))
   

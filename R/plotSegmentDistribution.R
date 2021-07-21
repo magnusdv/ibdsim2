@@ -141,7 +141,7 @@ plotSegmentDistribution = function(..., type = c("autozygosity", "ibd1"),
   
   # Other options for the `ids` parameter
   if(is.null(ids))
-    ids = lapply(sims, extractIdsFromSegmentSummary)
+    ids = lapply(sims, extractIds)
   else if(identical(ids, "leaves"))
     ids = lapply(sims, function(s) leaves(attr(s, 'pedigree')))
   else if(is.atomic(ids))

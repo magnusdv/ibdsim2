@@ -67,7 +67,7 @@ NULL
 realisedInbreeding = function(sims, id = NULL) {
   
   # IDs present in sims
-  idsims = extractIdsFromSegmentSummary(sims)
+  idsims = extractIds(sims)
   
   # Target ID
   if(is.null(id))
@@ -85,7 +85,7 @@ realisedInbreeding = function(sims, id = NULL) {
   resList = lapply(sims, function(s) {
     
     if(length(idsims) > 1 || !"Aut" %in% colnames(s)) {
-      s0 = segmentSummary(s, ids = id, addState = TRUE)
+      s0 = alleleFlow(s, ids = id, addState = TRUE)
       s = mergeSegments(s0, by = "Aut")
     }
 
@@ -123,7 +123,7 @@ realisedInbreeding = function(sims, id = NULL) {
 realisedKinship = function(sims, ids = NULL) {
   
   # IDs present in sims
-  idsims = extractIdsFromSegmentSummary(sims)
+  idsims = extractIds(sims)
   
   if(is.null(ids))
     ids = idsims
@@ -140,7 +140,7 @@ realisedKinship = function(sims, ids = NULL) {
   resList = vapply(sims, function(s) {
     
     if(!"Sigma" %in% colnames(s)) {
-      s0 = segmentSummary(s, ids = ids, addState = TRUE)
+      s0 = alleleFlow(s, ids = ids, addState = TRUE)
       s = mergeSegments(s0, by = "Sigma")
     }
     
@@ -169,7 +169,7 @@ realisedKinship = function(sims, ids = NULL) {
 realisedKappa = function(sims, ids = NULL) {
   
   # IDs present in sims
-  idsims = extractIdsFromSegmentSummary(sims)
+  idsims = extractIds(sims)
   
   if(is.null(ids))
     ids = idsims
@@ -186,7 +186,7 @@ realisedKappa = function(sims, ids = NULL) {
   resList = lapply(sims, function(s) {
     
     if(!"IBD" %in% colnames(s)) {
-      s0 = segmentSummary(s, ids = ids, addState = TRUE)
+      s0 = alleleFlow(s, ids = ids, addState = TRUE)
       s = mergeSegments(s0, by = "IBD")
     }
     
@@ -220,7 +220,7 @@ realisedKappa = function(sims, ids = NULL) {
 realisedIdentity = function(sims, ids = NULL) {
   
   # IDs present in sims
-  idsims = extractIdsFromSegmentSummary(sims)
+  idsims = extractIds(sims)
   
   if(is.null(ids))
     ids = idsims
@@ -237,7 +237,7 @@ realisedIdentity = function(sims, ids = NULL) {
   resList = lapply(sims, function(s) {
     
     if(!"Sigma" %in% colnames(s)) {
-      s0 = segmentSummary(s, ids = ids, addState = TRUE)
+      s0 = alleleFlow(s, ids = ids, addState = TRUE)
       s = mergeSegments(s0, by = "Sigma")
     }
     
@@ -279,10 +279,10 @@ realisedIdentity = function(sims, ids = NULL) {
 
 
 # Utility for deducing ID labels present in an output of `ibdsim()` simulation
-extractIdsFromSegmentSummary = function(x) {
-  clnms = colnames(x) %||% colnames(x[[1]])
+extractIds = function(sims) {
+  clnms = colnames(sims) %||% colnames(sims[[1]])
   if(is.null(clnms))
-    stop2("Cannot deduce ID labels from segment summary")
+    stop2("Cannot deduce ID labels from simulation data")
   
   idcols = grep(":p", clnms, fixed = TRUE, value = TRUE)
   substring(idcols, 1, nchar(idcols) - 2)
