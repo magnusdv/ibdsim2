@@ -86,8 +86,8 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
 #' @param x A list of matrices, whose column names must include `length`.
 #' @param quantiles A vector of quantiles to include in the summary.
 #'
-#' @return A list of two numeric matrices, named `perSim` and `summary`. The row
-#'   names of both matrices are as follows:
+#' @return A list containing a data frame `perSim` and a matrix `summary`. Both
+#'   of these contain the following variables:
 #'
 #'   * `Count`: The total number of segments in a simulation
 #'
@@ -103,7 +103,7 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
 #'   segments from all simulations
 #'
 #' @seealso [findPattern()]
-#' 
+#'
 #' @examples
 #' x = nuclearPed(3)
 #' sims = ibdsim(x, N = 10, map = uniformMap(M = 1), model = "haldane", seed = 1729)
@@ -125,11 +125,12 @@ segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975)) {
   lenDat = lapply(x, function(m) m[, 'length'])
   
   # Collect data for each sim
-  perSim = list(`Count`    = lengths(lenDat),
-                `Total`    = vapply(lenDat, sum, FUN.VALUE = numeric(1)), 
-                `Average`  = vapply(lenDat, function(v) if(length(v)) mean(v) else 0, FUN.VALUE = numeric(1)), 
-                `Shortest` = vapply(lenDat, function(v) if(length(v)) min(v) else 0, FUN.VALUE = numeric(1)),
-                `Longest`  = vapply(lenDat, function(v) if(length(v)) max(v) else 0, FUN.VALUE = numeric(1)))
+  perSim = data.frame(
+    `Count`    = lengths(lenDat),
+    `Total`    = vapply(lenDat, sum, FUN.VALUE = numeric(1)), 
+    `Average`  = vapply(lenDat, function(v) if(length(v)) mean(v) else 0, FUN.VALUE = numeric(1)), 
+    `Shortest` = vapply(lenDat, function(v) if(length(v)) min(v) else 0, FUN.VALUE = numeric(1)),
+    `Longest`  = vapply(lenDat, function(v) if(length(v)) max(v) else 0, FUN.VALUE = numeric(1)))
   
   # Summarising function
   sumfun = function(v) c(mean = mean(v), sd = sd(v), min = min(v), quantile(v, quantiles), max = max(v))
@@ -141,7 +142,7 @@ segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975)) {
   sumList$Overall = sumfun(unlist(lenDat, use.names = FALSE))
   
   # Return as data frames
-  list(perSim = do.call(rbind, perSim), summary = do.call(rbind, sumList))
+  list(perSim = perSim, summary = do.call(rbind, sumList))
 }
 
 
