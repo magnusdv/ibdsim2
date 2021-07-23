@@ -1,10 +1,30 @@
-# ibdsim2 (development version)
-
-# ibdsim2 1.3
+# ibdsim2 1.4.0
 
 ## New features
 
-* In `ibdsim()` allow `map` to be a list of chromosome maps.
+* New function `segmentStats()` for summarising the segments identified by `findPattern()`.
+
+* `findPattern()` has a new argument `cutoff` for excluding short segments.
+
+* `findPattern()` can detect more patterns: the argument `pattern` now accepts entries `autozygous` and `heterozygous`.
+
+* `findPattern()` is much faster now, mostly due to a new implementation of the internal `mergeSegments()`
+
+* New function `extractIds()` replaces the previous (non-exported) `extractIdsFromSegmentSummary()`.
+
+* Updated README, including links to Shiny app.
+
+
+## Bug fixes
+
+* Fixed wrong length attribute of `loadMap()` when `uniform = F` and `sexAverage = T`.
+
+
+# ibdsim2 1.3.0
+
+## New features
+
+* `ibdsim()` now allows `map` to be a list of chromosome maps.
 
 * New function `findPattern()` for identifying IBD patterns in simulation outputs.
 
