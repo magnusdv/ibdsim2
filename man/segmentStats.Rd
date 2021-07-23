@@ -7,7 +7,7 @@
 segmentStats(x, quantiles = c(0.025, 0.5, 0.975), returnAll = FALSE)
 }
 \arguments{
-\item{x}{A list of matrices, whose column names must include \code{length}.}
+\item{x}{A list of matrices produced with \code{\link[=findPattern]{findPattern()}}.}
 
 \item{quantiles}{A vector of quantiles to include in the summary.}
 
@@ -25,8 +25,8 @@ Variables used in the output:
 \item \code{Average}: The average segment lengths in a simulation
 \item \code{Shortest}: The length of the shortest segment in a simulation
 \item \code{Longest}: The length of the longest segment in a simulation
-\item \code{Overall}: (Only in \code{summary}) This summarises the lengths of all
-segments from all simulations
+\item \code{Overall} (only in \code{summary}): A summary of all segments from all
+simulations
 }
 }
 \description{

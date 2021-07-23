@@ -83,7 +83,7 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
 #'
 #' Compute summary statistics for segments identified by [findPattern()].
 #'
-#' @param x A list of matrices, whose column names must include `length`.
+#' @param x A list of matrices produced with [findPattern()].
 #' @param quantiles A vector of quantiles to include in the summary.
 #' @param returnAll A logical, by default FALSE. If TRUE, the output includes a
 #'   vector `allSegs` containing the lengths of all segments in all simulations.
@@ -103,8 +103,8 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
 #'
 #'   * `Longest`: The length of the longest segment in a simulation
 #'
-#'   * `Overall`: (Only in `summary`) This summarises the lengths of all
-#'   segments from all simulations
+#'   * `Overall` (only in `summary`): A summary of all segments from all
+#'   simulations
 #'
 #' @seealso [findPattern()]
 #'
