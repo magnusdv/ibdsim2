@@ -11,6 +11,10 @@ status](https://www.r-pkg.org/badges/version/ibdsim2)](https://CRAN.R-project.or
 [![](https://cranlogs.r-pkg.org/badges/last-month/ibdsim2?color=yellow)](https://cran.r-project.org/package=ibdsim2)
 <!-- badges: end -->
 
+> <span style="color:red; font-size:150%"> NEW: Try the [online
+> app](https://magnusdv.shinyapps.io/ibdsim2-shiny/) for visualising IBD
+> distributions! </span>
+
 ## Introduction
 
 The purpose of **ibdsim2** is to simulate and analyse the gene flow in
@@ -23,17 +27,6 @@ or with recombination maps provided by the user. Additional features
 include calculation of realised relatedness coefficients, distribution
 plots of IBD segments, and estimation of two-locus relatedness
 coefficients.
-
-**ibdsim2** is an updated and improved version of
-[IBDsim](https://CRAN.R-project.org/package=IBDsim). In particular, the
-underlying pedigree structure is now imported from the
-[pedtools](https://CRAN.R-project.org/package=pedtools) package instead
-of its predecessor
-[paramlink](https://CRAN.R-project.org/package=paramlink), which is no
-longer actively developed. In addition to the transition to pedtools,
-several new features are added in **ibdsim2**, including karyogram plots
-and analysis of *IBD absence* between (genealogically) related
-individuals.
 
 ## Installation
 
@@ -76,7 +69,7 @@ x = nuclearPed(2)
 chr1 = loadMap("decode19", chrom = 1)
 ```
 
-Now run the simulation\! The `seed` argument ensures reproducibility.
+Now run the simulation! The `seed` argument ensures reproducibility.
 
 ``` r
 sim = ibdsim(x, N = 1, map = chr1, seed = 1234, verbose = F)
@@ -119,14 +112,14 @@ haploDraw(x, sim[[1]], pos = c(2, 4, 1, 1), cols = c(3, 7, 2, 4),
 In this example we will compare the distributions of counts/lengths of
 IBD segments between the following pairwise relationships:
 
-  - Grandparent/grandchild (GR)
-  - Half siblings (HS)
-  - Half uncle/nephew (HU)
+-   Grandparent/grandchild (GR)
+-   Half siblings (HS)
+-   Half uncle/nephew (HU)
 
-Note that GR and HS have the same relatedness coefficients `kappa =
-(1/2, 1/2, 0)`, meaning that they are genetically indistinguishable in
-the context of unlinked loci. In contrast, HU has `kappa =
-(3/4, 1/4, 0)`.
+Note that GR and HS have the same relatedness coefficients
+`kappa = (1/2, 1/2, 0)`, meaning that they are genetically
+indistinguishable in the context of unlinked loci. In contrast, HU has
+`kappa = (3/4, 1/4, 0)`.
 
 For simplicity we create a pedigree containing all the three
 relationships we are interested in.
@@ -150,7 +143,7 @@ Next, we use `ibdsim()` to produce 500 simulations of the underlying IBD
 pattern in the entire pedigree.
 
 ``` r
-s = ibdsim(x, N = 500, map = "decode19")
+s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 #> Simulation parameters:
 #> Simulations  : 500
 #> Chromosomes  : 1-22
@@ -160,12 +153,13 @@ s = ibdsim(x, N = 500, map = "decode19")
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 11.7 secs
+#> Total time used: 12.7 secs
 ```
 
-The `plotSegmentDistribution()` function, with the option `type =
-"ibd1"` analyses the IBD segments in each simulation, and makes a nice
-plot. Note that the names of the `ids` list are used in the legend.
+The `plotSegmentDistribution()` function, with the option
+`type = "ibd1"` analyses the IBD segments in each simulation, and makes
+a nice plot. Note that the names of the `ids` list are used in the
+legend.
 
 ``` r
 plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
@@ -176,3 +170,6 @@ plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
 We conclude that the three distributions are almost completely disjoint.
 In particular, GR and HS are separable on the basis of their IBD
 segments, if these can be determined accurately enough.
+
+*A Shiny app for visualising IBD distributions is now available here:
+<https://magnusdv.shinyapps.io/ibdsim2-shiny/>.*
