@@ -21,11 +21,16 @@ knitr::opts_chunk$set(
 [![](https://cranlogs.r-pkg.org/badges/last-month/ibdsim2?color=yellow)](https://cran.r-project.org/package=ibdsim2)
 <!-- badges: end -->
 
+<br>
+  
+> <span style="color:red; font-size:150%"> NEW! Try the online app for visualising IBD distributions: [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
 
-> <span style="color:red; font-size:150%"> NEW: Try the [online app](https://magnusdv.shinyapps.io/ibdsim2-shiny/) for visualising IBD distributions! </span>
+<br>
 
 ## Introduction
 The purpose of **ibdsim2** is to simulate and analyse the gene flow in pedigrees. In particular, such simulations can be used to study distributions of chromosomal segments shared _identical-by-descent_ (IBD) by pedigree members. In each meiosis, the recombination process is simulated using sex specific recombination rates in the human genome ([Halldorsson et al., 2019](https://doi.org/10.1126/science.aau1043)), or with recombination maps provided by the user. Additional features include calculation of realised relatedness coefficients, distribution plots of IBD segments, and estimation of two-locus relatedness coefficients.
+
+**ibdsim2** is part of the [ped suite](https://magnusdv.github.io/pedsuite/) collection of packages for pedigree analysis in R. A detailed presentation of these packages, including a separate chapter on **ibdsim2**, is available in the book [Pedigree analysis in R](https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2) (Vigeland, 2021).
 
 ## Installation
 To get **ibdsim2**, install from CRAN as follows:
@@ -68,7 +73,7 @@ head(sim[[1]])
 
 Each row of the matrix corresponds to a segment of the genome, and describes the allelic state of the pedigree in that segment. Each individual has two columns, one with the paternal allele (marked by the suffix ":p") and one with the maternal (suffix ":m"). The founders (the parents in our case) are assigned alleles 1, 2, 3 and 4.
 
-The function `haploDraw()` interprets the allele 1-4 as colours, and draws the resulting haplotypes onto the pedigree. See `?haploDraw` for explanation of the arguments.
+The function `haploDraw()` interprets the alleles 1-4 as colours and draws the resulting haplotypes onto the pedigree. See `?haploDraw` for explanation of the arguments.
 
 ```{r quartet-haplo, fig.height = 3.5, fig.width = 3.5}
 haploDraw(x, sim[[1]], pos = c(2, 4, 1, 1), cols = c(3, 7, 2, 4), 

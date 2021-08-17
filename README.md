@@ -11,9 +11,13 @@ status](https://www.r-pkg.org/badges/version/ibdsim2)](https://CRAN.R-project.or
 [![](https://cranlogs.r-pkg.org/badges/last-month/ibdsim2?color=yellow)](https://cran.r-project.org/package=ibdsim2)
 <!-- badges: end -->
 
-> <span style="color:red; font-size:150%"> NEW: Try the [online
-> app](https://magnusdv.shinyapps.io/ibdsim2-shiny/) for visualising IBD
-> distributions! </span>
+<br>
+
+> <span style="color:red; font-size:150%"> NEW! Try the online app for
+> visualising IBD distributions:
+> [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
+
+<br>
 
 ## Introduction
 
@@ -27,6 +31,14 @@ or with recombination maps provided by the user. Additional features
 include calculation of realised relatedness coefficients, distribution
 plots of IBD segments, and estimation of two-locus relatedness
 coefficients.
+
+**ibdsim2** is part of the [ped
+suite](https://magnusdv.github.io/pedsuite/) collection of packages for
+pedigree analysis in R. A detailed presentation of these packages,
+including a separate chapter on **ibdsim2**, is available in the book
+[Pedigree analysis in
+R](https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2)
+(Vigeland, 2021).
 
 ## Installation
 
@@ -96,7 +108,7 @@ individual has two columns, one with the paternal allele (marked by the
 suffix “:p”) and one with the maternal (suffix “:m”). The founders (the
 parents in our case) are assigned alleles 1, 2, 3 and 4.
 
-The function `haploDraw()` interprets the allele 1-4 as colours, and
+The function `haploDraw()` interprets the alleles 1-4 as colours and
 draws the resulting haplotypes onto the pedigree. See `?haploDraw` for
 explanation of the arguments.
 
@@ -153,7 +165,7 @@ s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 12.7 secs
+#> Total time used: 11.4 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option
