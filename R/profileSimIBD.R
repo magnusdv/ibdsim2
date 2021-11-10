@@ -70,9 +70,11 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
   # Pick rows (indices) in `a` corresponding to marker positions
   arows = vapply(seq_len(nMark), function(i) {
     chrrows = which(achr == mchr[i])
-    chrrows[findInterval(mpos[i], a[chrrows, 'start'], all.inside = TRUE)]
+    if(length(chrrows) == 1)
+      chrrows
+    else
+      chrrows[findInterval(mpos[i], a[chrrows, 'start'], all.inside = TRUE)]
   }, FUN.VALUE = 1L)
-  
   
   # Allele columns
   acols = 4 + seq_len(2 * length(ids))
