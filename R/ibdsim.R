@@ -164,7 +164,8 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode",
   }
   
   # Seed for random sampling
-  set.seed(seed)
+  if(!is.null(seed))
+    set.seed(seed)
   
   # Start-data with founder alleles
   startData = distributeFounderAlleles(x, chrom = "AUTOSOMAL")
