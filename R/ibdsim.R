@@ -111,20 +111,8 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode",
   starttime = Sys.time()
 
   # Load map and extract chromosome names
-  if(is.character(map) && length(map) == 1) {
-    if(map == "uniform.sex.spec") {
-      message('The option `map = "uniform.sex.spec"` is deprecated and will be removed in a future version\n',
-              "Use `map = loadMap(uniform = T)` instead")
-      map = loadMap(uniform = TRUE, sexAverage = FALSE)
-    }
-    else if(map == "uniform.sex.aver") {
-      message('The option `map = "uniform.sex.aver"` is deprecated and will be removed in a future version\n',
-              "Use `map = loadMap(uniform = T, sexAverage = T)` instead")
-      map = loadMap(uniform = TRUE, sexAverage = TRUE)
-    }   
-    else
-      map = loadMap(map)
-  }
+  if(is.character(map) && length(map) == 1)
+    map = loadMap(map)
   else if(isChromMap(map) || (is.list(map) && all(sapply(map, isChromMap))))
     map = genomeMap(map)
   else if(!isGenomeMap(map))
