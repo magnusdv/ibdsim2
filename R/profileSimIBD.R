@@ -40,6 +40,10 @@
 #' @export
 profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL) {
 
+  # Set seed if given
+  if(!is.null(seed))
+    set.seed(seed)
+  
   if(!is.data.frame(ibdpattern) && is.list(ibdpattern))
     return(lapply(ibdpattern, function(patt) profileSimIBD(x, patt, markers = markers)))
   
@@ -84,10 +88,6 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
   
   # Create empty allele matrix
   alsMat.transp = matrix("0", nrow = 2*nMark, ncol = length(ids))
-  
-  # Set seed if given
-  if(!is.null(seed))
-    set.seed(seed)
   
   # Fill in allele matrix one marker at a time
   for(i in seq_len(nMark)) {
