@@ -188,3 +188,31 @@ convertPos = function(Mb = NULL, cM = NULL, map) {
   
   res
 }
+
+
+# Convert map with MB column to CM column
+convertMap = function(markerMap, genomeMap) {
+  if(!isGenomeMap(genomeMap))
+    stop2("Argument `genomeMap` is not a `genomeMap` object")
+
+  # Average genome map
+  sexAverage = lapply(genomeMap, function(cmap)
+    as.data.frame(cbind(Mb = cmap$male$Mb, cM = cmap$male$cM + cmap$female$cM), 
+                  row.names = NULL, optional = TRUE))
+  names(sexAverage) = sapply(genomeMap, attr, 'chrom')
+  
+  # Split marker map by chromosome
+  chromSplit = split(markerMap, markerMap$CHROM)
+  
+  # Convert positions in each chrom
+  newmap = lapply(chromSplit, function(chrmap) {
+    chr = as.character(chrmap$CHROM[1])
+    CM = convertPos(Mb = chrmap$MB, map = sexAverage[[chr]])
+    cbind(chrmap, CM = CM)[c("CHROM", "MARKER", "CM", "MB")] # 3 first cols as used by MERLIN
+  })
+  
+  res = do.call(rbind, newmap)
+  rownames(res) = NULL
+  
+  res
+}
