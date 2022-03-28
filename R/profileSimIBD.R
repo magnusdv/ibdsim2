@@ -45,7 +45,7 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
     set.seed(seed)
   
   if(!is.data.frame(ibdpattern) && is.list(ibdpattern))
-    return(lapply(ibdpattern, function(patt) profileSimIBD(x, patt, markers = markers)))
+    return(lapply(ibdpattern, function(patt) profileSimIBD(x, patt, ids = ids, markers = markers)))
   
   if(!is.null(markers))
     x = selectMarkers(x, markers)
