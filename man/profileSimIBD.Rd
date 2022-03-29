@@ -12,14 +12,15 @@ profileSimIBD(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
 \item{ibdpattern}{A \code{genomeSim()} object, typically created by \code{\link[=ibdsim]{ibdsim()}}.
 (See Examples).}
 
-\item{ids}{A vector of ID labels. If NULL, all members of \code{x} are included.}
+\item{ids}{A vector of ID labels. If NULL, extracted from \code{ibdpattern}.}
 
 \item{markers}{A vector with names or indices of markers attached to \code{x}.}
 
 \item{seed}{An integer seed for the random number generator.}
 }
 \value{
-An object similar to \code{x}. but with simulated genotypes.
+A copy of \code{x} where the genotypes of the selected markers have been
+replaced with simulated ones.
 }
 \description{
 This function simulates genotypes for a set of markers, conditional on a
@@ -27,8 +28,8 @@ specific underlying IBD pattern.
 }
 \details{
 It should be noted that the only \emph{random} part of this function is the
-selection of founder alleles for each marker. Given those, all other
-genotypes in the pedigree are determined by the underlying IBD pattern.
+sampling of founder alleles for each marker. Given those, all other genotypes
+in the pedigree are determined by the underlying IBD pattern.
 }
 \examples{
 # A pedigree with two siblings
