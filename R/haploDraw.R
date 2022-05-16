@@ -7,10 +7,11 @@
 #' @param ibd A `genomeSim` object.
 #' @param chrom A chromosome number, needed if `ibd` contains data from multiple
 #'   chromosomes.
-#' @param pos A vector recycled to the length of `labels(x)`, indicating where
-#'   haplotypes should be drawn relative to the pedigree symbols: 0 = no
-#'   haplotypes; 1 = below; 2 = left; 3 = above; 4 = right. By default, all are
-#'   placed below.
+#' @param ids A vector indicating for which pedigree members haplotypes should
+#'   be drawn. If NULL (default), all individuals in `ibd` are included.
+#' @param pos A vector recycled to `pedsize(x)`, indicating where haplotypes
+#'   should be drawn relative to the pedigree symbols: 0 = no haplotypes; 1 =
+#'   below; 2 = left; 3 = above; 4 = right. By default, all are placed below.
 #' @param cols A colour vector corresponding to the alleles in `ibd`.
 #' @param height The haplotype height divided by the height of a pedigree
 #'   symbol.
@@ -19,7 +20,8 @@
 #'   fraction of `width`.
 #' @param dist The distance between pedigree symbols and the closest haplotype,
 #'   given as a fraction of `width`.
-#' @param ... Arguments passed on to `plot.ped()`.
+#' @param ... Arguments passed on to `plot.ped()`. In particular, if the
+#'   haplotypes appear cropped it usually helps to increase the `margins`.
 #'
 #' @return None.
 #'
@@ -52,35 +54,82 @@
 #'           cols = c(8,8,3,7,8,8), margin = c(2, 2, 2, 2))
 #'
 #'
+#' ###############################
+#' # Example 3: X-chromosomal sims
+#' ###############################
+#'
+#' x = nuclearPed(2, sex = 2:1)
+#' s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 1)
+#' s[[1]]
+#'
+#' haploDraw(x, s[[1]], pos = c(2,4,2,4), margins = c(2, 5, 5, 5), cex = 1.2)
+#'
+#'
 #' # Restore graphics parameters
 #' par(op)
 #'
 #' @importFrom graphics rect plot
 #' @export
-haploDraw = function(x, ibd, chrom = NULL, pos = 1, cols = NULL, 
+haploDraw = function(x, ibd, chrom = NULL, ids = NULL, pos = 1, cols = NULL, 
                      height = 4, width = 0.5, sep = 0.75, dist = 1.5, ...) {
   
   if(!is.ped(x))
     stop2("Argument `x` must be a `ped` object")
   
   labs = labels(x)
-  
-  # Check that ids to be included are covered in `ibd`
   idsIBD = extractIds(ibd)
-  if(!all(labs[pos > 0] %in% idsIBD))
-    stop2("ID not found in `ibd` matrix: ", setdiff(labs[pos > 0], idsIBD))
   
-  # Check for multiple chromosomes
+  if(is.null(ids))
+    ids = idsIBD
+  else {
+    ids = as.character(ids)
+    if(!all(ids %in% idsIBD))
+      stop2("ID not found in `ibd` matrix: ", setdiff(ids, idsIBD))
+  }
+  
+  if(length(pos) == 1) {
+    pos = rep(pos, length(ids))
+    names(pos) = idsIBD
+  }
+  if(length(pos) != length(ids))
+    stop2("Arguments `pos` and `ids` are incompatible")
+  
+  if(is.null(names(pos)))
+    names(pos) = ids
+  if(!all(ids %in% names(pos)))
+    stop2("ID not found in `pos` vector: ", setdiff(ids, names(pos)))
+  
+  # Extend `pos` to all individuals
+  allpos = rep(0L, pedsize(x))
+  names(allpos) = labs
+  allpos[ids] = pos[ids]
+  
+  # If `ibd` is list of 1 sim: simplify
+  if(inherits(ibd, "genomeSimList") && length(ibd) == 1)
+    ibd = ibd[[1]]
+
+  Xchrom = isXsim(ibd)
+  isXmale = Xchrom & (labs %in% males(x))
+  
+  # If `chrom` is given, check compatibility and select rows from `ibd`
   chrvec = ibd[, 'chrom']
-  if(length(unique.default(chrvec)) > 1) {
-    if(is.null(chrom))
-      stop2("`ibd` contains data from multiple chromosomes. Use `chrom` to select one.")
+  multipleChrom = length(unique.default(chrvec)) > 1
+  if(multipleChrom && is.null(chrom))
+    stop2("`ibd` contains data from multiple chromosomes. Use `chrom` to select one.")
+  if(length(chrom) > 1)
+    stop2("More than one chromosome selected: ", chrom)
+  
+  if(!is.null(chrom)) { # by now chrom has length 1
+    if(chrom == 23 || chrom == "X") {
+      if(!Xchrom)
+        stop2("`chrom = 'X'` is indicated, but the given simulation is not X-chromosomal")
+      chrom = 23
+    }
     if(!chrom %in% chrvec)
-      stop2("Unknown chromosome: ", chrom)
+      stop2("Chromosome not present in the simulation: ", chrom)
     ibd = ibd[chrvec == chrom, , drop = FALSE]
   }
   
-  pos = rep(pos, length.out = pedsize(x))
   if(is.null(cols))
     cols = seq_len(2*length(founders(x)))
   
@@ -101,40 +150,47 @@ haploDraw = function(x, ibd, chrom = NULL, pos = 1, cols = NULL,
   
   # Loop through all individuals in pedigree
   for(i in 1:pedsize(x)) {
-    if(pos[i] == 0) 
+    if(allpos[i] == 0) 
       next
     
     # Center of haplo-pair
-    if(pos[i] == 1) {
+    if(allpos[i] == 1) {
       X = p$x[i]
       Y = p$y[i] + symh + DIST + H/2
     }
-    else if(pos[i] == 2) {
+    else if(allpos[i] == 2) {
       X = p$x[i] - symw/2 - DIST - W - SEP/2
       Y = p$y[i] + symh/2
     }
-    else if(pos[i] == 3) {
+    else if(allpos[i] == 3) {
       X = p$x[i]
       Y = p$y[i] - DIST - H/2
     }
-    else if(pos[i] == 4) {
+    else if(allpos[i] == 4) {
       X = p$x[i] + symw/2 + DIST + W + SEP/2
       Y = p$y[i] + symh/2
     }
     
     id = labs[i]
     
-    # Paternal haplotype
-    patCol = paste0(id, ":p")
-    segsPat = mergeSegments(ibd, by = patCol)
-    addRect(X - SEP/2 - W/2, Y, width = W, height = H, 
-            sta = segsPat[, 'start']/L, col = cols[segsPat[, patCol]])
-
-    # Paternal haplotype
-    matCol = paste0(id, ":m")
-    segsMat = mergeSegments(ibd, by = matCol)
-    addRect(X + SEP/2 + W/2, Y, width = W, height = H, 
-            sta = segsMat[, 'start']/L, col = cols[segsMat[, matCol]])
+    if(isXmale[i]) { # draw maternal haplotype only
+      matCol = paste0(id, ":m")
+      segsMat = mergeSegments(ibd, by = matCol)
+      addRect(X, Y, width = W, height = H, sta = segsMat[, 'start']/L, col = cols[segsMat[, matCol]])
+    }
+    else {
+      # Paternal haplotype
+      patCol = paste0(id, ":p")
+      segsPat = mergeSegments(ibd, by = patCol)
+      addRect(X - SEP/2 - W/2, Y, width = W, height = H, 
+              sta = segsPat[, 'start']/L, col = cols[segsPat[, patCol]])
+  
+      # Maternal haplotype
+      matCol = paste0(id, ":m")
+      segsMat = mergeSegments(ibd, by = matCol)
+      addRect(X + SEP/2 + W/2, Y, width = W, height = H, 
+              sta = segsMat[, 'start']/L, col = cols[segsMat[, matCol]])
+    }
   }
 }
 

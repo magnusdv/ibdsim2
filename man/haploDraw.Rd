@@ -8,6 +8,7 @@ haploDraw(
   x,
   ibd,
   chrom = NULL,
+  ids = NULL,
   pos = 1,
   cols = NULL,
   height = 4,
@@ -25,10 +26,12 @@ haploDraw(
 \item{chrom}{A chromosome number, needed if \code{ibd} contains data from multiple
 chromosomes.}
 
-\item{pos}{A vector recycled to the length of \code{labels(x)}, indicating where
-haplotypes should be drawn relative to the pedigree symbols: 0 = no
-haplotypes; 1 = below; 2 = left; 3 = above; 4 = right. By default, all are
-placed below.}
+\item{ids}{A vector indicating for which pedigree members haplotypes should
+be drawn. If NULL (default), all individuals in \code{ibd} are included.}
+
+\item{pos}{A vector recycled to \code{pedsize(x)}, indicating where haplotypes
+should be drawn relative to the pedigree symbols: 0 = no haplotypes; 1 =
+below; 2 = left; 3 = above; 4 = right. By default, all are placed below.}
 
 \item{cols}{A colour vector corresponding to the alleles in \code{ibd}.}
 
@@ -43,7 +46,8 @@ fraction of \code{width}.}
 \item{dist}{The distance between pedigree symbols and the closest haplotype,
 given as a fraction of \code{width}.}
 
-\item{...}{Arguments passed on to \code{plot.ped()}.}
+\item{...}{Arguments passed on to \code{plot.ped()}. In particular, if the
+haplotypes appear cropped it usually helps to increase the \code{margins}.}
 }
 \value{
 None.
@@ -79,6 +83,17 @@ s[[1]]
 # Grey colour (8) for irrelevant founder alleles
 haploDraw(x, s[[1]], pos = c(0,1,0,2,4,4),
           cols = c(8,8,3,7,8,8), margin = c(2, 2, 2, 2))
+
+
+###############################
+# Example 3: X-chromosomal sims
+###############################
+
+x = nuclearPed(2, sex = 2:1)
+s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 1)
+s[[1]]
+
+haploDraw(x, s[[1]], pos = c(2,4,2,4), margins = c(2, 5, 5, 5), cex = 1.2)
 
 
 # Restore graphics parameters
