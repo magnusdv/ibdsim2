@@ -39,14 +39,15 @@ chroms = thinned %>%
               male = c(0, .$cM.x),
               female = c(0, .$cM.y)))
 
-# Make chromosome maps
-maps = chroms %>%
+# Autosomal chromosome maps
+maps = chroms[1:22] %>%
   imap(~chromMap(male = select(.x, Mb, male), 
                  female = select(.x, Mb, female),
                  chrom = .y))
-# Fix X
-maps[[23]]$male = NULL
-attr(maps[[23]], 'chrom') = "X"
+# X
+maps[[23]] = chromMap(male = NULL,
+                      female = select(chroms[[23]], Mb, female),
+                      chrom = "X")
 
 decode19 = genomeMap(maps)
 
@@ -62,4 +63,4 @@ test1 = mraw %>%
 test1 %>% pull(err) %>% summary
 
 # Check chrom order
-barplot(sapply(decode19, mapLen))
+barplot(sapply(decode19, mapLen), beside = T)
