@@ -9,6 +9,7 @@ alleleFlow = function(x, ids, addState = TRUE) {
   
   n = length(ids)
   
+  # If nothing to do, return early
   if(setequal(ids, xids)) {
     if(n > 2 || !addState) 
       return(x)
@@ -49,7 +50,7 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
       if(byLen == 1)
         byEq = x[-1, by] == x[-k, by]
       else
-        byEq = rowSums(x[-1, by] == x[-k, by]) == byLen
+        byEq = rowSums(x[-1, by, drop = FALSE] == x[-k, by, drop = FALSE]) == byLen
     }
     else if(byLen == k && (is.numeric(by) || is.character(by))) {
       byEq = by[-1] == by[-k]
@@ -57,15 +58,15 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
     else
       stop2("Wrong format or length of argument `by`")
     
-    mergeRow = chrEq & byEq
+    mergeRow = chrEq & !is.na(byEq) & byEq
   }
-  
+ 
   # Segment adjacency
   if(checkAdjacency) {
     adjac = x[-1, 'start'] == x[-k, 'end']
     mergeRow = mergeRow & adjac
   }
-  
+ 
   if(!any(mergeRow))
     return(x)
   
@@ -191,18 +192,30 @@ mergeConsecutiveSegments = function(df, mergeBy, segStart = "start",
 
 # Add columns with IBD states (if 1 or 2 ids)
 addStates = function(x) {
+  
   if(ncol(x) == 8) { # Pairwise
-    # Jacquard state
-    Sigma = jacquardState(a1 = x[, 5], a2 = x[, 6], b1 = x[, 7], b2 = x[, 8])
     
-    # IBD state (0 <-> 9; 1 <-> 8; 2 <-> 7; otherwise NA)
+    a1 = x[, 5]; a2 = x[, 6] 
+    b1 = x[, 7]; b2 = x[, 8]
+    
+    # Identity states on X are follow the autosomal ordering,
+    # after replacing hemizygous alleles with autozygous ones. 
+    # See https://github.com/magnusdv/ribd
+    if(any(x[, 1] == 23)) {
+      a1[a1 == 0] = a2[a1 == 0]
+      b1[b1 == 0] = b2[b1 == 0]
+    }
+    
+    # Identity states
+    Sigma = jacquardState(a1, a2, b1, b2)
+    
+    # IBD states (0 <-> 9; 1 <-> 8; 2 <-> 7; otherwise NA)
     IBD = 9 - Sigma
     IBD[IBD > 2] = NA
     
     return(cbind(x, IBD = IBD, Sigma = Sigma))
   } 
-  else if(ncol(x) == 6) {
-    # Autozygosity state
+  else if(ncol(x) == 6) { # Single individual; look for autozygosity
     a = as.numeric(x[, 5] == x[, 6]) # since x is numeric
     return(cbind(x, Aut = a))
   }
@@ -213,6 +226,7 @@ addStates = function(x) {
 # Return the condensed identity ("jacquard") state given 4 alleles:
 # a1 and a2 from individual 1; b1 and b2 from individual 2
 jacquardState = function(a1, a2, b1, b2) { 
+  
   inb1 = a1 == a2
   inb2 = b1 == b2
   pa = a1 == b1

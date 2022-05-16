@@ -42,22 +42,22 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1,
   if (is.null(Mb)) 
     Mb = cM / cmPerMb
   
+  if(toupper(chrom) %in% c("23", "X"))
+    chrom = "X"
+    
   # If length 0, return early
   if(Mb == 0) {
-    male = female = cbind(Mb = 0, cM = 0)
+    female = cbind(Mb = 0, cM = 0)
+    male = if(chrom == "X") NULL else female
     return(chromMap(male, female, chrom = chrom))
   }
   
   Mb = unname(rep(Mb, length.out = 2))
   cM = unname(rep(cM, length.out = 2))
   
-  male = cbind(Mb = c(0, Mb[1]), cM = c(0, cM[1]))
   female = cbind(Mb = c(0, Mb[2]), cM = c(0, cM[2]))
-  
-  if (is.character(chrom) && tolower(chrom) == "x") {
-    chrom = "X"
-    male = NULL
-  }
+  male = if(chrom == "X") NULL else 
+    cbind(Mb = c(0, Mb[1]), cM = c(0, cM[1]))
   
   chromMap(male, female, chrom = chrom)
 }
@@ -119,6 +119,9 @@ loadMap = function(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage =
   if(!is.logical(sexAverage) || length(sexAverage) != 1 || is.na(sexAverage))
     stop2("Argument `sexAverage` must be either TRUE or FALSE")
   
+  if(sexAverage && isTRUE(any(c(23, "X") %in% chrom)))
+    stop2("X-chromosomal map cannot be sex averaged")
+  
   # For now only 'decode19' is implemented
   builtinMaps = c("decode19")
   mapno = pmatch(map, builtinMaps)
@@ -135,7 +138,6 @@ loadMap = function(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage =
     chroms = lapply(genome, function(chr) {
       chrom = attr(chr, "chrom")
       mb    = attr(chr, "physRange")
-      cm    = attr(chr, "physRange")
       cm    = attr(chr, "mapLen")
       
       if(sexAverage) 
@@ -247,41 +249,67 @@ customMap = function(x) {
 ###########################
 
 chromMap = function(male, female = male, chrom = 1) {
-  dmm = dim(male)
-  dmf = dim(female)
-  if(is.null(dmm) || dmm[2] != 2)
-    stop2("Male map does not have two columns")
-  if(is.null(dmf) || dmf[2] != 2)
-    stop2("Female map does not have two columns")
   
-  # Convert matrix/tibbles/etc
-  male = as.data.frame(male)
-  female = as.data.frame(female)
-  
-  # Fix names
-  names(male) = names(female) = c("Mb", "cM")
-  
-  physM = male$Mb
-  physF = female$Mb
-  
-  if(physM[1] != physF[1])
-    stop2("First position must be the same in male and female maps: ", c(physM[1], physF[1]))
-  
-  if(physM[dmm[1]] != physF[dmf[1]])
-    stop2("End position must be the same in male and female maps: ", c(physM[dmm[1]], physF[dmf[1]]))
-  
-  if(physF[dmf[1]] > 1e9) {
-    male$Mb = male$Mb / 1e6
-    female$Mb = female$Mb / 1e6
+  Xchrom = chrom == "X"
+  if(Xchrom) {
+    if(!is.null(male))
+      stop2("Male map on X must be NULL")
+
+    dmf = dim(female)
+    if(is.null(dmf) || dmf[2] != 2)
+      stop2("Female map does not have two columns")
+    
+    # Convert matrix/tibbles/etc
+    female = as.data.frame(female)
+    names(female) = c("Mb", "cM")
+    
+    physF = female$Mb
+    if(physF[dmf[1]] > 1e9) {
+      female$Mb = female$Mb / 1e6
+    }
   }
+  else {
+    dmm = dim(male)
+    dmf = dim(female)
+    if(is.null(dmm) || dmm[2] != 2)
+      stop2("Male map does not have two columns")
+    if(is.null(dmf) || dmf[2] != 2)
+      stop2("Female map does not have two columns")
+    
+    # Convert matrix/tibbles/etc
+    male = as.data.frame(male)
+    female = as.data.frame(female)
+    
+    # Fix names
+    names(male) = names(female) = c("Mb", "cM")
+    
+    physM = male$Mb
+    physF = female$Mb
+    
+    if(physM[1] != physF[1])
+      stop2("First position must be the same in male and female maps: ", c(physM[1], physF[1]))
+    
+    if(physM[dmm[1]] != physF[dmf[1]])
+      stop2("End position must be the same in male and female maps: ", c(physM[dmm[1]], physF[dmf[1]]))
+  
+    if(physF[dmf[1]] > 1e9) {
+      male$Mb = male$Mb / 1e6
+      female$Mb = female$Mb / 1e6
+    }
+  }
+  
   
   physStart = physF[1]
   physEnd = physF[dmf[1]]
   physRange = physEnd - physStart
-  mapLen = c(male = male$cM[dmm[1]], female = female$cM[dmf[1]])
+  mapLen = c(male = if(Xchrom) 0 else male$cM[dmm[1]], female = female$cM[dmf[1]])
   
   structure(list(male = male, female = female), physStart = physStart, physEnd = physEnd, 
-            physRange = physRange, mapLen = mapLen, chrom = chrom, class = "chromMap")
+            physRange = physRange, mapLen = mapLen, chrom = chrom, Xchrom = Xchrom, class = "chromMap")
+}
+
+isXmap = function(x) {
+  attr(x, "Xchrom")
 }
 
 genomeMap = function(x) {

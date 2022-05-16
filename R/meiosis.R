@@ -1,5 +1,10 @@
 #' @importFrom stats rpois runif
 meiosis = function(parent, map, model = "chi", skipRecomb = FALSE) { 
+  
+  # If X, return maternal strand unchanged
+  if(is.null(map)) 
+    return(parent$mat)
+           
   startStrand = sample.int(2, 1)
 
   if (skipRecomb) # return random strand with no recombination

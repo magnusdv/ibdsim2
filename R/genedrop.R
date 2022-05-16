@@ -20,71 +20,82 @@ genedrop.singlechrom = function(x, ids, chrommap, model, skipRecomb, startData) 
   NONFOU = nonfounders(x, internal = TRUE)
   
   chrom = attr(chrommap, "chrom")
+  Xchrom = identical(chrom, "X")
+  Xmale = Xchrom & x$SEX == 1
+  
   startMb = attr(chrommap, "physStart")
   endMb = attr(chrommap, "physEnd")
   
   skip = x$ID %in% skipRecomb
   
-  h = startData %||% distributeFounderAlleles(x, chrom)
+  h = startData %||% distributeFounderAlleles(x, Xchrom = Xchrom)
   
-  for (i in NONFOU) {
+  for(i in NONFOU) {
     fa = FIDX[i]
     mo = MIDX[i]
     matGamete = meiosis(h[[mo]], map = chrommap$female, model = model, skipRecomb = skip[mo])
-    if (chrom == "X")
-      patGamete = if (x$SEX[i] == 1) matGamete else h[[fa]][[1]]
+    if(Xmale[i])
+      patGamete = NULL
     else
       patGamete = meiosis(h[[fa]], map = chrommap$male, model = model, skipRecomb = skip[fa])
     
-    h[[i]] = list(patGamete, matGamete)
+    h[[i]] = list(pat = patGamete, mat = matGamete)
   }
   
   ### Convert to matrix of allele segments ###
-  haplos = unlist(h[IDS], recursive = FALSE)
+  haplos = unname(unlist(h[IDS], recursive = FALSE))
   breaks = unlist(lapply(haplos, function(m) m[-1, 1]))
   if(anyDuplicated.default(breaks))
     breaks = unique.default(breaks)
   
   sta = c(startMb, .sortDouble(breaks))
   
-  alleleMat = vapply(haplos, pos2allele, posvec = sta, FUN.VALUE = sta)
+  alleleMat = vapply(haplos, function(m) pos2allele(m, posvec = sta), FUN.VALUE = sta)
+  
   if (length(sta) == 1)      # since vapply simplifies if FUN.VALUE has length 1
     dim(alleleMat) = c(1, 2 * length(IDS))
   
   sto = c(sta[-1], endMb)
-  cbind(chrom = chrom, start = sta, end = sto, length = sto - sta, alleleMat)
+  cbind(chrom = if(Xchrom) 23L else chrom, start = sta, end = sto, length = sto - sta, alleleMat)
 }
 
 
-# Start-data for genedrop: founder alleles
-distributeFounderAlleles = function(x, chrom = "AUTOSOMAL") {
-  h = vector("list", pedsize(x))
+
+# Start-data for genedrop
+# List of length pedsize, with entries to become list(pat, mat).
+distributeFounderAlleles = function(x, Xchrom = FALSE) {
+  
   fou = founders(x, internal = TRUE)
   nfou = length(fou)
   
-  if(identical(chrom, "X")) {
-    SEX = x$SEX
-    alleles = numeric(nfou)
-    k = 1
-    for (i in seq_along(fou)) {
-      sex = SEX[fou[i]]
-      alleles[c(2 * i - 1, 2 * i)] = c(k, k + sex - 1)
-      k = k + sex
-    }
-    aux = cbind(rep.int(0, 2 * nfou), alleles, deparse.level = 0)
-  }
-  else {
-    aux = cbind(rep.int(0, 2 * nfou), seq_len(2 * nfou))
-    
-    # For 100% inbred founders; make alleles identical
-    FOU_INB = founderInbreeding(x)
-    stopifnot(all(FOU_INB %in% c(0,1)))
-    inb1 = which(FOU_INB == 1)
-    if(length(inb1) > 0)
-      aux[2 * inb1, ] = aux[2 * inb1 - 1, ]
-  }
+  # Auxiliary function producing a full haplotype (1x2 matrix; pos-allele) of allele `a`
+  TMP = rbind(c(0,0))
+  .setAllele = function(a) `[<-`(TMP,2,a)
   
-  h[fou] = lapply(2 * seq_along(fou), function(i) 
-    list(aux[i - 1, , drop = FALSE], aux[i, , drop = FALSE]))
+  # Logical of length nfou
+  Xmale = Xchrom & x$SEX[fou] == 1
+  
+  # Logical of length nfou (100% inbred founders?)
+  FOU_INB = founderInbreeding(x, chromType = if(Xchrom) "x" else "autosomal")
+  inb1 = FOU_INB > 0
+  if(any(FOU_INB[inb1] < 1))
+      stop2("Founder inbreeding less than 100% is not supported: ", setdiff(FOU_INB, c(0,1)))
+  
+  # Create output list
+  h = vector("list", pedsize(x))
+  names(h) = x$ID
+  
+  # Fill in founders
+  for(i in seq_along(fou)) {
+    if(Xmale[i]) {
+      pat = NULL
+      mat = .setAllele(2*i)
+    }
+    else {
+      pat = .setAllele(2*i - 1)
+      mat = if(inb1[i]) pat else .setAllele(2*i)
+    }
+    h[[fou[i]]] = list(pat = pat, mat = mat)
+  }
   h
 }

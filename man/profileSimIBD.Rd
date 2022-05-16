@@ -2,9 +2,16 @@
 % Please edit documentation in R/profileSimIBD.R
 \name{profileSimIBD}
 \alias{profileSimIBD}
-\title{Simulate markers on a given IBD pattern}
+\title{Simulate markers conditional on a given IBD pattern}
 \usage{
-profileSimIBD(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
+profileSimIBD(
+  x,
+  ibdpattern,
+  ids = NULL,
+  markers = NULL,
+  seed = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{x}{A \code{ped} object.}
@@ -17,14 +24,16 @@ profileSimIBD(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
 \item{markers}{A vector with names or indices of markers attached to \code{x}.}
 
 \item{seed}{An integer seed for the random number generator.}
+
+\item{verbose}{A logical, by default TRUE.}
 }
 \value{
-A copy of \code{x} where the genotypes of the selected markers have been
-replaced with simulated ones.
+A copy of \code{x} where marker genotypes have been simulated conditional
+on \code{ibdpattern}.
 }
 \description{
-This function simulates genotypes for a set of markers, conditional on a
-specific underlying IBD pattern.
+This function simulates genotypes for a set of markers conditional on a
+specific underlying IBD pattern (typically produced with \code{\link[=ibdsim]{ibdsim()}}).
 }
 \details{
 It should be noted that the only \emph{random} part of this function is the
@@ -33,7 +42,7 @@ in the pedigree are determined by the underlying IBD pattern.
 }
 \examples{
 # A pedigree with two siblings
-x = nuclearPed(2)
+x = nuclearPed(2, sex = 1:2)
 
 # Attach 3 linked markers on chromosome 1
 pos = c(20, 50, 70)   # marker positions in megabases
@@ -42,13 +51,24 @@ mlist = lapply(pos, function(i)
 x = setMarkers(x, mlist)
 
 # Simulate the underlying IBD pattern in the pedigree
-s = ibdsim(x, 1, map = uniformMap(M = 1, chrom = 1), seed = 123)[[1]]
+sim = ibdsim(x, 1, map = uniformMap(M = 1, chrom = 1), seed = 123)[[1]]
 
 # Simulate genotypes for the sibs conditional on the given IBD pattern
-profileSimIBD(x, s, ids = 3:4, seed = 123)
+profileSimIBD(x, sim, ids = 3:4, seed = 123)
 
 # With a different seed
-profileSimIBD(x, s, ids = 3:4, seed = 124)
+profileSimIBD(x, sim, ids = 3:4, seed = 124)
+
+
+### X chromosomal simulation
+mlistX = list(marker(x, alleles = 1:4, chrom = "X", posMb = 1),
+              marker(x, alleles = 1:4, chrom = "X", posMb = 50),
+              marker(x, alleles = 1:4, chrom = "X", posMb = 100))
+x = setMarkers(x, mlistX)
+
+simX = ibdsim(x, N = 1, map = loadMap("decode19", chrom = 23), seed = 11)[[1]]
+
+profileSimIBD(x, simX, seed = 12)
 
 }
 \seealso{

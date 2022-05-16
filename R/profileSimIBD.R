@@ -1,7 +1,7 @@
-#' Simulate markers on a given IBD pattern
+#' Simulate markers conditional on a given IBD pattern
 #'
-#' This function simulates genotypes for a set of markers, conditional on a
-#' specific underlying IBD pattern.
+#' This function simulates genotypes for a set of markers conditional on a
+#' specific underlying IBD pattern (typically produced with [ibdsim()]).
 #'
 #' It should be noted that the only *random* part of this function is the
 #' sampling of founder alleles for each marker. Given those, all other genotypes
@@ -13,15 +13,16 @@
 #' @param ids A vector of ID labels. If NULL, extracted from `ibdpattern`.
 #' @param markers A vector with names or indices of markers attached to `x`.
 #' @param seed An integer seed for the random number generator.
+#' @param verbose A logical, by default TRUE.
 #'
-#' @return A copy of `x` where the genotypes of the selected markers have been
-#'   replaced with simulated ones.
+#' @return A copy of `x` where marker genotypes have been simulated conditional
+#'   on `ibdpattern`.
 #'
 #' @seealso [ibdsim()]
 #'
 #' @examples
 #' # A pedigree with two siblings
-#' x = nuclearPed(2)
+#' x = nuclearPed(2, sex = 1:2)
 #'
 #' # Attach 3 linked markers on chromosome 1
 #' pos = c(20, 50, 70)   # marker positions in megabases
@@ -30,16 +31,27 @@
 #' x = setMarkers(x, mlist)
 #'
 #' # Simulate the underlying IBD pattern in the pedigree
-#' s = ibdsim(x, 1, map = uniformMap(M = 1, chrom = 1), seed = 123)[[1]]
+#' sim = ibdsim(x, 1, map = uniformMap(M = 1, chrom = 1), seed = 123)[[1]]
 #'
 #' # Simulate genotypes for the sibs conditional on the given IBD pattern
-#' profileSimIBD(x, s, ids = 3:4, seed = 123)
+#' profileSimIBD(x, sim, ids = 3:4, seed = 123)
 #'
 #' # With a different seed
-#' profileSimIBD(x, s, ids = 3:4, seed = 124)
+#' profileSimIBD(x, sim, ids = 3:4, seed = 124)
+#'
+#'
+#' ### X chromosomal simulation
+#' mlistX = list(marker(x, alleles = 1:4, chrom = "X", posMb = 1),
+#'               marker(x, alleles = 1:4, chrom = "X", posMb = 50),
+#'               marker(x, alleles = 1:4, chrom = "X", posMb = 100))
+#' x = setMarkers(x, mlistX)
+#'
+#' simX = ibdsim(x, N = 1, map = loadMap("decode19", chrom = 23), seed = 11)[[1]]
+#'
+#' profileSimIBD(x, simX, seed = 12)
 #'
 #' @export
-profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL) {
+profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL, verbose = TRUE) {
   
   # Set seed if given
   if(!is.null(seed))
@@ -52,32 +64,42 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
     x = selectMarkers(x, markers)
   
   a = ibdpattern
-  if(is.null(ids))
+  if(is.null(ids)) {
     ids = extractIds(a)
+    if(verbose) cat("IDs extracted from provided IBD pattern:", toString(ids), "\n")
+  }
   else
     a = alleleFlow(a, ids, addState = FALSE)
 
   if(!all(ids %in% labels(x)))
     stop2("ID label in `ibdpattern` not found in `x`: ", setdiff(ids, labels(x)))
   
-  idsInt = internalID(x, ids)
-  
-  # Split a on chrom (NB: split(a, a[,'chrom']) doesn't work directly)
-  aChr = lapply(split(1:nrow(a), a[, "chrom"]), function(rws) a[rws, , drop = FALSE])
-
   nMark = nMarkers(x)
+  if(nMark == 0)
+    stop2("The pedigree has no markers attached")
+  
+  idsInt = internalID(x, ids)
   mchr  = chrom(x, 1:nMark)
   mpos  = posMb(x, 1:nMark)
   
   if(any(is.na(mpos) | is.na(mchr)))
     stop2("All markers must have defined chromosome and position attributes")
   
+  Xchrom = isXsim(a)
+  
+  # X-chromosome is notated as "23" in the simulation
+  if(Xchrom)
+    mchr[mchr == "X"] = "23"
+  
+  # Split a on chrom (NB: split(a, a[,'chrom']) doesn't work directly)
+  aChr = lapply(split(1:nrow(a), a[, "chrom"]), function(rws) a[rws, , drop = FALSE])
+  
   if(!all(mchr %in% names(aChr)))
     stop2("Chromosome missing from `ibdpattern`: ", setdiff(mchr, achr))
   
   # Allele columns
-  matcols = 4 + seq_along(ids)*2L
-  patcols = matcols - 1L
+  matcols = 4 + seq_along(ids)*2L 
+  patcols = matcols - 1L           
   
   # Number of founder alleles (i.e,. "different colours")
   f2 = 2 * length(founders(x))
@@ -101,6 +123,12 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL)
     # Sample founder alleles
     founderAlleles = sample.int(length(frq), size = f2, replace = TRUE, prob = frq)
     
+    # Ad hoc (but good enough) fix for X males
+    if(Xchrom) {
+      zz = ibdpat == 0
+      ibdpat[zz] = ibdmat[zz]
+    }
+                                                     
     # Distribute alleles according to IBD pattern
     amat = tmpMat
     amat[idsInt, 1] = founderAlleles[ibdpat]

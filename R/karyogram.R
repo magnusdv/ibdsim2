@@ -2,7 +2,7 @@
 #'
 #' Functions for visualising IBD segments in karyograms. The `karyogram1()` and
 #' `karyogram2()` functions produces karyograms illustrating the output of
-#' [ibdim()] for one or two specified individuals. The actual plotting is done
+#' [ibdsim()] for one or two specified individuals. The actual plotting is done
 #' by functions `karyoHaploid()` and `karyoDiploid()`.
 #'
 #' @param sim A `genomeSimList` object, typically produced by [ibdsim()].

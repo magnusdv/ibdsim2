@@ -20,7 +20,10 @@ isCount = function(x, minimum = 1) {
 }
 
 
-pos2allele = function(haplo, posvec) { # haplo = matrix with 2 columns (breaks - allele)
+pos2allele = function(haplo, posvec) { 
+  # haplo = matrix with 2 columns (breaks - allele)
+  if(is.null(haplo))
+    return(rep(0, length(posvec)))
   indices = findInterval(posvec, haplo[, 1])
   haplo[indices, 2]
 }

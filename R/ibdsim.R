@@ -119,8 +119,11 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode",
     stop2("Argument `map` must be either a `genomeMap`, a single `chromMap` or a single character")
   
   mapchrom = sapply(map, attr, "chrom")
-  if(any(mapchrom == "X"))
-    stop2("X chromosomal simulations are put on hold, but will be back in the near future.")
+  isX = sapply(map, isXmap)
+  
+  Xchrom = all(isX)
+  if(any(isX) && !Xchrom)
+    stop2("Mixed autosomal/X simulations are not currently allowed: ", mapchrom)
   
   # Model: Either "chi" or "haldane"
   model = match.arg(model)
@@ -156,7 +159,7 @@ ibdsim = function(x, N = 1, ids = labels(x), map = "decode",
     set.seed(seed)
   
   # Start-data with founder alleles
-  startData = distributeFounderAlleles(x, chrom = "AUTOSOMAL")
+  startData = distributeFounderAlleles(x, Xchrom = Xchrom)
   
   # The actual simulations
   genomeSimList = replicate(N, 
@@ -197,3 +200,11 @@ print.genomeSimList = function(x, ...) {
   "))
 }
 
+isXsim = function(s) {
+  if(inherits(s, "genomeSimList"))
+    chrom = attr(s, "chrom")
+  else if(inherits(s, "genomeSim") || is.matrix(s))
+    chrom = unique.default(s[, "chrom"])
+  
+  length(chrom) == 1 && (chrom == "X" || chrom == 23)
+}
