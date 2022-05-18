@@ -89,7 +89,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, pos = 1, cols = NULL,
   
   if(length(pos) == 1) {
     pos = rep(pos, length(ids))
-    names(pos) = idsIBD
+    names(pos) = ids
   }
   if(length(pos) != length(ids))
     stop2("Arguments `pos` and `ids` are incompatible")
