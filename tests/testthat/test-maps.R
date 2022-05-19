@@ -31,7 +31,10 @@ test_that("loadMap() catches errors", {
   expect_error(loadMap(uniform = NULL), "Argument `uniform` must be either TRUE or FALSE")
   expect_error(loadMap(sex = NA), "Argument `sexAverage` must be either TRUE or FALSE")
   expect_error(loadMap(sex = c(T,T)), "Argument `sexAverage` must be either TRUE or FALSE")
-  expect_error(loadMap(chrom = 30), "Index out of range")
+  expect_error(loadMap(chrom = 30), "Unknown chromosome name")
+  expect_error(loadMap(chrom = NA), "Unknown chromosome name")
+  expect_error(loadMap(chrom = c(1,1)), "Duplicated chromosome")
+  expect_error(loadMap(chrom = c(23,"X")), "Duplicated chromosome")
 })
 
 test_that("loadMap() options work", {

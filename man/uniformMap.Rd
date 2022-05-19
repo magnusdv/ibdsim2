@@ -15,19 +15,27 @@ uniformMap(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1, chrom = 1)
 
 \item{cmPerMb}{A positive number; the cM/Mb ratio.}
 
-\item{chrom}{A chromosome label.}
+\item{chrom}{A chromosome label, which may be any string. The values "X" and
+"23" have a special meaning, both resulting in the \code{Xchrom} attribute being
+set to TRUE.}
 }
 \value{
-An object of class \code{chromMap}, which is a list of two matrices,
-named "male" and "female".
+An object of class \code{chromMap}. See \code{\link[=loadMap]{loadMap()}} for details.
 }
 \description{
 Create a uniform recombination map of a given length.
 }
 \examples{
-uniformMap(M = 1)
-
 m = uniformMap(Mb = 1, cM = 2:3)
+m
+m$male
+m$female
+
+mx = uniformMap(M = 1, chrom = "X")
+mx
+mx$male
+mx$female
+
 }
 \seealso{
 \code{\link[=loadMap]{loadMap()}}, \code{\link[=customMap]{customMap()}}

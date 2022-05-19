@@ -63,10 +63,9 @@
 #'
 #'   * `IBD` : The IBD status of each segment (= number of alleles shared
 #'   identical by descent). For a given segment, the IBD status is either 0, 1,
-#'   2 or NA. If either individual is inbred, they may be autozygous in a
-#'   segment, in which case the IBD status is reported as NA. With inbred
-#'   individuals the `Sigma` column (see below) is more informative than the
-#'   `IBD` column.
+#'   2 or NA. If either individual is autozygous in a segment, the IBD status is
+#'   reported as NA. With inbred individuals the `Sigma` column (see below) is
+#'   more informative than the `IBD` column.
 #'
 #'   * `Sigma` : The condensed identity ("Jacquard") state of each segment,
 #'   given as an integer in the range 1-9. The numbers correspond to the
@@ -81,7 +80,12 @@
 #' @examples
 #'
 #' hs = halfSibPed()
-#' ibdsim(hs, N = 2, map = uniformMap(M = 1), ids = 4:5)
+#' sims = ibdsim(hs, N = 2, map = uniformMap(M = 1), seed = 10)
+#' sims
+#' 
+#' # Inspect the first simulation
+#' sims[[1]]
+#' haploDraw(hs, sims[[1]], pos = 2)
 #'
 #' # Full sib mating: all 9 states are possible
 #' x = fullSibMating(1)

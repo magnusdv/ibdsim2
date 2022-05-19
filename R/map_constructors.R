@@ -6,17 +6,25 @@
 #' @param cM Map length in centiMorgan.
 #' @param M Map length in Morgan.
 #' @param cmPerMb A positive number; the cM/Mb ratio.
-#' @param chrom A chromosome label.
+#' @param chrom A chromosome label, which may be any string. The values "X" and
+#'   "23" have a special meaning, both resulting in the `Xchrom` attribute being
+#'   set to TRUE.
 #'
-#' @return An object of class `chromMap`, which is a list of two matrices,
-#'   named "male" and "female".
+#' @return An object of class `chromMap`. See [loadMap()] for details.
 #'
 #' @seealso [loadMap()], [customMap()]
-#' 
-#' @examples
-#' uniformMap(M = 1)
 #'
+#' @examples
 #' m = uniformMap(Mb = 1, cM = 2:3)
+#' m
+#' m$male
+#' m$female
+#' 
+#' mx = uniformMap(M = 1, chrom = "X")
+#' mx
+#' mx$male
+#' mx$female
+#' 
 #' @export
 uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1, 
                       chrom = 1) {
@@ -45,6 +53,11 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1,
   if(toupper(chrom) %in% c("23", "X"))
     chrom = "X"
     
+  if(chrom == "X") {
+    if((length(Mb) > 1 && Mb[1] > 0) || (length(cM) > 1 && cM[1] > 0))
+      stop2("Male X chromosome cannot have positive length")
+  }
+  
   # If length 0, return early
   if(Mb == 0) {
     female = cbind(Mb = 0, cM = 0)
@@ -65,12 +78,12 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1,
 
 #' Load a built-in genetic map
 #'
-#' This function loads one of the built-in genetic maps. Currently, the
-#' available map is based on the publication by Halldorsson et al. (2019).
+#' This function loads one of the built-in genetic maps. Currently, the only
+#' option is a detailed human recombination map, based on the publication by
+#' Halldorsson et al. (2019).
 #'
-#' For reasons of speed and efficiency, the built-in map is a thinned version of
-#' the published map (Halldorsson et al., 2019), keeping around 60 000 data
-#' points.
+#' For reasons of speed and efficiency, the map published by map Halldorsson et
+#' al. (2019) has been thinned down to around 60 000 data points.
 #'
 #' By setting `uniform = TRUE`, a uniform version of the map is returned, in
 #' which each chromosome has the same genetic lengths as in the original, but
@@ -79,15 +92,36 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1,
 #'
 #' @param map The name of the wanted map, possibly abbreviated. Currently, the
 #'   only valid choice is "decode19" (default).
-#' @param chrom A numeric vector indicating which chromosomes to load. Default:
-#'   `1:22` (the autosomes).
+#' @param chrom A vector containing a subset of the numbers 1,2,...,23,
+#'   indicating which chromosomes to load. As a special case, `chrom = "X"` is
+#'   synonymous to `chrom = 23`. Default: `1:22` (the autosomes).
 #' @param uniform A logical. If FALSE (default), the complete inhomogeneous map
 #'   is used. If TRUE, a uniform version of the same map is produced, i.e., with
-#'   the correct lengths, but constant recombination rate along each chromosome.
+#'   the correct physical range and genetic lengths, but with constant
+#'   recombination rates along each chromosome.
 #' @param sexAverage A logical, by default FALSE. If TRUE, a sex-averaged map is
 #'   returned, with equal recombination rates for males and females.
 #'
-#' @return An object of class `genomeMap`.
+#' @return An object of class `genomeMap`, which is a list of `chromMap`
+#'   objects. A `chromMap` is a list of two matrices, named "male" and "female",
+#'   with various attributes:
+#'
+#'   * `physStart`: The first physical position (Mb) on the chromosome covered
+#'   by the map
+#'
+#'   * `physEnd`: The last physical position (Mb) on the chromosome covered by
+#'   the map
+#'
+#'   * `physRange`: The physical map length (Mb), equal to `physEnd - physStart`
+#'
+#'   * `mapLen`: A vector of length 2, containing the centiMorgan lengths of the
+#'   male and female strands
+#'
+#'   * `chrom`: A chromosome label
+#'
+#'   * `Xchrom`: A logical. This is checked by `ibdsim()` and other function, to
+#'   select mode of inheritance
+
 #'
 #' @seealso [uniformMap()], [customMap()]
 #'
@@ -101,17 +135,33 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1,
 #'
 #' # Uniform version
 #' m = loadMap(uniform = TRUE)
-#'
+#' m
+#' 
 #' # Check chromosome 1
 #' m1 = m[[1]]
+#' m1
 #' m1$male
 #' m1$female
 #'
+#' # The X chromosome
+#' loadMap(chrom = "X")[[1]]
+#' 
 #' @export
 loadMap = function(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage = FALSE) {
   
   if(!is.character(map) || length(map) != 1)
     stop2("Argument `map` must be a character of length 1")
+  
+  if(!all(chrom %in% c(1:23, "X")))
+    stop2("Unknown chromosome name: ", setdiff(chrom, c(1:23, "X")))
+  
+  if(is.character(chrom)) {
+     chrom[chrom == "X"] = 23
+     chrom = as.numeric(chrom)
+  }
+  
+  if(dup <- anyDuplicated.default(chrom))
+    stop2("Duplicated chromosome: ", chrom[dup])
   
   if(!is.logical(uniform) || length(uniform) != 1 || is.na(uniform))
     stop2("Argument `uniform` must be either TRUE or FALSE")
@@ -121,6 +171,7 @@ loadMap = function(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage =
   
   if(sexAverage && isTRUE(any(c(23, "X") %in% chrom)))
     stop2("X-chromosomal map cannot be sex averaged")
+  
   
   # For now only 'decode19' is implemented
   builtinMaps = c("decode19")

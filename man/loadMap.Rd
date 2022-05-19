@@ -10,27 +10,43 @@ loadMap(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage = FALSE)
 \item{map}{The name of the wanted map, possibly abbreviated. Currently, the
 only valid choice is "decode19" (default).}
 
-\item{chrom}{A numeric vector indicating which chromosomes to load. Default:
-\code{1:22} (the autosomes).}
+\item{chrom}{A vector containing a subset of the numbers 1,2,...,23,
+indicating which chromosomes to load. As a special case, \code{chrom = "X"} is
+synonymous to \code{chrom = 23}. Default: \code{1:22} (the autosomes).}
 
 \item{uniform}{A logical. If FALSE (default), the complete inhomogeneous map
 is used. If TRUE, a uniform version of the same map is produced, i.e., with
-the correct lengths, but constant recombination rate along each chromosome.}
+the correct physical range and genetic lengths, but with constant
+recombination rates along each chromosome.}
 
 \item{sexAverage}{A logical, by default FALSE. If TRUE, a sex-averaged map is
 returned, with equal recombination rates for males and females.}
 }
 \value{
-An object of class \code{genomeMap}.
+An object of class \code{genomeMap}, which is a list of \code{chromMap}
+objects. A \code{chromMap} is a list of two matrices, named "male" and "female",
+with various attributes:
+\itemize{
+\item \code{physStart}: The first physical position (Mb) on the chromosome covered
+by the map
+\item \code{physEnd}: The last physical position (Mb) on the chromosome covered by
+the map
+\item \code{physRange}: The physical map length (Mb), equal to \code{physEnd - physStart}
+\item \code{mapLen}: A vector of length 2, containing the centiMorgan lengths of the
+male and female strands
+\item \code{chrom}: A chromosome label
+\item \code{Xchrom}: A logical. This is checked by \code{ibdsim()} and other function, to
+select mode of inheritance
+}
 }
 \description{
-This function loads one of the built-in genetic maps. Currently, the
-available map is based on the publication by Halldorsson et al. (2019).
+This function loads one of the built-in genetic maps. Currently, the only
+option is a detailed human recombination map, based on the publication by
+Halldorsson et al. (2019).
 }
 \details{
-For reasons of speed and efficiency, the built-in map is a thinned version of
-the published map (Halldorsson et al., 2019), keeping around 60 000 data
-points.
+For reasons of speed and efficiency, the map published by map Halldorsson et
+al. (2019) has been thinned down to around 60 000 data points.
 
 By setting \code{uniform = TRUE}, a uniform version of the map is returned, in
 which each chromosome has the same genetic lengths as in the original, but
@@ -43,11 +59,16 @@ loadMap()
 
 # Uniform version
 m = loadMap(uniform = TRUE)
+m
 
 # Check chromosome 1
 m1 = m[[1]]
+m1
 m1$male
 m1$female
+
+# The X chromosome
+loadMap(chrom = "X")[[1]]
 
 }
 \references{
