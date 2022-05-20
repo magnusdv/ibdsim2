@@ -192,12 +192,11 @@ convertPos = function(Mb = NULL, cM = NULL, map) {
 
 # Convert map with MB column to CM column
 convertMap = function(markerMap, genomeMap) {
-  if(!isGenomeMap(genomeMap))
-    stop2("Argument `genomeMap` is not a `genomeMap` object")
-
+  genomeMap = genomeMap(genomeMap)
+  
   # Average genome map
   sexAverage = lapply(genomeMap, function(cmap)
-    as.data.frame(cbind(Mb = cmap$male$Mb, cM = cmap$male$cM + cmap$female$cM), 
+    as.data.frame(cbind(Mb = cmap$male$Mb, cM = (cmap$male$cM + cmap$female$cM)/2), 
                   row.names = NULL, optional = TRUE))
   names(sexAverage) = sapply(genomeMap, attr, 'chrom')
   

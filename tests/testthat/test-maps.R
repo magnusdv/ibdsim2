@@ -77,3 +77,14 @@ test_that("customMap() assigns male/female columns correctly", {
   m2 = customMap(data.frame(chrom = 1, mb = 0:1, female = c(0,3), male = c(0,2)))
   expect_equal(mapLen(m2), c(male = 2, female = 3))
 })
+
+test_that("convertMap() converts correctly", {
+  MB = 10
+  CM = 20
+  markermapMB = singleton(1) |> distributeMarkers(n=2, chromLen = MB) |> getMap()
+  
+  gmap = uniformMap(Mb = MB, cM = CM)
+  markermapCM = convertMap(markermapMB, gmap)
+  expect_equal(markermapCM$CM, c(0, CM))
+})
+
