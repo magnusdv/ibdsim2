@@ -364,10 +364,14 @@ isXmap = function(x) {
 }
 
 genomeMap = function(x) {
+  if(isGenomeMap(x))
+    return(x)
+  
   if(isChromMap(x))
     x = list(x)
-  else if(!all(sapply(x, isChromMap)))
-    stop2("Input to `genomeMap()` must a list of `chromMap' objects")
+  
+  if(!all(sapply(x, isChromMap)))
+    stop2("Cannot convert to genomeMap")
   
   structure(x, class = "genomeMap")
 }
