@@ -1,3 +1,20 @@
+# ibdsim2 1.5.0
+
+## New features
+
+* X-chromosomal simulations are now implemented
+
+* `haploDraw()` now handles and displays X-chromosomal simulations
+
+## Other
+
+* Fix labelling bug in `haploDraw()`
+
+* `profileSimIBD()` has been overhauled, fixing several glitches and with significant speed improvements. Note: Simulations with a given `seed` may differ across versions.
+
+* The internal dataset `decode19` has been recompiled, updating some attributes. This should not affect regular users.
+
+
 # ibdsim2 1.4.0
 
 ## New features
