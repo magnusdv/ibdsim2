@@ -71,17 +71,16 @@ estimateTwoLocusIdentity(
 
 \item{Nsim}{The number of simulations.}
 
-\item{Xchrom}{A logical indicating if the loci are X-linked (if TRUE) or
-autosomal (FALSE).}
+\item{Xchrom}{A logical indicating if the loci are X-linked or autosomal.}
 
 \item{verbose}{A logical.}
 
 \item{...}{Further arguments passed on to \code{\link[=ibdsim]{ibdsim()}}, e.g. \code{seed}.}
 
 \item{rho}{A scalar in the interval \verb{[0, 0.5]}: the recombination fraction
-between the two loci, converted to centiMorgans using Haldane's map function:
-cM = -50 * log(1 - 2 * rho). Either \code{rho} or \code{cM} (but not both) must be
-non-NULL.}
+between the two loci, converted to centiMorgans using Haldane's map
+function: cM = -50 * log(1 - 2 * rho). Either \code{rho} or \code{cM} (but not both)
+must be non-NULL.}
 
 \item{cM}{A non-negative number: the genetic distance between the two loci,
 given in centiMorgans. Either \code{rho} or \code{cM} (but not both) must be

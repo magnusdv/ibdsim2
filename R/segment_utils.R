@@ -221,7 +221,7 @@ addStates = function(x) {
 # a1 and a2 from individual 1; b1 and b2 from individual 2
 jacquardState = function(a1, a2, b1, b2, Xchrom = FALSE) { 
   
-  # Identity states on X are follow the autosomal ordering,
+  # Identity states on X follow the autosomal ordering,
   # after replacing hemizygous alleles with autozygous ones. 
   # See https://github.com/magnusdv/ribd
   if(Xchrom) {
