@@ -9,3 +9,4 @@
 ^R/karyogram.R
 ^data-raw$
 ^revdep$
+^CRAN-SUBMISSION$
