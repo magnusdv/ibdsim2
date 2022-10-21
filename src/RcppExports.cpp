@@ -23,9 +23,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sortC
+NumericVector sortC(NumericVector x);
+RcppExport SEXP _ibdsim2_sortC(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(sortC(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ibdsim2_recombine", (DL_FUNC) &_ibdsim2_recombine, 3},
+    {"_ibdsim2_sortC", (DL_FUNC) &_ibdsim2_sortC, 1},
     {NULL, NULL, 0}
 };
 

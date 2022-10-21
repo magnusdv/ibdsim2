@@ -87,3 +87,9 @@ NumericMatrix recombine(NumericMatrix strand1, NumericMatrix strand2, NumericVec
 }
 
 
+// [[Rcpp::export]]
+NumericVector sortC(NumericVector x) {
+  NumericVector y = clone(x);
+  std::sort(y.begin(), y.end());
+  return y;
+} 

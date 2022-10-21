@@ -57,7 +57,7 @@ pos2allele = function(haplo, posvec) {
     }
     return(c(a,b,c))
   }
-  x[order(x, method = "shell")]
+  sortC(x) # [order(x, method = "shell")]
 }
 
 

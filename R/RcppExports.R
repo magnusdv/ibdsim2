@@ -5,3 +5,7 @@ recombine <- function(strand1, strand2, cross) {
     .Call(`_ibdsim2_recombine`, strand1, strand2, cross)
 }
 
+sortC <- function(x) {
+    .Call(`_ibdsim2_sortC`, x)
+}
+
