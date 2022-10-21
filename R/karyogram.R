@@ -10,7 +10,7 @@
 #' @param verbose A logical.
 #' @param ... Further arguments passed on to `karyoHaploid()`.
 #'
-#' @return
+#' @return A plot object returned invisibly.
 #' 
 #' @examples
 #' x = quadHalfFirstCousins()
@@ -141,7 +141,7 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
 #' karyogram2(s[[1]])
 #' }
 #'
-#' 
+#' @export
 karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, separate = TRUE, 
                         alpha = 1, bgcol = "gray92", title = NULL, legendTitle = colorBy, 
                         prefix = "chr") {

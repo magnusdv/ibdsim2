@@ -6,7 +6,6 @@
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 ^notes-private$
-^R/karyogram.R
 ^data-raw$
 ^revdep$
 ^CRAN-SUBMISSION$
