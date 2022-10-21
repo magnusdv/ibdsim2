@@ -4,14 +4,25 @@
 \alias{convertPos}
 \title{Conversion of genetic map positions}
 \usage{
-convertPos(Mb = NULL, cM = NULL, map)
+convertPos(
+  chrom = NULL,
+  Mb = NULL,
+  cM = NULL,
+  map = "decode19",
+  sex = c("average", "male", "female")
+)
 }
 \arguments{
+\item{chrom}{(Optional) A vector of chromosome labels.}
+
 \item{Mb}{A vector of physical positions (in Mb), or NULL.}
 
 \item{cM}{A vector of genetic positions (in cM), or NULL.}
 
-\item{map}{A data frame with columns \code{Mb} and \code{cM}.}
+\item{map}{A \code{genomeMap}, a \code{chromMap}, or a data frame with columns \code{Mb} and
+\code{cM}. By default, \code{loadMap("decode19")} is used.}
+
+\item{sex}{Either "average", "male" or "female".}
 }
 \value{
 A vector of the same length as the input.
@@ -28,10 +39,10 @@ head(map$male)
 
 # Conversion Mb -> cM
 phys = 1:5
-gen = convertPos(Mb = phys, map = map$male)
+gen = convertPos(Mb = phys, map = map, sex = "male")
 gen
 
 # Convert back (note the first position, which was outside of map)
-convertPos(cM = gen, map = map$male)
+convertPos(cM = gen, map = map, sex = "male")
 
 }
