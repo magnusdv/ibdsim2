@@ -138,35 +138,35 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
 #'               
 #' # Example showing simulated IBD segments of full siblings
 #' s = ibdsim(nuclearPed(2), N = 1, ids = 3:4)
-#' karyogram(s[[1]])
+#' karyogram2(s[[1]])
 #' }
 #'
 #' 
 karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, separate = TRUE, 
-                        alpha = 1, bgcol = "gray95", title = NULL, legendTitle = "IBD", 
+                        alpha = 1, bgcol = "gray92", title = NULL, legendTitle = colorBy, 
                         prefix = "chr") {
   
+  
   map = loadMap("decode19", chrom = chrom)
-  chrlen = sapply(map, physRange)
+  chrlen = sapply(map, attr, "physEnd")
   seqnames = paste0(prefix, sapply(map, attr, 'chrom'))
   
-  genome = data.frame(chr = factor(seqnames, levels = seqnames), 
+  genome = data.frame(chrom = factor(seqnames, levels = seqnames), 
                       Mb = chrlen)
   
-  segments = segments[segments[,1] %in% chrom, , drop = F]
-  segments = prepare_segments(segments, colorBy)
-  segments$chr = factor(paste0(prefix, segments$chr), 
-                        levels = levels(genome$chr))
+  segments = prepare_segments(segments, chrom = chrom, colorBy = colorBy)
+  segments$chrom = factor(paste0(prefix, segments$chrom), 
+                        levels = levels(genome$chrom))
   
   levN = nlevels(segments$fill)
   if(is.null(color))
-    color = if(!is.na(colorBy)) 1 else (1 + 1:levN)
-  
+    color = if(is.na(colorBy)) 1 else (1 + 1:levN)
+
   # Segments y positions
   if(separate) {
-    heig = levN + 1 - as.integer(segments$fill)
-    segments$ymin = (heig - 1)/levN
-    segments$ymax = heig/levN
+    heig = 1/segments$gsize
+    segments$ymin = (segments$gidx - 1) * heig
+    segments$ymax = segments$gidx * heig
   }
   else {
     segments$ymin = 0
@@ -183,7 +183,7 @@ karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, sepa
                          fill = "fill"), 
               col = "black", alpha = alpha) +
     ggtitle(title) +
-    facet_grid(chr ~ ., switch = "y") + 
+    facet_grid(chrom ~ ., switch = "y") + 
     scale_x_continuous(expand = c(0.01, 0.01)) +
     scale_fill_manual(values = color) + 
     guides(fill = if(is.na(colorBy)) "none" else guide_legend(legendTitle)) +
@@ -192,8 +192,9 @@ karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, sepa
           plot.title = element_text(size = 16, 
                                     margin = margin(b = 10, unit = "pt")),
           strip.text.y.left = element_text(angle = 0, hjust = 1),
-          legend.position = c(0.97, 0.4),
-          legend.justification = c(1, 0)
+          legend.position = c(0.97, 0),
+          legend.justification = c(1, 0),
+          #legend.text = element_text(margin = margin(b = 0.5, unit = 'cm'))
           )
   p
 }
@@ -236,16 +237,16 @@ karyoDiploid = function(paternal, maternal, chrom = 1:22,
                          colors = c(paternal = "lightblue", maternal = "orange"),  
                          alpha = 1, bgcol = "gray95", title = NULL) {
   
-  decode = loadMap("Decode", chrom = chrom)
-  chrlen = sapply(decode, attr, 'length')
+  map = loadMap("decode19", chrom = chrom)
+  chrlen = sapply(map, attr, "physEnd")
   seqnames = paste0("chr", chrom)
-  genome = data.frame(chr = factor(seqnames, levels = seqnames), Mb = chrlen)
+  genome = data.frame(chrom = factor(seqnames, levels = seqnames), Mb = chrlen)
   
-  paternal = prepare_segments(paternal, colorBy = NA)
-  maternal = prepare_segments(maternal, colorBy = NA)
+  paternal = prepare_segments(paternal, chrom = chrom, colorBy = NA)
+  maternal = prepare_segments(maternal, chrom = chrom, colorBy = NA)
   
-  paternal$chr = factor(paternal$chr, levels = levels(genome$chr))
-  maternal$chr = factor(maternal$chr, levels = levels(genome$chr))
+  paternal$chrom = factor(paternal$chrom, levels = levels(genome$chrom))
+  maternal$chrom = factor(maternal$chrom, levels = levels(genome$chrom))
   
   Np = nrow(paternal)
   Nm = nrow(maternal)
@@ -264,7 +265,7 @@ karyoDiploid = function(paternal, maternal, chrom = 1:22,
               data = genome, fill = bgcol, col = "black") + 
     geom_rect(aes_string(xmin = 0, xmax = "Mb", ymin = 0.57, ymax = 1), 
               data = genome, fill = bgcol, col = "black") +
-    facet_grid(chr ~ ., switch = "y") + 
+    facet_grid(chrom ~ ., switch = "y") + 
     theme(
       plot.margin = unit(c(10, 5, 10, 5), "pt"),
       strip.text.y.left = element_text(angle = 0, margin = margin(0,0,0,0), hjust = 1),
@@ -290,40 +291,46 @@ karyoDiploid = function(paternal, maternal, chrom = 1:22,
 
 # Prepare input 'segments' for plotting (extract and rename relevant columns,
 # merge adjacent segments)
-prepare_segments = function(segments, colorBy = NA) {
+prepare_segments = function(segments, chrom = 1:22, colorBy = NA) {
   segments = as.data.frame(segments)
   
   stopifnot(ncol(segments) >= 3, 
             is.na(colorBy) || colorBy %in% names(segments))
   
-  N = nrow(segments)
-  df = segments[1:3]
-  names(df) = c("chr", "start", "end")
+  # Numeric chrs
+  chrNo = segments[,1] = sub("chr", "", sub("chrom", "", sub("chromosome", "", segments[,1])))
+  
+  df = segments[chrNo %in% chrom, , drop = FALSE]
+  N = nrow(df)
   
   # Fill colours
-  df$fill = factor(if(!is.na(colorBy)) segments[[colorBy]] else rep_len(1, N))
+  df$fill = factor(if(!is.na(colorBy)) df[[colorBy]] else rep_len(1, N))
+  
+  names(df)[1:3] = c("chrom", "start", "end")
+  df = df[c("chrom", "start", "end", "fill")]
   
   # Early return if empty
   if(N == 0) 
     return(df)
   
-  # Remove 'chr' and similar
-  if(grepl("chr", df$chr[1], ignore.case = TRUE))
-    df$chr = sub("chr", "", sub("chrom", "", sub("chromosome", "", df$chr)))
+  # Sort
+  if(N > 1)
+    df = df[order(as.numeric(df$chrom), df$start, df$end), , drop = FALSE]
   
   if(max(df$end) > 250e3) {
     df$start = df$start/1e6
     df$end = df$end/1e6
     message("Converting positions to Mb by diving by 1e6")
-  }
-  else if(max(df$end) > 250) {
+  } else if(max(df$end) > 250) {
     df$start = df$start/1e3
     df$end = df$end/1e3
     message("Converting positions to Mb by diving by 1000")
   }
   
-  # Merge overlapping segments with the same color
-  df = mergeConsecutiveSegments(df, mergeBy = c("chr", "fill"), segLength = "length")
-  df
+  # Merge overlapping segments with the same colour
+  df = mergeSegments(df, by = c("chrom", "fill"), checkAdjacency = TRUE)
+  rownames(df) = NULL
+  
+  groupOverlaps(df)
 }
 

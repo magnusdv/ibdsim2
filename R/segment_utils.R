@@ -32,6 +32,26 @@ alleleFlow = function(x, ids, addState = TRUE) {
   y
 }
 
+
+groupOverlaps = function(x) { # assumes sorted on chrom, start, end
+  
+  # Storage vector for group number and group size
+  g = n = gidx = numeric(nrow(x))
+  
+  for(chr in unique.default(x[,1])) {
+    idx = x[,1] == chr
+    start = x[idx, 2]
+    end = x[idx, 3]
+    gchr = cumsum(cummax(c(0, end[-length(end)])) <= start)
+    tb = tabulate(gchr)
+    g[idx] = gchr
+    n[idx] = tb[gchr]
+    gidx[idx] = unlist(lapply(tb, seq_len))
+  }
+  
+  cbind(x, group = paste(x[,1], g, sep = "-"), gsize = n, gidx = gidx)
+}
+
 # Merge segments (on the same chrom) with equal entries in `by` (single vector or column names)
 mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
   k = nrow(x)
@@ -75,7 +95,12 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
   
   y = x[fromRow, , drop = FALSE]
   y[, 'end'] = x[toRow, 'end']
-  y[, 'length'] = y[, 'end'] - y[, 'start'] 
+  
+  # Recompute lengths if included
+  if("length" %in% colnames(y))
+    y[, 'length'] = y[, 'end'] - y[, 'start'] 
+  
+  rownames(y) = NULL
   y
 }
 
