@@ -5,20 +5,25 @@
 #' [ibdsim()] for one or two specified individuals. The actual plotting is done
 #' by functions `karyoHaploid()` and `karyoDiploid()`.
 #'
-#' @param sim A `genomeSimList` object, typically produced by [ibdsim()].
+#' @param sim A `genomeSim` object, or a `genomeSimList` of length 1, e.g.
+#'   produced by `ibdsim(..., N = 1)`.
 #' @param ids A vector of one or two ID labels.
 #' @param verbose A logical.
 #' @param ... Further arguments passed on to `karyoHaploid()`.
 #'
 #' @return A plot object returned invisibly.
-#' 
-#' @examples
-#' x = quadHalfFirstCousins()
-#' s = ibdsim(x, ids = leaves(x))
 #'
-#' karyogram2(s[[1]])
+#' @examples
+#' \donttest{
+#' x = quadHalfFirstCousins()
+#' s = ibdsim(x, seed = 1729)
+#' # karyogram2(s, ids = leaves(x), title = "QHFC")
+#' }
 #' 
 karyogram2 = function(sim, ids = NULL, verbose = TRUE, ...) {
+  
+  if(inherits(sim, "genomeSimList") && length(sim) == 1)
+    sim = sim[[1]]
   
   # IDs present in sim
   simids = extractIds(sim)
@@ -170,8 +175,7 @@ karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL, separa
     geom_rect(aes_(xmin = 0, xmax = ~Mb, ymin = 0, ymax = 1), 
               data = genome, fill = bgcol, col = "black") + 
     geom_rect(aes_(xmin = ~start, xmax = ~end, ymin = ~ymin, ymax = ~ymax, 
-                         fill = ~fill), data = segments, 
-              col = "black", alpha = alpha) +
+                   fill = ~fill), data = segments, color = 1, alpha = alpha) +
     ggtitle(title) +
     facet_grid(chrom ~ ., switch = "y") + 
     scale_x_continuous(expand = c(0.01, 0.01)) +
@@ -181,10 +185,10 @@ karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL, separa
     theme(plot.margin = margin(4, 4, 4, 4),
           plot.title = element_text(size = 16, 
                                     margin = margin(b = 10, unit = "pt")),
-          strip.text.y.left = element_text(angle = 0, hjust = 1),
+          strip.text.y.left = element_text(angle = 0, hjust = 1, vjust = 0.5),
           legend.position = c(0.97, 0),
           legend.justification = c(1, 0),
-          )
+          panel.spacing.y = unit(0.3, "lines"))
 }
 
 

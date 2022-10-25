@@ -12,9 +12,9 @@ haploDraw(
   pos = 1,
   cols = NULL,
   height = 4,
-  width = 0.5,
+  width = 0.75,
   sep = 0.75,
-  dist = 1.5,
+  dist = 1,
   ...
 )
 }
@@ -38,13 +38,13 @@ below; 2 = left; 3 = above; 4 = right. By default, all are placed below.}
 \item{height}{The haplotype height divided by the height of a pedigree
 symbol.}
 
-\item{width}{The haplotype width divided by the width of a pedigree symbol.}
+\item{width}{The haplotype width, divided by the width of a pedigree symbol.}
 
-\item{sep}{The separation between haplotypes within a pair, given as a
-fraction of \code{width}.}
+\item{sep}{The separation between haplotypes within a pair, measured in
+pedigree symbol widths.}
 
 \item{dist}{The distance between pedigree symbols and the closest haplotype,
-given as a fraction of \code{width}.}
+measured in pedigree symbol widths.}
 
 \item{...}{Arguments passed on to \code{plot.ped()}. In particular, if the
 haplotypes appear cropped it usually helps to increase the \code{margins}.}
