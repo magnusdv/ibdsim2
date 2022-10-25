@@ -21,3 +21,7 @@ convert_pos_C <- function(pos, mapFrom, mapTo, extValue) {
     .Call(`_ibdsim2_convert_pos_C`, pos, mapFrom, mapTo, extValue)
 }
 
+build_allelemat_C <- function(pos, haplolist) {
+    .Call(`_ibdsim2_build_allelemat_C`, pos, haplolist)
+}
+

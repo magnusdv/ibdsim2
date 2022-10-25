@@ -1,5 +1,5 @@
 #' @importFrom stats rpois runif
-meiosis = function(parent, map, model = "chi", skipRecomb = FALSE) { 
+meiosis = function(parent, map, maplen = NULL, model = "chi", skipRecomb = FALSE) { 
   
   # If X, return maternal strand unchanged
   if(is.null(map)) 
@@ -10,21 +10,23 @@ meiosis = function(parent, map, model = "chi", skipRecomb = FALSE) {
   if (skipRecomb) # return random strand with no recombination
     return(parent[[startStrand]])
   
-  L.cM = map[nrow(map), "cM"]  # chromosome length in cM
+  # Chromosome length in cM
+  if(is.null(maplen)) 
+    maplen = map$cM[length(map$cM)] # [nrow(map), "cM"] 
 
   switch(model,
     haldane = {
-      ncross = rpois(1, L.cM / 100)
+      ncross = rpois(1, maplen / 100)
       if (ncross == 0) 
         return(parent[[startStrand]])
-      Cx = .sortDouble(runif(ncross, min = 0, max = L.cM))
+      Cx = .sortDouble(runif(ncross, min = 0, max = maplen))
     },
     chi = {
       m = 4
-      nC = rpois(1, L.cM / 50 * (m + 1))    # L.cM/100*2*(m+1); number of potential crossover events
+      nC = rpois(1, maplen / 50 * (m + 1))    # maplen/100*2*(m+1); number of potential crossover events
       if (nC == 0) 
         return(parent[[startStrand]])
-      C_events = .sortDouble(runif(nC, min = 0, max = L.cM)) # potential crossover positions (N-1 intervals, uniformly distr given nC)
+      C_events = .sortDouble(runif(nC, min = 0, max = maplen)) # potential crossover positions (N-1 intervals, uniformly distr given nC)
       Cx.bundle = C_events[!as.logical((seq_len(nC) + .sampleInt(m + 1, 1)) %% (m + 1))]    # Cx events on 4 strand bundle: every (m+1)th
       Cx = Cx.bundle[as.logical(.sampleInt(2, length(Cx.bundle)) %% 2)]    # thinning. Each survive with prob=1/2
   })

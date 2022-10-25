@@ -23,6 +23,7 @@ genedrop.singlechrom = function(x, ids, chrommap, model, skipRecomb, startData) 
   Xchrom = identical(chrom, "X")
   Xmale = Xchrom & x$SEX == 1
   
+  maplen = attr(chrommap, "mapLen") # length in cM
   startMb = attr(chrommap, "physStart")
   endMb = attr(chrommap, "physEnd")
   
@@ -33,27 +34,31 @@ genedrop.singlechrom = function(x, ids, chrommap, model, skipRecomb, startData) 
   for(i in NONFOU) {
     fa = FIDX[i]
     mo = MIDX[i]
-    matGamete = meiosis(h[[mo]], map = chrommap$female, model = model, skipRecomb = skip[mo])
+    matGamete = meiosis(h[[mo]], map = chrommap$female, maplen = maplen[2], 
+                        model = model, skipRecomb = skip[mo])
     if(Xmale[i])
       patGamete = NULL
     else
-      patGamete = meiosis(h[[fa]], map = chrommap$male, model = model, skipRecomb = skip[fa])
+      patGamete = meiosis(h[[fa]], map = chrommap$male, maplen = maplen[1], 
+                          model = model, skipRecomb = skip[fa])
     
     h[[i]] = list(pat = patGamete, mat = matGamete)
   }
   
   ### Convert to matrix of allele segments ###
-  haplos = unname(unlist(h[IDS], recursive = FALSE))
-  breaks = unlist(lapply(haplos, function(m) m[-1, 1]))
+  haplos = unlist(h[IDS], recursive = FALSE, use.names = FALSE)
+  breaks = unlist(lapply(haplos, function(m) m[-1, 1]), use.names = FALSE)
   if(anyDuplicated.default(breaks))
     breaks = unique.default(breaks)
-  
   sta = c(startMb, .sortDouble(breaks))
   
-  alleleMat = vapply(haplos, function(m) pos2allele(m, posvec = sta), FUN.VALUE = sta)
+  # New, fast version
+  alleleMat = build_allelemat_C(sta, haplos)
   
-  if (length(sta) == 1)      # since vapply simplifies if FUN.VALUE has length 1
-    dim(alleleMat) = c(1, 2 * length(IDS))
+  # Previous, slower:
+  # alleleMat = vapply(haplos, function(m) pos2allele(m, posvec = sta), FUN.VALUE = sta)
+  # if (length(sta) == 1)      # since vapply simplifies if FUN.VALUE has length 1
+  #   dim(alleleMat) = c(1, 2 * length(IDS))
   
   sto = c(sta[-1], endMb)
   cbind(chrom = if(Xchrom) 23L else chrom, start = sta, end = sto, length = sto - sta, alleleMat)

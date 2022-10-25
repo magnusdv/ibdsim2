@@ -46,7 +46,7 @@ groupOverlaps = function(x) { # assumes sorted on chrom, start, end
     tb = tabulate(gchr)
     g[idx] = gchr
     n[idx] = tb[gchr]
-    gidx[idx] = unlist(lapply(tb, seq_len))
+    gidx[idx] = unlist(lapply(tb, seq_len), use.names = FALSE)
   }
   
   cbind(x, group = paste(x[,1], g, sep = "-"), gsize = n, gidx = gidx)

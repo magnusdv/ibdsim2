@@ -4,7 +4,9 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 NumericMatrix recombine(NumericMatrix strand1, NumericMatrix strand2, NumericVector cross) {
 	int nc = cross.size();
-  if(nc == 0) return strand1;
+  if(nc == 0) 
+    return strand1;
+  
   if(is_true(any(cross < 0))) stop("Inadmissible crossover point");
 
   int nr1 = strand1.nrow(), nr2 = strand2.nrow();
@@ -150,4 +152,31 @@ NumericVector convert_pos_C(NumericVector pos,
     }
   }
   return res;
+}
+
+
+// [[Rcpp::export]]
+NumericMatrix build_allelemat_C(NumericVector pos, List haplolist) { 
+  // Each entry of haplolist: matrix with 2 columns (breaks - allele)
+  
+  int idx = 0;
+  
+  NumericMatrix am(pos.length(), haplolist.length());
+  //if(is.null(haplo)) return(rep(0, length(posvec)))
+  
+  for(int j=0; j < haplolist.length(); ++j) {
+    NumericMatrix h = haplolist[j]; 
+    NumericVector breaks = h(_, 0);
+    NumericVector als = h(_, 1);
+    for(int i=0; i < pos.length(); ++i) {
+      if(breaks.length() == 1) {
+        idx = 0;
+      }
+      else {
+        idx = std::distance(breaks.begin(), std::upper_bound(breaks.begin(), breaks.end(), pos[i])) - 1;
+      }
+      am(i, j) = als[idx];
+    }
+  }
+  return am;
 }

@@ -70,6 +70,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// build_allelemat_C
+NumericMatrix build_allelemat_C(NumericVector pos, List haplolist);
+RcppExport SEXP _ibdsim2_build_allelemat_C(SEXP posSEXP, SEXP haplolistSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type pos(posSEXP);
+    Rcpp::traits::input_parameter< List >::type haplolist(haplolistSEXP);
+    rcpp_result_gen = Rcpp::wrap(build_allelemat_C(pos, haplolist));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ibdsim2_recombine", (DL_FUNC) &_ibdsim2_recombine, 3},
@@ -77,6 +89,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ibdsim2_sample_12_C", (DL_FUNC) &_ibdsim2_sample_12_C, 0},
     {"_ibdsim2_sample_int_C", (DL_FUNC) &_ibdsim2_sample_int_C, 2},
     {"_ibdsim2_convert_pos_C", (DL_FUNC) &_ibdsim2_convert_pos_C, 4},
+    {"_ibdsim2_build_allelemat_C", (DL_FUNC) &_ibdsim2_build_allelemat_C, 2},
     {NULL, NULL, 0}
 };
 
