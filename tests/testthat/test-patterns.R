@@ -16,11 +16,11 @@ test_that("findPattern() finds segments correctly", {
   expect_equal(nrow(findPattern(s, list(aut = 6))), 2)
   expect_equal(nrow(findPattern(s, list(aut = 5:6))), 1)
   expect_equal(nrow(findPattern(s, list(aut = 1:2))), 0)
-  expect_equal(nrow(findPattern(s, list(aut = 6, non = 1))), 2)
-  expect_equal(nrow(findPattern(s, list(aut = 6, non = 2))), 0)
+  expect_equal(nrow(findPattern(s, list(aut = 6, non = 1))), 0)
+  expect_equal(nrow(findPattern(s, list(aut = 6, non = 2))), 2)
   
   expect_equal(nrow(findPattern(s, list(aut = 6, het = 5))), 2)
-  expect_equal(nrow(findPattern(s, list(carrier = c(1,6), non = 5))), 2)
+  expect_equal(nrow(findPattern(s, list(carrier = c(1,6), non = 5))), 1)
 })
 
 test_that("findPattern() merges segments correctly", {

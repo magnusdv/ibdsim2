@@ -165,6 +165,10 @@ NumericMatrix build_allelemat_C(NumericVector pos, List haplolist) {
   //if(is.null(haplo)) return(rep(0, length(posvec)))
   
   for(int j=0; j < haplolist.length(); ++j) {
+    
+    if(haplolist[j] == R_NilValue) {
+      continue;
+    }
     NumericMatrix h = haplolist[j]; 
     NumericVector breaks = h(_, 0);
     NumericVector als = h(_, 1);
