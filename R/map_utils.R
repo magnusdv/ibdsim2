@@ -155,6 +155,9 @@ convertPos = function(chrom = NULL, Mb = NULL, cM = NULL, map = "decode19", sex 
   if(is.null(Mb) + is.null(cM) != 1)
     stop2("Exactly one of `Mb` and `cM` must be NULL")
   
+  if(length(Mb) + length(cM) == 0)
+    return(numeric(0))
+  
   if(is.character(map) && length(map) == 1)
     map = loadMap(map)
   
@@ -186,47 +189,21 @@ convertPos = function(chrom = NULL, Mb = NULL, cM = NULL, map = "decode19", sex 
   .convertPos1(Mb = Mb, cM = cM, map = map)
 }
 
+
 .convertPos1 = function(Mb = NULL, cM = NULL, map) {
   if(is.null(Mb) + is.null(cM) != 1)
     stop2("Exactly one of `Mb` and `cM` must be NULL")
+  
+  if(length(Mb) + length(cM) == 0)
+    return(numeric(0))
+
   if(!is.data.frame(map))
     stop2("Expected `map` to be a data frame, not a ", class(map))
   
-  if(is.null(Mb)) {
-    from = cM
-    fromUnit = "cM"
-    toUnit = "Mb"
-  } else {
-    from = Mb
-    fromUnit = "Mb"
-    toUnit = "cM"
-  }
-  
-  # Output vector
-  res = numeric(length(from))
-  
-  mapFrom = map[[fromUnit]]
-  mapTo = map[[toUnit]]
-  mapN = nrow(map)
-  
-  # Deal with values outside of map
-  before = from < mapFrom[1]
-  after =  from > mapFrom[mapN]
-  res[before] = 0
-  res[after] = if(toUnit == "Mb") NA else mapTo[mapN]
-  
-  # Locate inside values
-  inside = !before & !after
-  src = from[inside]
-  idx = findInterval(src, mapFrom, all.inside = TRUE)
-  
-  # Rate of change
-  rate = (mapTo[idx + 1] - mapTo[idx]) / (mapFrom[idx + 1] - mapFrom[idx])
-  
-  # Extrapolate
-  res[inside] = mapTo[idx] + (src - mapFrom[idx]) * rate
-  
-  res
+  if(is.null(Mb))
+    convert_pos_C(pos = cM, mapFrom = map$cM, mapTo = map$Mb, extValue = NA)
+  else
+    convert_pos_C(pos = Mb, mapFrom = map$Mb, mapTo = map$cM, extValue = map$cM[length(map$cM)])
 }
 
 

@@ -23,14 +23,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sortC
-NumericVector sortC(NumericVector x);
-RcppExport SEXP _ibdsim2_sortC(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(sortC(x));
+// convert_pos_C
+NumericVector convert_pos_C(NumericVector pos, NumericVector mapFrom, NumericVector mapTo, double extValue);
+RcppExport SEXP _ibdsim2_convert_pos_C(SEXP posSEXP, SEXP mapFromSEXP, SEXP mapToSEXP, SEXP extValueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type pos(posSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mapFrom(mapFromSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mapTo(mapToSEXP);
+    Rcpp::traits::input_parameter< double >::type extValue(extValueSEXP);
+    rcpp_result_gen = Rcpp::wrap(convert_pos_C(pos, mapFrom, mapTo, extValue));
     return rcpp_result_gen;
 END_RCPP
 }

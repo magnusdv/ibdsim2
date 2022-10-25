@@ -88,8 +88,43 @@ NumericMatrix recombine(NumericMatrix strand1, NumericMatrix strand2, NumericVec
 
 
 // [[Rcpp::export]]
-NumericVector sortC(NumericVector x) {
-  NumericVector y = clone(x);
   std::sort(y.begin(), y.end());
   return y;
-} 
+} // [[Rcpp::export]]
+NumericVector convert_pos_C(NumericVector pos, 
+                            NumericVector mapFrom, 
+                            NumericVector mapTo,
+                            double extValue) {
+  // Output vector
+  NumericVector res(pos.length());
+    
+  double src, rate;
+  int idx = 0;
+  int mapN = mapFrom.length();
+  
+  for(int i=0; i < res.length(); ++i) {
+    
+    src = pos[i];
+    
+    // Values outside of map
+    if(src < mapFrom[0]) {
+      res[i] = 0;
+    }
+    else if(src > mapFrom[mapN-1]) {
+      res[i] = extValue;
+    }
+    else {
+      // findInterval(src, mapFrom). (Extract 1 because cpp is 0-indexed.)
+      idx = std::distance(mapFrom.begin(), std::upper_bound(mapFrom.begin(), mapFrom.end(), src)) - 1;
+      
+      // Rprintf("\nidx = %d. mapto[idx+1] = %f. mapto[idx] = %f", idx, mapTo[idx + 1], mapTo[idx]);
+      
+      // Rate of change
+      rate = (mapTo[idx + 1] - mapTo[idx]) / (mapFrom[idx + 1] - mapFrom[idx]);
+      
+      // Extrapolate
+      res[i] = mapTo[idx] + (src - mapFrom[idx]) * rate;
+    }
+  }
+  return res;
+}
