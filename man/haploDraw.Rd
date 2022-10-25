@@ -21,7 +21,7 @@ haploDraw(
 \arguments{
 \item{x}{A \code{ped} object.}
 
-\item{ibd}{A \code{genomeSim} object.}
+\item{ibd}{A \code{genomeSim} object, typically made by \code{\link[=ibdsim]{ibdsim()}}.}
 
 \item{chrom}{A chromosome number, needed if \code{ibd} contains data from multiple
 chromosomes.}
@@ -90,7 +90,7 @@ haploDraw(x, s[[1]], pos = c(0,1,0,2,4,4),
 ###############################
 
 x = nuclearPed(2, sex = 2:1)
-s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 1)
+s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 123)
 s[[1]]
 
 haploDraw(x, s[[1]], pos = c(2,4,2,4), margins = c(2, 5, 5, 5), cex = 1.2)

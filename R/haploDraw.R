@@ -4,7 +4,7 @@
 #' the pedigree.
 #'
 #' @param x A `ped` object.
-#' @param ibd A `genomeSim` object.
+#' @param ibd A `genomeSim` object, typically made by [ibdsim()].
 #' @param chrom A chromosome number, needed if `ibd` contains data from multiple
 #'   chromosomes.
 #' @param ids A vector indicating for which pedigree members haplotypes should
@@ -15,11 +15,11 @@
 #' @param cols A colour vector corresponding to the alleles in `ibd`.
 #' @param height The haplotype height divided by the height of a pedigree
 #'   symbol.
-#' @param width The haplotype width divided by the width of a pedigree symbol.
-#' @param sep The separation between haplotypes within a pair, given as a
-#'   fraction of `width`.
+#' @param width The haplotype width, divided by the width of a pedigree symbol.
+#' @param sep The separation between haplotypes within a pair, measured in
+#'   pedigree symbol widths.
 #' @param dist The distance between pedigree symbols and the closest haplotype,
-#'   given as a fraction of `width`.
+#'   measured in pedigree symbol widths.
 #' @param ... Arguments passed on to `plot.ped()`. In particular, if the
 #'   haplotypes appear cropped it usually helps to increase the `margins`.
 #'
@@ -59,7 +59,7 @@
 #' ###############################
 #'
 #' x = nuclearPed(2, sex = 2:1)
-#' s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 1)
+#' s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 123)
 #' s[[1]]
 #'
 #' haploDraw(x, s[[1]], pos = c(2,4,2,4), margins = c(2, 5, 5, 5), cex = 1.2)
@@ -71,7 +71,7 @@
 #' @importFrom graphics rect plot
 #' @export
 haploDraw = function(x, ibd, chrom = NULL, ids = NULL, pos = 1, cols = NULL, 
-                     height = 4, width = 0.5, sep = 0.75, dist = 1.5, ...) {
+                     height = 4, width = 0.75, sep = 0.75, dist = 1, ...) {
   
   if(!is.ped(x))
     stop2("Argument `x` must be a `ped` object")
@@ -145,8 +145,8 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, pos = 1, cols = NULL,
 
   H = height * symh
   W = width  * symw
-  SEP = sep * W
-  DIST = dist * W
+  SEP = sep * symw
+  DIST = dist * symw
   
   # Loop through all individuals in pedigree
   for(i in 1:pedsize(x)) {
