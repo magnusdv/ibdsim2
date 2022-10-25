@@ -63,7 +63,7 @@ karyogram2 = function(sim, ids = NULL, verbose = TRUE, ...) {
   segData$type = droplevels(factor(segData$type, levels = 1:4, 
                                    labels = c("Paternal", "Maternal", "Fa1 = Mo2", "Fa2 = Mo2")))
   
-  karyoHaploid(segData, colorBy = "type", color = c(2,4,3,5), ...)
+  karyoHaploid(segData, colBy = "type", col = c(2,4,3,5), ...)
 }
 
 
@@ -99,14 +99,14 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
 #'   containing the segments to be shown on the karyogram. The first three
 #'   columns must contain chromosome (with or without "chr" prefix), start
 #'   position and stop position (in Mb). Any further columns are ignored, except
-#'   possibly a column indicated by `colorBy`.
-#' @param colorBy The name of a single column of `segments`, to be used for
-#'   colouring. If NA (default), all segments will have the same colour,
-#'   controlled by the `color` parameter.
-#' @param color A single fill colour for all the segments, or (if `colorBy` is
-#'   not NA) a named vector of colours. In the latter case, the names should
-#'   include all entries in the `colorBy` column.
-#' @param separate A logical; relevant only if the `colorBy` column has more
+#'   possibly a column indicated by `colBy`.
+#' @param chrom A vector indicating which chromosomes to include. 
+#' @param colBy A character vector naming the columns to be used for
+#'   colouring. If NULL (default), all segments have the same colour.
+#' @param col A single fill colour for all the segments, or (if `colBy` is
+#'   used) a named vector of colours. In the latter case, the names should
+#'   include all entries in the `colBy` column.
+#' @param separate A logical; relevant only if the `colBy` column has more
 #'   than one level. If FALSE, all segments are drawn in full height. This may
 #'   not be optimal if segments of different colours overlap. If TRUE the levels
 #'   are drawn in separate bands on the chromosomes.
@@ -124,43 +124,35 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
 #' segs = data.frame(chrom = c(1,4,5,5,10,10),
 #'                   start = c(100,50,20,80,10,50),
 #'                   end = c(120,100,25,100,70,120),
-#'                   IBD = c("cousin1","cousin2"))
-#' cols = c(cousin1 = "blue", cousin2 = "red")
-#' 
-#' karyoHaploid(segs, color = "cyan")
-#' karyoHaploid(segs, colorBy = "IBD", color = cols)
-#' 
+#'                   IBD = c("paternal","maternal"))
+#' cols = c(paternal = "blue", maternal = "red")
+#'
+#' karyoHaploid(segs, col = "cyan")
+#' karyoHaploid(segs, colBy = "IBD", col = cols)
+#'
 #' # Note difference if `separate = FALSE`
-#' karyoHaploid(segs, colorBy = "IBD", color = cols, separate = FALSE)
-#' 
-#' # To see the overlap now, you can reduce alpha:
-#' karyoHaploid(segs, colorBy = "IBD", color = cols, separate = FALSE, alpha = 0.7)
-#'               
-#' # Example showing simulated IBD segments of full siblings
-#' s = ibdsim(nuclearPed(2), N = 1, ids = 3:4)
-#' karyogram2(s[[1]])
+#' karyoHaploid(segs, colBy = "IBD", col = cols, separate = FALSE)
+#'
+#' # Reduce alpha to see the overlaps:
+#' karyoHaploid(segs, colBy = "IBD", col = cols, separate = FALSE, alpha = 0.7)
+#'
 #' }
 #'
 #' @export
-karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, separate = TRUE, 
-                        alpha = 1, bgcol = "gray92", title = NULL, legendTitle = colorBy, 
-                        prefix = "chr") {
+karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL, separate = TRUE, 
+                        alpha = 1, bgcol = "gray92", title = NULL) {
   
-  
+  # Genome map
   map = loadMap("decode19", chrom = chrom)
-  chrlen = sapply(map, attr, "physEnd")
-  seqnames = paste0(prefix, sapply(map, attr, 'chrom'))
-  
+  seqnames = sapply(map, attr, 'chrom')
   genome = data.frame(chrom = factor(seqnames, levels = seqnames), 
-                      Mb = chrlen)
+                      Mb = sapply(map, attr, "physEnd"))
   
-  segments = prepare_segments(segments, chrom = chrom, colorBy = colorBy)
-  segments$chrom = factor(paste0(prefix, segments$chrom), 
-                        levels = levels(genome$chrom))
+  segments = prepare_segments(segments, chrom = chrom, colBy = colBy)
+  segments$chrom = factor(segments$chrom, levels = levels(genome$chrom))
   
-  levN = nlevels(segments$fill)
-  if(is.null(color))
-    color = if(is.na(colorBy)) 1 else (1 + 1:levN)
+  if(is.null(col))
+    col = if(is.null(colBy)) 2 else (1 + seq_along(levels(segments$fill)))
 
   # Segments y positions
   if(separate) {
@@ -174,19 +166,17 @@ karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, sepa
   }
   
   # Build plot object
-  p = ggplot() + 
-    geom_rect(data = genome, 
-              aes_string(xmin = 0, xmax = "Mb", ymin = 0, ymax = 1), 
-              fill = bgcol, col = "black") + 
-    geom_rect(data = segments, 
-              aes_string(xmin = "start", xmax = "end", ymin = "ymin", ymax = "ymax", 
-                         fill = "fill"), 
+  ggplot() + 
+    geom_rect(aes_(xmin = 0, xmax = ~Mb, ymin = 0, ymax = 1), 
+              data = genome, fill = bgcol, col = "black") + 
+    geom_rect(aes_(xmin = ~start, xmax = ~end, ymin = ~ymin, ymax = ~ymax, 
+                         fill = ~fill), data = segments, 
               col = "black", alpha = alpha) +
     ggtitle(title) +
     facet_grid(chrom ~ ., switch = "y") + 
     scale_x_continuous(expand = c(0.01, 0.01)) +
-    scale_fill_manual(values = color) + 
-    guides(fill = if(is.na(colorBy)) "none" else guide_legend(legendTitle)) +
+    scale_fill_manual(values = col) + 
+    guides(fill = guide_legend(colBy[1])) +
     theme_void(base_size = 16) + 
     theme(plot.margin = margin(4, 4, 4, 4),
           plot.title = element_text(size = 16, 
@@ -194,9 +184,7 @@ karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, sepa
           strip.text.y.left = element_text(angle = 0, hjust = 1),
           legend.position = c(0.97, 0),
           legend.justification = c(1, 0),
-          #legend.text = element_text(margin = margin(b = 0.5, unit = 'cm'))
           )
-  p
 }
 
 
@@ -211,7 +199,7 @@ karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, sepa
 #'   names are ignored, as well as any further columns.
 #' @param chrom The (autosomal) chromosomes to be included in the plot,
 #'   given as a subset of the integers 1, 2,..., 22.
-#' @param colors A vector of two colours (in any form recognisable by R). If only
+#' @param col A vector of two colours (in any form recognisable by R). If only
 #'   one colour is given it is recycled. If the vector is named, a colour legend
 #'   is included in the plot, using the names as labels.
 #' @param alpha A single numeric in `[0,1]` indicating colour transparency.
@@ -234,7 +222,7 @@ karyoHaploid = function(segments, chrom = 1:22, colorBy = NA, color = NULL, sepa
 #'
 #' 
 karyoDiploid = function(paternal, maternal, chrom = 1:22, 
-                         colors = c(paternal = "lightblue", maternal = "orange"),  
+                         col = c(paternal = "lightblue", maternal = "orange"),  
                          alpha = 1, bgcol = "gray95", title = NULL) {
   
   map = loadMap("decode19", chrom = chrom)
@@ -242,8 +230,8 @@ karyoDiploid = function(paternal, maternal, chrom = 1:22,
   seqnames = paste0("chr", chrom)
   genome = data.frame(chrom = factor(seqnames, levels = seqnames), Mb = chrlen)
   
-  paternal = prepare_segments(paternal, chrom = chrom, colorBy = NA)
-  maternal = prepare_segments(maternal, chrom = chrom, colorBy = NA)
+  paternal = prepare_segments(paternal, chrom = chrom, colBy = NA)
+  maternal = prepare_segments(maternal, chrom = chrom, colBy = NA)
   
   paternal$chrom = factor(paternal$chrom, levels = levels(genome$chrom))
   maternal$chrom = factor(maternal$chrom, levels = levels(genome$chrom))
@@ -252,11 +240,11 @@ karyoDiploid = function(paternal, maternal, chrom = 1:22,
   Nm = nrow(maternal)
    
   # Colours
-  colorlabels = names(colors) %||% c("paternal", "maternal")
-  colorlabels = factor(colorlabels, levels = colorlabels)
+  colourlabels = names(col) %||% c("paternal", "maternal")
+  colourlabels = factor(colourlabels, levels = colourlabels)
   
-  paternal$fill = rep_len(colorlabels[1], Np)
-  maternal$fill = rep_len(colorlabels[2], Nm)
+  paternal$fill = rep_len(colourlabels[1], Np)
+  maternal$fill = rep_len(colourlabels[2], Nm)
   
   p = ggplot() + 
     theme_void(base_size = 15) +  
@@ -283,7 +271,7 @@ karyoDiploid = function(paternal, maternal, chrom = 1:22,
                        col = "black", alpha = alpha)
   
   p = p + 
-    scale_fill_manual(values = colors, drop = FALSE) +
+    scale_fill_manual(values = col, drop = FALSE) +
     labs(fill = NULL)
       
   p
@@ -291,11 +279,13 @@ karyoDiploid = function(paternal, maternal, chrom = 1:22,
 
 # Prepare input 'segments' for plotting (extract and rename relevant columns,
 # merge adjacent segments)
-prepare_segments = function(segments, chrom = 1:22, colorBy = NA) {
+prepare_segments = function(segments, chrom = 1:22, colBy = NULL) {
   segments = as.data.frame(segments)
   
-  stopifnot(ncol(segments) >= 3, 
-            is.na(colorBy) || colorBy %in% names(segments))
+  if(ncol(segments) < 3)
+    stop2("Data frame `segments` must have at least 3 columns (chrom, start, end)")
+  if(!is.null(colBy) && !all(colBy %in% names(segments)))
+    stop2("Unknown column name: ", setdiff(colBy, names(segments)))
   
   # Numeric chrs
   chrNo = segments[,1] = sub("chr", "", sub("chrom", "", sub("chromosome", "", segments[,1])))
@@ -304,7 +294,12 @@ prepare_segments = function(segments, chrom = 1:22, colorBy = NA) {
   N = nrow(df)
   
   # Fill colours
-  df$fill = factor(if(!is.na(colorBy)) df[[colorBy]] else rep_len(1, N))
+  if(is.null(colBy))
+    fill = rep_len(1, N)
+  else
+    fill = apply(df[colBy], 1, paste, collapse = "-")
+  
+  df$fill = factor(fill)
   
   names(df)[1:3] = c("chrom", "start", "end")
   df = df[c("chrom", "start", "end", "fill")]

@@ -7,14 +7,12 @@
 karyoHaploid(
   segments,
   chrom = 1:22,
-  colorBy = NA,
-  color = NULL,
+  colBy = NULL,
+  col = NULL,
   separate = TRUE,
   alpha = 1,
   bgcol = "gray92",
-  title = NULL,
-  legendTitle = colorBy,
-  prefix = "chr"
+  title = NULL
 )
 }
 \arguments{
@@ -22,17 +20,18 @@ karyoHaploid(
 containing the segments to be shown on the karyogram. The first three
 columns must contain chromosome (with or without "chr" prefix), start
 position and stop position (in Mb). Any further columns are ignored, except
-possibly a column indicated by \code{colorBy}.}
+possibly a column indicated by \code{colBy}.}
 
-\item{colorBy}{The name of a single column of \code{segments}, to be used for
-colouring. If NA (default), all segments will have the same colour,
-controlled by the \code{color} parameter.}
+\item{chrom}{A vector indicating which chromosomes to include.}
 
-\item{color}{A single fill colour for all the segments, or (if \code{colorBy} is
-not NA) a named vector of colours. In the latter case, the names should
-include all entries in the \code{colorBy} column.}
+\item{colBy}{A character vector naming the columns to be used for
+colouring. If NULL (default), all segments have the same colour.}
 
-\item{separate}{A logical; relevant only if the \code{colorBy} column has more
+\item{col}{A single fill colour for all the segments, or (if \code{colBy} is
+used) a named vector of colours. In the latter case, the names should
+include all entries in the \code{colBy} column.}
+
+\item{separate}{A logical; relevant only if the \code{colBy} column has more
 than one level. If FALSE, all segments are drawn in full height. This may
 not be optimal if segments of different colours overlap. If TRUE the levels
 are drawn in separate bands on the chromosomes.}
@@ -56,21 +55,18 @@ Show chromosomal segments in a haploid karyogram
 segs = data.frame(chrom = c(1,4,5,5,10,10),
                   start = c(100,50,20,80,10,50),
                   end = c(120,100,25,100,70,120),
-                  IBD = c("cousin1","cousin2"))
-cols = c(cousin1 = "blue", cousin2 = "red")
+                  IBD = c("paternal","maternal"))
+cols = c(paternal = "blue", maternal = "red")
 
-karyoHaploid(segs, color = "cyan")
-karyoHaploid(segs, colorBy = "IBD", color = cols)
+karyoHaploid(segs, col = "cyan")
+karyoHaploid(segs, colBy = "IBD", col = cols)
 
 # Note difference if `separate = FALSE`
-karyoHaploid(segs, colorBy = "IBD", color = cols, separate = FALSE)
+karyoHaploid(segs, colBy = "IBD", col = cols, separate = FALSE)
 
-# To see the overlap now, you can reduce alpha:
-karyoHaploid(segs, colorBy = "IBD", color = cols, separate = FALSE, alpha = 0.7)
-              
-# Example showing simulated IBD segments of full siblings
-s = ibdsim(nuclearPed(2), N = 1, ids = 3:4)
-karyogram2(s[[1]])
+# Reduce alpha to see the overlaps:
+karyoHaploid(segs, colBy = "IBD", col = cols, separate = FALSE, alpha = 0.7)
+
 }
 
 }
