@@ -23,10 +23,39 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sort_dbl_C
+NumericVector sort_dbl_C(NumericVector x);
+RcppExport SEXP _ibdsim2_sort_dbl_C(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(sort_dbl_C(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sample_12_C
+double sample_12_C();
+RcppExport SEXP _ibdsim2_sample_12_C() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(sample_12_C());
+    return rcpp_result_gen;
+END_RCPP
+}
+// sample_int_C
+NumericVector sample_int_C(double n, double size);
+RcppExport SEXP _ibdsim2_sample_int_C(SEXP nSEXP, SEXP sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type size(sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_int_C(n, size));
+    return rcpp_result_gen;
+END_RCPP
+}
 // convert_pos_C
 NumericVector convert_pos_C(NumericVector pos, NumericVector mapFrom, NumericVector mapTo, double extValue);
 RcppExport SEXP _ibdsim2_convert_pos_C(SEXP posSEXP, SEXP mapFromSEXP, SEXP mapToSEXP, SEXP extValueSEXP) {
@@ -44,7 +73,10 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ibdsim2_recombine", (DL_FUNC) &_ibdsim2_recombine, 3},
-    {"_ibdsim2_sortC", (DL_FUNC) &_ibdsim2_sortC, 1},
+    {"_ibdsim2_sort_dbl_C", (DL_FUNC) &_ibdsim2_sort_dbl_C, 1},
+    {"_ibdsim2_sample_12_C", (DL_FUNC) &_ibdsim2_sample_12_C, 0},
+    {"_ibdsim2_sample_int_C", (DL_FUNC) &_ibdsim2_sample_int_C, 2},
+    {"_ibdsim2_convert_pos_C", (DL_FUNC) &_ibdsim2_convert_pos_C, 4},
     {NULL, NULL, 0}
 };
 

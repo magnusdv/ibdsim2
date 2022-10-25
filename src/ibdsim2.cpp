@@ -88,9 +88,32 @@ NumericMatrix recombine(NumericMatrix strand1, NumericMatrix strand2, NumericVec
 
 
 // [[Rcpp::export]]
+NumericVector sort_dbl_C(NumericVector x) {
+  NumericVector y(x);
   std::sort(y.begin(), y.end());
   return y;
-} // [[Rcpp::export]]
+} 
+
+
+// [[Rcpp::export]]
+double sample_12_C() {
+  double r = R::rnorm(0,1);
+  if(r < 0) {
+    return(1);
+  }
+  else {
+    return(2);
+  }
+}
+
+
+// [[Rcpp::export]]
+NumericVector sample_int_C(double n, double size) {
+  return ceiling(Rcpp::runif(size, 0, n));
+}
+
+
+// [[Rcpp::export]]
 NumericVector convert_pos_C(NumericVector pos, 
                             NumericVector mapFrom, 
                             NumericVector mapTo,

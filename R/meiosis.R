@@ -5,7 +5,7 @@ meiosis = function(parent, map, model = "chi", skipRecomb = FALSE) {
   if(is.null(map)) 
     return(parent$mat)
            
-  startStrand = sample.int(2, 1)
+  startStrand = .sampleInt(2,1) # random 1 or 2
 
   if (skipRecomb) # return random strand with no recombination
     return(parent[[startStrand]])
@@ -25,8 +25,8 @@ meiosis = function(parent, map, model = "chi", skipRecomb = FALSE) {
       if (nC == 0) 
         return(parent[[startStrand]])
       C_events = .sortDouble(runif(nC, min = 0, max = L.cM)) # potential crossover positions (N-1 intervals, uniformly distr given nC)
-      Cx.bundle = C_events[!as.logical((seq_len(nC) + sample.int(m + 1, 1)) %% (m + 1))]    # Cx events on 4 strand bundle: every (m+1)th
-      Cx = Cx.bundle[as.logical(sample.int(2, length(Cx.bundle), replace = TRUE) %% 2)]    # thinning. Each survive with prob=1/2
+      Cx.bundle = C_events[!as.logical((seq_len(nC) + .sampleInt(m + 1, 1)) %% (m + 1))]    # Cx events on 4 strand bundle: every (m+1)th
+      Cx = Cx.bundle[as.logical(.sampleInt(2, length(Cx.bundle)) %% 2)]    # thinning. Each survive with prob=1/2
   })
   
   cpos = .convertPos1(cM = Cx, map = map) # crossover positions

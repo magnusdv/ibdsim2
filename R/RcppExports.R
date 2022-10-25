@@ -5,6 +5,18 @@ recombine <- function(strand1, strand2, cross) {
     .Call(`_ibdsim2_recombine`, strand1, strand2, cross)
 }
 
+sort_dbl_C <- function(x) {
+    .Call(`_ibdsim2_sort_dbl_C`, x)
+}
+
+sample_12_C <- function() {
+    .Call(`_ibdsim2_sample_12_C`)
+}
+
+sample_int_C <- function(n, size) {
+    .Call(`_ibdsim2_sample_int_C`, n, size)
+}
+
 convert_pos_C <- function(pos, mapFrom, mapTo, extValue) {
     .Call(`_ibdsim2_convert_pos_C`, pos, mapFrom, mapTo, extValue)
 }

@@ -28,6 +28,14 @@ pos2allele = function(haplo, posvec) {
   haplo[indices, 2]
 }
 
+# Call Rcpp version of sample.int(, ... replace = TRUE)
+.sampleInt = function(n, size) {
+  if(n == 2 && size == 1)
+    sample_12_C()
+  else
+    sample_int_C(n, size)
+}
+
 .sortDouble = function(x) {
   len = length(x)
   if(len == 1) 
@@ -57,7 +65,9 @@ pos2allele = function(haplo, posvec) {
     }
     return(c(a,b,c))
   }
-  sortC(x) # [order(x, method = "shell")]
+  if(!is.numeric(x))
+    stop2("Sorting method expected a numerical vector")
+  sort_dbl_C(x) # [order(x, method = "shell")]
 }
 
 
