@@ -35,7 +35,7 @@
 #' zeroIBD(s, ids = cous)
 #'
 #' # Re-compute with nonzero threshold
-#' zeroIBD(s, ids = cous, threshold = 1, u)
+#' zeroIBD(s, ids = cous, threshold = 1, unit = "cm")
 #' zeroIBD(s, ids = cous, threshold = 1, unit = "mb")
 #'
 #' @export
