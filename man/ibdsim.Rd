@@ -51,9 +51,12 @@ A list of \code{N} objects of class \code{genomeSim}.
 
 A \code{genomeSim} object is essentially a numerical matrix describing the
 allele flow through the pedigree in a single simulated. Each row
-corresponds to a chromosomal segment. The first 4 columns describe the
-segment (chromosome, start, end, length), and are followed by two columns
-(paternal allele, maternal allele) for each of the \code{ids} individuals.
+corresponds to a chromosomal segment. The first 3 columns (chrom, startMB,
+endMB) describe the physical location of the segment. Next, the genetic
+coordinates (startCM, endCM), which are computed from \code{map} by averaging
+the male and female values. Then follow the allele columns, two for each
+individual in \code{ids}, suffixed by ":p" and ":m" signifying the paternal and
+maternal alleles, respectively.
 
 If \code{ids} has length 1, a column named "Aut" is added, whose entries are 1
 for autozygous segments and 0 otherwise.

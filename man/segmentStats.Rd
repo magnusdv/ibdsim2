@@ -4,7 +4,12 @@
 \alias{segmentStats}
 \title{Summary statistics for identified segments}
 \usage{
-segmentStats(x, quantiles = c(0.025, 0.5, 0.975), returnAll = FALSE)
+segmentStats(
+  x,
+  quantiles = c(0.025, 0.5, 0.975),
+  returnAll = FALSE,
+  unit = "mb"
+)
 }
 \arguments{
 \item{x}{A list of matrices produced with \code{\link[=findPattern]{findPattern()}}.}
@@ -13,6 +18,9 @@ segmentStats(x, quantiles = c(0.025, 0.5, 0.975), returnAll = FALSE)
 
 \item{returnAll}{A logical, by default FALSE. If TRUE, the output includes a
 vector \code{allSegs} containing the lengths of all segments in all simulations.}
+
+\item{unit}{Either "mb" (megabases) or "cm" (centiMorgan); the length unit
+for genomic segments.}
 }
 \value{
 A list containing a data frame \code{perSim}, a matrix \code{summary} and (if
@@ -40,7 +48,10 @@ sims = ibdsim(x, N = 2, map = uniformMap(M = 2), model = "haldane", seed = 1729)
 segs = findPattern(sims, pattern = list(carriers = 3:5))
 
 # Summarise
-segmentStats(segs)
+segmentStats(segs, unit = "mb")
+
+# The unit does not matter in this case (since the map is trivial)
+segmentStats(segs, unit = "cm")
 
 }
 \seealso{

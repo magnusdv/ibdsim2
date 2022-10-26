@@ -4,7 +4,7 @@
 \alias{findPattern}
 \title{Find specific IBD patterns}
 \usage{
-findPattern(sims, pattern, merge = TRUE, cutoff = 0)
+findPattern(sims, pattern, merge = TRUE, cutoff = 0, unit = "mb")
 }
 \arguments{
 \item{sims}{A \code{genomeSim} object, or a list of such. Typically made by
@@ -18,6 +18,8 @@ Default: TRUE.}
 
 \item{cutoff}{A non-negative number. Segments shorter than this are excluded
 from the output. Default: 0.}
+
+\item{unit}{The unit of \code{cutoff}: either "mb" or "cm".}
 }
 \value{
 A matrix (if \code{sims} is a single \code{genomeSim} object), or a list of

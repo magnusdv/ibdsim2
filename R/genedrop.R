@@ -5,10 +5,13 @@ genedrop = function(x, ids, map, model, skipRecomb, startData) {
     genedrop.singlechrom(x, ids, chrommap, model, skipRecomb, startData))
   
   res = do.call(rbind, sims)
-  colnames(res)[-(1:4)] = paste(rep(ids, each = 2), c("p", "m"), sep = ":")
+  
+  # Name allele columns (safely)
+  acols = paste(rep(ids, each = 2), c("p", "m"), sep = ":") 
+  colnames(res)[seq.int(to = ncol(res), along.with = acols)] = acols
   
   if(length(ids) < 3)
-    res = addStates(res)
+    res = addStates(res, acols = acols)
   
   structure(res, class = "genomeSim")
 }
@@ -22,11 +25,7 @@ genedrop.singlechrom = function(x, ids, chrommap, model, skipRecomb, startData) 
   chrom = attr(chrommap, "chrom")
   Xchrom = identical(chrom, "X")
   Xmale = Xchrom & x$SEX == 1
-  
   maplen = attr(chrommap, "mapLen") # length in cM
-  startMb = attr(chrommap, "physStart")
-  endMb = attr(chrommap, "physEnd")
-  
   skip = x$ID %in% skipRecomb
   
   h = startData %||% distributeFounderAlleles(x, Xchrom = Xchrom)
@@ -50,9 +49,14 @@ genedrop.singlechrom = function(x, ids, chrommap, model, skipRecomb, startData) 
   breaks = unlist(lapply(haplos, function(m) m[-1, 1]), use.names = FALSE)
   if(anyDuplicated.default(breaks))
     breaks = unique.default(breaks)
-  sta = c(startMb, .sortDouble(breaks))
   
-  # New, fast version
+  physStart = attr(chrommap, "physStart")
+  physEnd = attr(chrommap, "physEnd")
+  
+  sta = c(physStart, .sortDouble(breaks))
+  sto = c(sta[-1], physEnd)
+  
+  # Allele matrix (fast version)
   alleleMat = build_allelemat_C(sta, haplos)
   
   # Previous, slower:
@@ -60,8 +64,18 @@ genedrop.singlechrom = function(x, ids, chrommap, model, skipRecomb, startData) 
   # if (length(sta) == 1)      # since vapply simplifies if FUN.VALUE has length 1
   #   dim(alleleMat) = c(1, 2 * length(IDS))
   
-  sto = c(sta[-1], endMb)
-  cbind(chrom = if(Xchrom) 23L else chrom, start = sta, end = sto, length = sto - sta, alleleMat)
+  # Add columns with average CM positions
+  avmap = chrommap$female
+  if(!Xchrom) 
+    avmap$cM = (chrommap$male$cM + chrommap$female$cM)/2
+  startCM = .convertPos1(Mb = sta, map = avmap)
+  endCM = .convertPos1(Mb = sto, map = avmap)
+  
+  # Collect as matrix
+  cbind(chrom = if(Xchrom) 23L else chrom, 
+        startMB = sta, endMB = sto,
+        startCM = startCM, endCM = endCM,
+        alleleMat)
 }
 
 

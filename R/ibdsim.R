@@ -52,9 +52,12 @@
 #'
 #'   A `genomeSim` object is essentially a numerical matrix describing the
 #'   allele flow through the pedigree in a single simulated. Each row
-#'   corresponds to a chromosomal segment. The first 4 columns describe the
-#'   segment (chromosome, start, end, length), and are followed by two columns
-#'   (paternal allele, maternal allele) for each of the `ids` individuals.
+#'   corresponds to a chromosomal segment. The first 3 columns (chrom, startMB,
+#'   endMB) describe the physical location of the segment. Next, the genetic
+#'   coordinates (startCM, endCM), which are computed from `map` by averaging
+#'   the male and female values. Then follow the allele columns, two for each
+#'   individual in `ids`, suffixed by ":p" and ":m" signifying the paternal and
+#'   maternal alleles, respectively.
 #'
 #'   If `ids` has length 1, a column named "Aut" is added, whose entries are 1
 #'   for autozygous segments and 0 otherwise.
@@ -82,7 +85,7 @@
 #' hs = halfSibPed()
 #' sims = ibdsim(hs, N = 2, map = uniformMap(M = 1), seed = 10)
 #' sims
-#' 
+#'
 #' # Inspect the first simulation
 #' sims[[1]]
 #' haploDraw(hs, sims[[1]], pos = 2)

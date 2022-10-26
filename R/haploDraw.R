@@ -137,7 +137,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, pos = 1, cols = NULL,
   p = plot(x, labs = "", keep.par = TRUE, ...)
   
   # Chromosome length
-  L = sum(ibd[, 'length'])
+  L = sum(ibd[, 'endMB'] - ibd[, 'startMB'])
   
   # Height/width of ped symbols
   symh = p$boxh
@@ -176,20 +176,20 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, pos = 1, cols = NULL,
     if(isXmale[i]) { # draw maternal haplotype only
       matCol = paste0(id, ":m")
       segsMat = mergeSegments(ibd, by = matCol)
-      addRect(X, Y, width = W, height = H, sta = segsMat[, 'start']/L, col = cols[segsMat[, matCol]])
+      addRect(X, Y, width = W, height = H, sta = segsMat[, 'startMB']/L, col = cols[segsMat[, matCol]])
     }
     else {
       # Paternal haplotype
       patCol = paste0(id, ":p")
       segsPat = mergeSegments(ibd, by = patCol)
       addRect(X - SEP/2 - W/2, Y, width = W, height = H, 
-              sta = segsPat[, 'start']/L, col = cols[segsPat[, patCol]])
+              sta = segsPat[, 'startMB']/L, col = cols[segsPat[, patCol]])
   
       # Maternal haplotype
       matCol = paste0(id, ":m")
       segsMat = mergeSegments(ibd, by = matCol)
       addRect(X + SEP/2 + W/2, Y, width = W, height = H, 
-              sta = segsMat[, 'start']/L, col = cols[segsMat[, matCol]])
+              sta = segsMat[, 'startMB']/L, col = cols[segsMat[, matCol]])
     }
   }
 }

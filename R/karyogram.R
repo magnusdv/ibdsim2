@@ -174,7 +174,7 @@ karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL, separa
   ggplot() + 
     geom_rect(aes_(xmin = 0, xmax = ~Mb, ymin = 0, ymax = 1), 
               data = genome, fill = bgcol, col = "black") + 
-    geom_rect(aes_(xmin = ~start, xmax = ~end, ymin = ~ymin, ymax = ~ymax, 
+    geom_rect(aes_(xmin = ~startMB, xmax = ~endMB, ymin = ~ymin, ymax = ~ymax, 
                    fill = ~fill), data = segments, color = 1, alpha = alpha) +
     ggtitle(title) +
     facet_grid(chrom ~ ., switch = "y") + 
@@ -305,8 +305,8 @@ prepare_segments = function(segments, chrom = 1:22, colBy = NULL) {
   
   df$fill = factor(fill)
   
-  names(df)[1:3] = c("chrom", "start", "end")
-  df = df[c("chrom", "start", "end", "fill")]
+  names(df)[1:3] = c("chrom", "startMB", "endMB")
+  df = df[c("chrom", "startMB", "endMB", "fill")]
   
   # Early return if empty
   if(N == 0) 
@@ -314,15 +314,15 @@ prepare_segments = function(segments, chrom = 1:22, colBy = NULL) {
   
   # Sort
   if(N > 1)
-    df = df[order(as.numeric(df$chrom), df$start, df$end), , drop = FALSE]
+    df = df[order(as.numeric(df$chrom), df$startMB, df$endMB), , drop = FALSE]
   
-  if(max(df$end) > 250e3) {
-    df$start = df$start/1e6
-    df$end = df$end/1e6
+  if(max(df$endMB) > 250e3) {
+    df$startMB = df$startMB/1e6
+    df$endMB = df$endMB/1e6
     message("Converting positions to Mb by diving by 1e6")
-  } else if(max(df$end) > 250) {
-    df$start = df$start/1e3
-    df$end = df$end/1e3
+  } else if(max(df$endMB) > 250) {
+    df$startMB = df$startMB/1e3
+    df$endMB = df$endMB/1e3
     message("Converting positions to Mb by diving by 1000")
   }
   

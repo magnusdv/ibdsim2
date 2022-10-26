@@ -23,6 +23,7 @@
 #'   Default: TRUE.
 #' @param cutoff A non-negative number. Segments shorter than this are excluded
 #'   from the output. Default: 0.
+#' @param unit The unit of `cutoff`: either "mb" or "cm".
 #'
 #' @return A matrix (if `sims` is a single `genomeSim` object), or a list of
 #'   matrices.
@@ -45,7 +46,7 @@
 #' haploDraw(x, s1, margin = c(5,3,3,3))
 #'
 #' @export
-findPattern = function(sims, pattern, merge = TRUE, cutoff = 0) {
+findPattern = function(sims, pattern, merge = TRUE, cutoff = 0, unit = "mb") {
   
   if(single <- is.matrix(sims))
     sims = list(sims)
@@ -162,9 +163,11 @@ findPattern = function(sims, pattern, merge = TRUE, cutoff = 0) {
       s = mergeSegments(s, checkAdjacency = TRUE)
     
     # Apply length cutoff
-    if(cutoff > 0)
-      s = s[s[, 'length'] > cutoff, , drop = FALSE]
-    
+    if(cutoff > 0) {
+      len = switch(unit, mb = s[, 'endMB'] - s[, 'startMB'],
+                   cm = s[, 'endCM'] - s[, 'startCM'])
+      s = s[len >= cutoff, , drop = FALSE]
+    }
     # Result for this sim
     s
   })

@@ -8,6 +8,7 @@ plotSegmentDistribution(
   ...,
   type = c("autozygosity", "ibd1"),
   ids = NULL,
+  unit = "cm",
   labels = NULL,
   col = NULL,
   shape = 1,
@@ -20,8 +21,8 @@ plotSegmentDistribution(
 )
 }
 \arguments{
-\item{\dots}{One or several objects of class \code{genomeSimList}, typically created by
-\code{\link[=ibdsim]{ibdsim()}}. They can be entered separately or as a \code{list}.}
+\item{\dots}{One or several objects of class \code{genomeSimList}, typically
+created by \code{\link[=ibdsim]{ibdsim()}}. They can be entered separately or as a \code{list}.}
 
 \item{type}{A string indicating which segments should be plotted. Currently,
 the allowed entries are "autozygosity" and "ibd1".}
@@ -33,6 +34,8 @@ extracted from the inputs in \code{...}.
 Two other short-cuts are possible: If a single vector is given, it is
 repeated for all pedigrees. Finally, if \code{ids} is the word "leaves" then
 \code{pedtools::leaves()} is used to extract labels in each pedigree.}
+
+\item{unit}{Length unit; either "cm" (centiMorgan) or "mb" (megabases).}
 
 \item{labels}{An optional character vector of labels used in the legend. If
 NULL, the labels are taken from \code{names(...)}.}
@@ -50,8 +53,8 @@ NULL, the labels are taken from \code{names(...)}.}
 \item{legendInside}{A logical controlling the legend placement.}
 }
 \description{
-Visualise and compare count/length distributions of IBD segments. Two types are
-currently implemented: Segments of autozygosity (for a single person) and
+Visualise and compare count/length distributions of IBD segments. Two types
+are currently implemented: Segments of autozygosity (for a single person) and
 segments with (pairwise) IBD state 1.
 }
 \details{
@@ -101,7 +104,7 @@ x = addSon(halfSibPed(), 5)
 s = ibdsim(x, N = N, map = map)
 
 # Indicate the pairs explicitly this time.
-ids = list(HS = 4:5, HU = c(4,7), GR = c(1,7))
+ids = list(GR = c(2,7), HS = 4:5, HU = c(4,7))
 
 # List names are used as labels in the plot
 plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)

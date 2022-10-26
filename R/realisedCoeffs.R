@@ -32,7 +32,9 @@
 #'
 #' @param sims A list of genome simulations, as output by [ibdsim()].
 #' @param id,ids A vector with one or two ID labels.
-#'
+#' @param unit Either "mb" (megabases) or "cm" (centiMorgan); the length unit
+#'   for genomic segments. Default is "cm", which normally gives lower variance.
+#'   
 #' @examples
 #'
 #' # Realised IBD coefficients between full siblings
@@ -41,7 +43,7 @@
 #' realisedKappa(s, ids = 3:4)
 #'
 #' ###########
-#' 
+#'
 #' # Realised inbreeding coefficients, child of first cousins
 #' x = cousinPed(1, child = TRUE)
 #' s = ibdsim(x, N = 2) # increase N
@@ -51,12 +53,12 @@
 #' realisedKinship(s, ids = parents(x, 9))
 #'
 #' ###########
-#' 
+#'
 #' # Realised identity coefficients after full sib mating
 #' x = fullSibMating(1)
 #' s = ibdsim(x, N = 2) # increase N
 #' realisedIdentity(s, ids = 5:6)
-#' 
+#'
 #' @name realised
 NULL
 
@@ -64,7 +66,7 @@ NULL
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedInbreeding = function(sims, id = NULL) {
+realisedInbreeding = function(sims, id = NULL, unit = "cm") {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -81,6 +83,10 @@ realisedInbreeding = function(sims, id = NULL) {
   if(!is.null(dim(sims)))
     sims = list(sims)
   
+  # Names of start/end columns
+  startCol = switch(unit, mb = "startMB", cm = "startCM")
+  endCol = switch(unit, mb = "endMB", cm = "endCM")
+  
   # Summarise each simulation
   resList = lapply(sims, function(s) {
     
@@ -92,23 +98,23 @@ realisedInbreeding = function(sims, id = NULL) {
     # Which segments are autozygous
     isAut = as.logical(s[, "Aut"])
     
-    # Summary stats on autoz segs
-    segLen = s[isAut, 'length']
-    nSeg = length(segLen)
-    totLen = sum(segLen)
+    # Summary stats on autozygous segments
+    len = s[isAut, endCol] - s[isAut, startCol]
+    nSeg = length(len)
+    totLen = sum(len)
     
     c(nSeg = nSeg, 
       meanLen = ifelse(nSeg == 0, 0, totLen/nSeg), 
       totLen = totLen, 
-      maxLen = ifelse(nSeg == 0, 0, max(segLen)), 
-      minLen = ifelse(nSeg == 0, 0, min(segLen)))
+      maxLen = ifelse(nSeg == 0, 0, max(len)), 
+      minLen = ifelse(nSeg == 0, 0, min(len)))
   })
   
   # Bind row-wise
   resDf = as.data.frame(do.call(rbind, resList), make.names = FALSE)
   
   # Total genome length (assume same for all!)
-  L = sum(sims[[1]][, 'length'])
+  L = sum(sims[[1]][, endCol] - sims[[1]][, startCol])
   
   # Add realised f
   resDf$fReal = fr = resDf$totLen/L
@@ -120,7 +126,7 @@ realisedInbreeding = function(sims, id = NULL) {
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedKinship = function(sims, ids = NULL) {
+realisedKinship = function(sims, ids = NULL, unit = "cm") {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -137,6 +143,11 @@ realisedKinship = function(sims, ids = NULL) {
   if(!is.list(sims))
     sims = list(sims)
   
+  # Names of start/end columns
+  startCol = switch(unit, mb = "startMB", cm = "startCM")
+  endCol = switch(unit, mb = "endMB", cm = "endCM")
+  
+  # Summarise each simulation
   resList = vapply(sims, function(s) {
     
     if(!"Sigma" %in% colnames(s)) {
@@ -144,7 +155,7 @@ realisedKinship = function(sims, ids = NULL) {
       s = mergeSegments(s0, by = "Sigma")
     }
     
-    len = s[, 'length']  
+    len = s[, endCol] - s[, startCol]
     jacq = s[, 'Sigma']  
     
     # Coefficients in the relation phi = weights * jacq
@@ -155,7 +166,7 @@ realisedKinship = function(sims, ids = NULL) {
   }, FUN.VALUE = numeric(1))
   
   # Total genome length (assume same for all!)
-  L = sum(sims[[1]][, 'length'])
+  L = sum(sims[[1]][, endCol] - sims[[1]][, startCol])
   
   resVec = unlist(resList)/L
   
@@ -166,7 +177,7 @@ realisedKinship = function(sims, ids = NULL) {
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedKappa = function(sims, ids = NULL) {
+realisedKappa = function(sims, ids = NULL, unit = "cm") {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -183,6 +194,10 @@ realisedKappa = function(sims, ids = NULL) {
   if(!is.list(sims))
     sims = list(sims)
   
+  # Names of start/end columns
+  startCol = switch(unit, mb = "startMB", cm = "startCM")
+  endCol = switch(unit, mb = "endMB", cm = "endCM")
+  
   resList = lapply(sims, function(s) {
     
     if(!"IBD" %in% colnames(s)) {
@@ -190,7 +205,7 @@ realisedKappa = function(sims, ids = NULL) {
       s = mergeSegments(s0, by = "IBD")
     }
     
-    len = s[, 'length']  
+    len = s[, endCol] - s[, startCol]
     ibd = s[, 'IBD']  
     
     c(ibd0 = sum(len[ibd == 0]), ibd1 = sum(len[ibd == 1]), ibd2 = sum(len[ibd == 2]),
@@ -201,7 +216,7 @@ realisedKappa = function(sims, ids = NULL) {
   resMat = do.call(rbind, resList)
   
   # Total genome length (assume same for all!)
-  L = sum(sims[[1]][, 'length'])
+  L = sum(sims[[1]][, endCol] - sims[[1]][, startCol])
   
   resDf = data.frame(k0 = resMat[,1]/L, 
                      k1 = resMat[,2]/L, 
@@ -217,7 +232,7 @@ realisedKappa = function(sims, ids = NULL) {
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedIdentity = function(sims, ids = NULL) {
+realisedIdentity = function(sims, ids = NULL, unit = "cm") {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -234,6 +249,10 @@ realisedIdentity = function(sims, ids = NULL) {
   if(!is.list(sims))
     sims = list(sims)
   
+  # Names of start/end columns
+  startCol = switch(unit, mb = "startMB", cm = "startCM")
+  endCol = switch(unit, mb = "endMB", cm = "endCM")
+  
   resList = lapply(sims, function(s) {
     
     if(!"Sigma" %in% colnames(s)) {
@@ -241,7 +260,7 @@ realisedIdentity = function(sims, ids = NULL) {
       s = mergeSegments(s0, by = "Sigma")
     }
     
-    len = s[, 'length']  
+    len = s[, endCol] - s[, startCol]
     j = s[, 'Sigma']  
     
     c(D1 = sum(len[j == 1]), 
@@ -268,7 +287,7 @@ realisedIdentity = function(sims, ids = NULL) {
   resDf = as.data.frame(do.call(rbind, resList))
   
   # Total genome length (assume same for all!)
-  L = sum(sims[[1]][, 'length'])
+  L = sum(sims[[1]][, endCol] - sims[[1]][, startCol])
   
   resDf[1:9] = resDf[1:9]/L
   resDf[10:18] = lapply(resDf[10:18], as.integer)
