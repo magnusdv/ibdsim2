@@ -73,8 +73,10 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
     if(is.character(by) && all(by %in% colnames(x))) { # Interpret as column names
       if(byLen == 1)
         byEq = x[-1, by] == x[-k, by]
-      else
-        byEq = rowSums(x[-1, by, drop = FALSE] == x[-k, by, drop = FALSE]) == byLen
+      else {
+        chck = x[-1, by, drop = FALSE] == x[-k, by, drop = FALSE]
+        byEq = .rowSums(chck, m = k - 1, n = byLen) == byLen
+      }
     }
     else if(byLen == k && (is.numeric(by) || is.character(by))) {
       byEq = by[-1] == by[-k]
