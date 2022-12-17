@@ -23,8 +23,8 @@
 #'   pedigree symbol widths.
 #' @param dist The distance between pedigree symbols and the closest haplotype,
 #'   measured in pedigree symbol widths.
-#' @param ... Arguments passed on to `plot.ped()`. In particular, if the
-#'   haplotypes appear cropped it usually helps to increase the `margins`.
+#' @param margins Plot margins, passed on to `plot.ped()`.
+#' @param ... Further arguments passed on to `plot.ped()`.
 #'
 #' @return None.
 #'
@@ -36,11 +36,17 @@
 #' ###############################
 #'
 #' x = nuclearPed(2)
-#' s = ibdsim(x, N = 1, map = uniformMap(M = 1), seed = 4276)
+#' map = uniformMap(M = 1)
+#' s = ibdsim(x, N = 1, map = map, seed = 4276)
 #' s[[1]]
 #'
-#' haploDraw(x, s[[1]], pos = c(2,4,2,4), cols = c(3,7,2,4),
-#'           margins = c(2, 5, 5, 5), cex = 1.2)
+#' haploDraw(x, s)
+#' 
+#' # Nicer colours and position of haplotypes
+#' haploDraw(x, s, cols = c(3,7,2,4), pos = c(2,4,2,4))
+#'
+#' # Standard plot options apply
+#' haploDraw(x, s, margins = 3, cex = 1.5)
 #'
 #'
 #' ###########################
@@ -48,13 +54,12 @@
 #' ###########################
 #'
 #' x = halfCousinPed(0, child = TRUE)
-#' s = ibdsim(x, N = 1, map = uniformMap(M = 1),
-#'            skipRecomb = spouses(x, 2), seed = 19499)
+#' map = uniformMap(M = 1)
+#' s = ibdsim(x, N = 1, map = map, skipRecomb = c(1,3), seed = 19499)
 #' s[[1]]
 #'
 #' # Grey colour (8) for irrelevant founder alleles
-#' haploDraw(x, s[[1]], pos = c(0,1,0,2,4,4),
-#'           cols = c(8,8,3,7,8,8), margin = c(2, 2, 2, 2))
+#' haploDraw(x, s, pos = c(0,1,0,2,4,4), cols = c(8,8,3,7,8,8))
 #'
 #'
 #' ###############################
@@ -65,22 +70,22 @@
 #' s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 123)
 #' s[[1]]
 #'
-#' haploDraw(x, s[[1]], pos = c(2,4,2,4), margins = c(2, 5, 5, 5), cex = 1.2)
-#'
+#' haploDraw(x, s[[1]], pos = c(2,4,2,4))
 #'
 #' # Restore graphics parameters
 #' par(op)
 #'
 #' @importFrom graphics rect plot
 #' @export
-haploDraw = function(x, ibd, chrom = NULL, ids = NULL, pos = 1, cols = NULL, 
-                     height = 4, width = 0.75, sep = 0.75, dist = 1, ...) {
+haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, pos = 1, cols = NULL, 
+                     height = 4, width = 0.75, sep = 0.75, dist = 1, margins = 3, ...) {
   
   if(!is.ped(x))
     stop2("Argument `x` must be a `ped` object")
   
   labs = labels(x)
   idsIBD = extractIds(ibd)
+  N = pedsize(x)
   
   if(is.null(ids))
     ids = idsIBD
@@ -103,7 +108,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, pos = 1, cols = NULL,
     stop2("ID not found in `pos` vector: ", setdiff(ids, names(pos)))
   
   # Extend `pos` to all individuals
-  allpos = rep(0L, pedsize(x))
+  allpos = rep(0L, N)
   names(allpos) = labs
   allpos[ids] = pos[ids]
   
@@ -136,71 +141,90 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, pos = 1, cols = NULL,
   if(is.null(cols))
     cols = seq_len(2*length(founders(x)))
   
-  # Basic pedigree plot
-  p = plot(x, labs = "", keep.par = TRUE, ...)
+  # Names of start/end columns
+  startCol = switch(unit, mb = "startMB", cm = "startCM")
+  endCol = switch(unit, mb = "endMB", cm = "endCM")
   
   # Chromosome length
-  L = sum(ibd[, 'endMB'] - ibd[, 'startMB'])
+  if(is.null(L))
+    L = sum(ibd[, endCol] - ibd[, startCol])
+  
+  # Get pedigree layout and scaling
+  p = plot(x, labs = "", keep.par = TRUE, margins = margins, draw = FALSE, ...)
+  xpos = p$alignment$x
+  ypos = p$alignment$y
   
   # Height/width of ped symbols
-  symh = p$boxh
-  symw = p$boxw
+  symh = p$scaling$boxh
+  symw = p$scaling$boxw
 
   H = height * symh
   W = width  * symw
   SEP = sep * symw
   DIST = dist * symw
   
-  # Loop through all individuals in pedigree
-  for(i in 1:pedsize(x)) {
+  # Center of haplo-pair
+  X = Y = rep(NA, N)
+  for(i in seq_len(N)) {
     if(allpos[i] == 0) 
       next
-    
-    # Center of haplo-pair
-    if(allpos[i] == 1) {
-      X = p$x[i]
-      Y = p$y[i] + symh + DIST + H/2
-    }
-    else if(allpos[i] == 2) {
-      X = p$x[i] - symw/2 - DIST - W - SEP/2
-      Y = p$y[i] + symh/2
-    }
-    else if(allpos[i] == 3) {
-      X = p$x[i]
-      Y = p$y[i] - DIST - H/2
-    }
-    else if(allpos[i] == 4) {
-      X = p$x[i] + symw/2 + DIST + W + SEP/2
-      Y = p$y[i] + symh/2
-    }
-    
+    switch(allpos[i], { # 1
+      X[i] = xpos[i]
+      Y[i] = ypos[i] + symh + DIST + H/2
+    }, { #2
+      X[i] = xpos[i] - symw/2 - DIST - W - SEP/2
+      Y[i] = ypos[i] + symh/2
+    }, { #3
+      X[i] = xpos[i]
+      Y[i] = ypos[i] - DIST - H/2
+    }, { #4
+      X[i] = xpos[i] + symw/2 + DIST + W + SEP/2
+      Y[i] = ypos[i] + symh/2
+    })
+  }
+  
+  # Possibly extend plot limits (user coords)
+  usr = p$scaling$usr
+  xlim = c(min(usr[1:2], X - SEP/2 - W, na.rm = T),
+           max(usr[1:2], X + SEP/2 + W, na.rm = TRUE))
+  ylim = c(min(usr[3:4], Y - H/2, na.rm = TRUE),
+           max(usr[3:4], Y + H/2, na.rm = TRUE))
+
+  pedtools::drawPed(p$alignment, p$annotation, margins = margins, 
+                    xlim = xlim, ylim = ylim, keep.par = TRUE, ...)
+  
+  # Draw rectangles!
+  for(i in seq_len(N)) {  
     id = labs[i]
-    
+    X
     if(isXmale[i]) { # draw maternal haplotype only
       matCol = paste0(id, ":m")
       segsMat = mergeSegments(ibd, by = matCol)
-      addRect(X, Y, width = W, height = H, sta = segsMat[, 'startMB']/L, col = cols[segsMat[, matCol]])
+      addRect(X[i], Y[i], width = W, height = H, 
+              sta = segsMat[, startCol]/L, col = cols[segsMat[, matCol]])
     }
     else {
       # Paternal haplotype
       patCol = paste0(id, ":p")
       segsPat = mergeSegments(ibd, by = patCol)
-      addRect(X - SEP/2 - W/2, Y, width = W, height = H, 
-              sta = segsPat[, 'startMB']/L, col = cols[segsPat[, patCol]])
+      addRect(X[i] - SEP/2 - W/2, Y[i], width = W, height = H, 
+              sta = segsPat[, startCol]/L, col = cols[segsPat[, patCol]])
   
       # Maternal haplotype
       matCol = paste0(id, ":m")
       segsMat = mergeSegments(ibd, by = matCol)
-      addRect(X + SEP/2 + W/2, Y, width = W, height = H, 
-              sta = segsMat[, 'startMB']/L, col = cols[segsMat[, matCol]])
+      addRect(X[i] + SEP/2 + W/2, Y[i], width = W, height = H, 
+              sta = segsMat[, startCol]/L, col = cols[segsMat[, matCol]])
     }
   }
+  invisible(p)
 }
 
 
 # Function for drawing a single haplotype
 addRect = function(xmid, ymid, width, height, sta = 0, col = seq_along(sta)+1) {
   stopifnot(length(col) == length(sta))
+  
   bottom = ymid - height/2
   sto = c(sta[-1], 1)
   for(i in seq_along(sta))

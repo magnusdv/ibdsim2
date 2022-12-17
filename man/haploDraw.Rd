@@ -54,8 +54,9 @@ pedigree symbol widths.}
 \item{dist}{The distance between pedigree symbols and the closest haplotype,
 measured in pedigree symbol widths.}
 
-\item{...}{Arguments passed on to \code{plot.ped()}. In particular, if the
-haplotypes appear cropped it usually helps to increase the \code{margins}.}
+\item{margins}{Plot margins, passed on to \code{plot.ped()}.}
+
+\item{...}{Further arguments passed on to \code{plot.ped()}.}
 }
 \value{
 None.
@@ -72,11 +73,17 @@ op = par(no.readonly = TRUE)
 ###############################
 
 x = nuclearPed(2)
-s = ibdsim(x, N = 1, map = uniformMap(M = 1), seed = 4276)
+map = uniformMap(M = 1)
+s = ibdsim(x, N = 1, map = map, seed = 4276)
 s[[1]]
 
-haploDraw(x, s[[1]], pos = c(2,4,2,4), cols = c(3,7,2,4),
-          margins = c(2, 5, 5, 5), cex = 1.2)
+haploDraw(x, s)
+
+# Nicer colours and position of haplotypes
+haploDraw(x, s, cols = c(3,7,2,4), pos = c(2,4,2,4))
+
+# Standard plot options apply
+haploDraw(x, s, margins = 3, cex = 1.5)
 
 
 ###########################
@@ -84,13 +91,12 @@ haploDraw(x, s[[1]], pos = c(2,4,2,4), cols = c(3,7,2,4),
 ###########################
 
 x = halfCousinPed(0, child = TRUE)
-s = ibdsim(x, N = 1, map = uniformMap(M = 1),
-           skipRecomb = spouses(x, 2), seed = 19499)
+map = uniformMap(M = 1)
+s = ibdsim(x, N = 1, map = map, skipRecomb = c(1,3), seed = 19499)
 s[[1]]
 
 # Grey colour (8) for irrelevant founder alleles
-haploDraw(x, s[[1]], pos = c(0,1,0,2,4,4),
-          cols = c(8,8,3,7,8,8), margin = c(2, 2, 2, 2))
+haploDraw(x, s, pos = c(0,1,0,2,4,4), cols = c(8,8,3,7,8,8))
 
 
 ###############################
@@ -101,8 +107,7 @@ x = nuclearPed(2, sex = 2:1)
 s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 123)
 s[[1]]
 
-haploDraw(x, s[[1]], pos = c(2,4,2,4), margins = c(2, 5, 5, 5), cex = 1.2)
-
+haploDraw(x, s[[1]], pos = c(2,4,2,4))
 
 # Restore graphics parameters
 par(op)
