@@ -34,6 +34,51 @@ alleleFlow = function(x, ids, addState = TRUE) {
 }
 
 
+stackIntervals = function(start, end, chrom = NULL, sort = TRUE) {
+  
+  n = length(start)
+  if(n < 2)
+    return(rep_len(1, n))
+  
+  lay = integer(n)
+  
+  if(!is.null(chrom)) {
+    for(chr in unique.default(chrom)) {
+      idx = chrom == chr
+      lay[idx] = stackIntervals(start = start[idx], end = end[idx], sort = sort)
+    }
+    return(lay)
+  }
+    
+  if(any(start > end))
+    stop2("Inverted segment")
+  
+  if(sort) {
+    ord = order(start, -end, method = "shell")
+    start = start[ord]
+    end = end[ord]
+  }
+  
+  # Current end of each layer
+  layerEnds = numeric(n) # theoretical max
+  layerEnds[1] = end[1]
+  
+  lay[1] = 1
+  for (k in seq.int(2, n)) {
+    for(i in 1:n) {
+      if(layerEnds[i] < start[k]) {
+        lay[k] = i
+        layerEnds[i] = end[k]
+        break
+      }
+    }
+  }
+  
+  if(sort)
+    lay = lay[order(ord, method = "shell")]
+  lay
+}
+
 groupOverlaps = function(x) { # assumes sorted on chrom, start, end
   
   # Storage vector for group number and group size
