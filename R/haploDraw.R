@@ -9,6 +9,9 @@
 #'   chromosomes.
 #' @param ids A vector indicating for which pedigree members haplotypes should
 #'   be drawn. If NULL (default), all individuals in `ibd` are included.
+#' @param unit Either "mb" (default) or "cm".
+#' @param L A positive number: the chromosome length. By default derived from
+#'   `ibd`.
 #' @param pos A vector recycled to `pedsize(x)`, indicating where haplotypes
 #'   should be drawn relative to the pedigree symbols: 0 = no haplotypes; 1 =
 #'   below; 2 = left; 3 = above; 4 = right. By default, all are placed below.

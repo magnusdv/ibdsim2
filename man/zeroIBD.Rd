@@ -46,7 +46,8 @@ s = ibdsim(x, N = 10)
 # Probability of zero ibd segments. (By default all segs are used)
 zeroIBD(s, ids = cous)
 
-# Re-compute with positive threshold
-zeroIBD(s, ids = cous, threshold = 1)
+# Re-compute with nonzero threshold
+zeroIBD(s, ids = cous, threshold = 1, unit = "cm")
+zeroIBD(s, ids = cous, threshold = 1, unit = "mb")
 
 }

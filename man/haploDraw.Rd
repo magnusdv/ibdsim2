@@ -9,12 +9,15 @@ haploDraw(
   ibd,
   chrom = NULL,
   ids = NULL,
+  unit = "mb",
+  L = NULL,
   pos = 1,
   cols = NULL,
   height = 4,
   width = 0.75,
   sep = 0.75,
   dist = 1,
+  margins = 3,
   ...
 )
 }
@@ -28,6 +31,11 @@ chromosomes.}
 
 \item{ids}{A vector indicating for which pedigree members haplotypes should
 be drawn. If NULL (default), all individuals in \code{ibd} are included.}
+
+\item{unit}{Either "mb" (default) or "cm".}
+
+\item{L}{A positive number: the chromosome length. By default derived from
+\code{ibd}.}
 
 \item{pos}{A vector recycled to \code{pedsize(x)}, indicating where haplotypes
 should be drawn relative to the pedigree symbols: 0 = no haplotypes; 1 =
