@@ -78,7 +78,7 @@
 #' @importFrom graphics rect plot
 #' @export
 haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, pos = 1, cols = NULL, 
-                     height = 4, width = 0.75, sep = 0.75, dist = 1, margins = 3, ...) {
+                     height = 4, width = 0.75, sep = 0.75, dist = 1, margins = 1, ...) {
   
   if(!is.ped(x))
     stop2("Argument `x` must be a `ped` object")
@@ -195,8 +195,10 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, po
   
   # Draw rectangles!
   for(i in seq_len(N)) {  
+    if(is.na(X[i]))
+      next
+
     id = labs[i]
-    X
     if(isXmale[i]) { # draw maternal haplotype only
       matCol = paste0(id, ":m")
       segsMat = mergeSegments(ibd, by = matCol)

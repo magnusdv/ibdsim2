@@ -17,7 +17,7 @@ haploDraw(
   width = 0.75,
   sep = 0.75,
   dist = 1,
-  margins = 3,
+  margins = 1,
   ...
 )
 }
