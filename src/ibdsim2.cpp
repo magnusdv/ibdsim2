@@ -144,11 +144,16 @@ NumericVector convert_pos_C(NumericVector pos,
       
       // Rprintf("\nidx = %d. mapto[idx+1] = %f. mapto[idx] = %f", idx, mapTo[idx + 1], mapTo[idx]);
       
-      // Rate of change
-      rate = (mapTo[idx + 1] - mapTo[idx]) / (mapFrom[idx + 1] - mapFrom[idx]);
-      
-      // Extrapolate
-      res[i] = mapTo[idx] + (src - mapFrom[idx]) * rate;
+      if(src == mapFrom[idx]) {
+        res[i] = mapTo[idx];
+      }
+      else {
+        // Rate of change
+        rate = (mapTo[idx + 1] - mapTo[idx]) / (mapFrom[idx + 1] - mapFrom[idx]);
+        
+        // Extrapolate
+        res[i] = mapTo[idx] + (src - mapFrom[idx]) * rate;
+      }
     }
   }
   return res;

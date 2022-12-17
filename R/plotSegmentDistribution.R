@@ -1,7 +1,7 @@
 #' Scatter plots of IBD segment distributions
 #'
-#' Visualise and compare count/length distributions of IBD segments. Two types are
-#' currently implemented: Segments of autozygosity (for a single person) and
+#' Visualise and compare count/length distributions of IBD segments. Two types
+#' are currently implemented: Segments of autozygosity (for a single person) and
 #' segments with (pairwise) IBD state 1.
 #'
 #' This function takes as input one or several complete outputs from the
@@ -12,8 +12,8 @@
 #' theoretical/pedigree-based values: either inbreeding coefficients (if `type =
 #' "autozygosity"`) or \eqn{\kappa_1} (if `type = "ibd1"`).
 #'
-#' @param \dots One or several objects of class `genomeSimList`, typically created by
-#'   [ibdsim()]. They can be entered separately or as a `list`.
+#' @param \dots One or several objects of class `genomeSimList`, typically
+#'   created by [ibdsim()]. They can be entered separately or as a `list`.
 #' @param type A string indicating which segments should be plotted. Currently,
 #'   the allowed entries are "autozygosity" and "ibd1".
 #' @param ids A list of the same length as `...`, where each entry contains one
@@ -25,6 +25,7 @@
 #'   `pedtools::leaves()` is used to extract labels in each pedigree.
 #' @param labels An optional character vector of labels used in the legend. If
 #'   NULL, the labels are taken from `names(...)`.
+#' @param unit Length unit; either "cm" (centiMorgan) or "mb" (megabases).
 #' @param col An optional colour vector of the same length as `...`.
 #' @param shape A vector with point shapes, of the same length as `...`.
 #' @param alpha A transparency parameter for the scatter points.
@@ -33,16 +34,16 @@
 #' @param title,xlab,ylab Title and axis labels.
 #'
 #' @examples
-#' 
+#'
 #' # Simulation parameters used in the below examples.
 #' map = uniformMap(M = 10)   # recombination map
 #' N = 5                      # number of sims
-#' 
+#'
 #' # For more realistic results, replace with e.g.:
 #' # map = loadMap("decode19")
 #' # N = 1000
-#' 
-#' 
+#'
+#'
 #' #################################################################
 #' # EXAMPLE 1
 #' # Comparison of IBD segment distributions
@@ -71,7 +72,7 @@
 #' s = ibdsim(x, N = N, map = map)
 #'
 #' # Indicate the pairs explicitly this time.
-#' ids = list(HS = 4:5, HU = c(4,7), GR = c(1,7))
+#' ids = list(GR = c(2,7), HS = 4:5, HU = c(4,7))
 #'
 #' # List names are used as labels in the plot
 #' plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
@@ -104,7 +105,7 @@
 #'
 #' @export
 plotSegmentDistribution = function(..., type = c("autozygosity", "ibd1"), 
-                                   ids = NULL, labels = NULL, col = NULL, 
+                                   ids = NULL, unit = "cm", labels = NULL, col = NULL, 
                                    shape = 1, alpha = 1, ellipses = TRUE, 
                                    title = NULL, xlab = NULL, ylab = NULL,
                                    legendInside = TRUE) {
@@ -162,19 +163,19 @@ plotSegmentDistribution = function(..., type = c("autozygosity", "ibd1"),
   col = if(is.null(col)) (1 + 1:N) else rep(col, length.out = N)
   shape = rep(shape, N)
   xlab = xlab %||% "Number of segments"
-  ylab = ylab %||% "Average length"
+  ylab = ylab %||% sprintf("Average length (%s)", unit) 
   
   PLOTFUN = switch(match.arg(type), 
                    autozygosity = plotSegmentDistribution.autoz, 
                    ibd1 = plotSegmentDistribution.ibd1)
   
-  PLOTFUN(sims, ids, col = col, shape = shape, alpha = alpha, ellipses = ellipses, 
+  PLOTFUN(sims, ids, unit = unit, col = col, shape = shape, alpha = alpha, ellipses = ellipses, 
           title = title, xlab = xlab, ylab = ylab, legendInside = legendInside)
 }
   
 
 #' @importFrom ribd inbreeding 
-plotSegmentDistribution.autoz = function(sims, ids, col = NULL, shape = 1, alpha = 1, ellipses = TRUE, 
+plotSegmentDistribution.autoz = function(sims, ids, unit, col = NULL, shape = 1, alpha = 1, ellipses = TRUE, 
                                          title = NULL, xlab = NULL, ylab = NULL, legendInside = TRUE) {
   
   N = length(sims)
@@ -187,7 +188,7 @@ plotSegmentDistribution.autoz = function(sims, ids, col = NULL, shape = 1, alpha
   plotDatList = lapply(1:N, function(i) {
     s = sims[[i]]
     id = ids[[i]]
-    real = realisedInbreeding(s, id = id)$perSimulation
+    real = realisedInbreeding(s, id = id, unit = unit)$perSimulation
     cbind(real[c('nSeg', 'meanLen')], relation = labs[i])
   })
   
@@ -198,7 +199,7 @@ plotSegmentDistribution.autoz = function(sims, ids, col = NULL, shape = 1, alpha
   fPed = sapply(1:N, function(i) inbreeding(attr(sims[[i]], "pedigree"), ids = ids[[i]]))
   
   expect.args = list(values = fPed, 
-                     physRange = attr(sims[[1]], "physRange"),
+                     physRange = .getLen(sims[[1]], unit),
                      label = expression(Expected~italic(f)))
   
   # Create the plot
@@ -209,7 +210,7 @@ plotSegmentDistribution.autoz = function(sims, ids, col = NULL, shape = 1, alpha
 
 
 #' @importFrom ribd kinship
-plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha = 1, ellipses = TRUE, 
+plotSegmentDistribution.ibd1 = function(sims, ids, unit, col = NULL, shape = 1, alpha = 1, ellipses = TRUE, 
                                         title = NULL, xlab = NULL, ylab = NULL, legendInside = TRUE) {
   
   N = length(sims)
@@ -223,12 +224,12 @@ plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha 
   plotDatList = lapply(1:N, function(i) {
     s = sims[[i]]
     ids = ids[[i]]
-    real = realisedKappa(s, ids = ids)$perSimulation
+    real = realisedKappa(s, ids = ids, unit = unit)$perSimulation
     
     if(any(real$nSeg2 > 0)) 
       message("Warning: Simulation list ", i, " includes IBD = 2 segments. Expected 'kappa_1 curve' will be wrong!")
     
-    L = attr(s, "physRange")
+    L = .getLen(s, unit)
     nSeg = real$nSeg1
     meanLen = ifelse(nSeg > 0, real$k1 * L / nSeg, 0)
     data.frame(nSeg = nSeg,  meanLen = meanLen, relation = labs[i])
@@ -242,7 +243,7 @@ plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha 
     4 * kinship(attr(sims[[i]], "pedigree"), as.character(ids[[i]])))
   
   expect.args = list(values = kappa1, 
-                     physRange = attr(sims[[1]], "physRange"),
+                     physRange = .getLen(sims[[1]], unit),
                      label = expression(Expected~kappa[1]))
   
   # Create the plot
@@ -302,3 +303,13 @@ plotSegmentDistribution.ibd1 = function(sims, ids, col = NULL, shape = 1, alpha 
   g
 }
 
+.getLen = function(s, unit) {
+  if(unit == "mb")
+    return(attr(s, "physRange"))
+  
+  mapl = attr(s, "mapLen")
+  if(isXsim(s))
+    mapl[["female"]]
+  else 
+    mean(mapl)
+}

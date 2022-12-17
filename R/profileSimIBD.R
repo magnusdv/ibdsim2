@@ -98,7 +98,7 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL,
     stop2("Chromosome missing from `ibdpattern`: ", setdiff(mchr, achr))
   
   # Allele columns
-  matcols = 4 + seq_along(ids)*2L 
+  matcols = 5 + seq_along(ids)*2L 
   patcols = matcols - 1L           
   
   # Number of founder alleles (i.e,. "different colours")
@@ -112,7 +112,7 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL,
     
     # IBD pattern for this marker
     achr = aChr[[mchr[i]]]
-    rw = if(nrow(achr) > 1) findInterval(mpos[i], achr[, 'start'], all.inside = TRUE) else 1L
+    rw = if(nrow(achr) > 1) findInterval(mpos[i], achr[, 'startMB'], all.inside = TRUE) else 1L
     ibdpat = achr[rw, patcols]
     ibdmat = achr[rw, matcols]
     

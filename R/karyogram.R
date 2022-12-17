@@ -105,19 +105,21 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
 #'   columns must contain chromosome (with or without "chr" prefix), start
 #'   position and stop position (in Mb). Any further columns are ignored, except
 #'   possibly a column indicated by `colBy`.
-#' @param chrom A vector indicating which chromosomes to include. 
-#' @param colBy A character vector naming the columns to be used for
-#'   colouring. If NULL (default), all segments have the same colour.
-#' @param col A single fill colour for all the segments, or (if `colBy` is
-#'   used) a named vector of colours. In the latter case, the names should
-#'   include all entries in the `colBy` column.
-#' @param separate A logical; relevant only if the `colBy` column has more
-#'   than one level. If FALSE, all segments are drawn in full height. This may
-#'   not be optimal if segments of different colours overlap. If TRUE the levels
-#'   are drawn in separate bands on the chromosomes.
+#' @param chrom A vector indicating which chromosomes to include.
+#' @param colBy A character vector naming the columns to be used for colouring.
+#'   If NULL (default), all segments have the same colour.
+#' @param col A single fill colour for all the segments, or (if `colBy` is used)
+#'   a named vector of colours. In the latter case, the names should include all
+#'   entries in the `colBy` column.
+#' @param separate A logical; relevant only if the `colBy` column has more than
+#'   one level. If FALSE, all segments are drawn in full height. This may not be
+#'   optimal if segments of different colours overlap. If TRUE the levels are
+#'   drawn in separate bands on the chromosomes.
 #' @param alpha A single numeric in `[0,1]` indicating colour transparency.
 #' @param bgcol The background colour of the chromosomes.
 #' @param title Plot title.
+#' @param legendTitle Legend title.
+#' @param base_size Font size, passed onto `ggplot2::theme()`.
 #'
 #' @return The plot object is returned invisibly, so that additional `ggplot`
 #'   layers may be added if needed.
@@ -145,7 +147,7 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
 #'
 #' @export
 karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL, separate = TRUE, 
-                        alpha = 1, bgcol = "gray92", title = NULL) {
+                        alpha = 1, bgcol = "gray92", title = NULL, legendTitle = NULL, base_size = 16) {
   
   # Genome map
   map = loadMap("decode19", chrom = chrom)
@@ -159,6 +161,10 @@ karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL, separa
   if(is.null(col))
     col = if(is.null(colBy)) 2 else (1 + seq_along(levels(segments$fill)))
 
+  # If col has names, use these to sort legend
+  if(!is.null(names(col)))
+    segments$fill = factor(segments$fill, intersect(names(col), segments$fill))
+    
   # Segments y positions
   if(separate) {
     heig = 1/segments$gsize
@@ -174,20 +180,23 @@ karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL, separa
   ggplot() + 
     geom_rect(aes_(xmin = 0, xmax = ~Mb, ymin = 0, ymax = 1), 
               data = genome, fill = bgcol, col = "black") + 
-    geom_rect(aes_(xmin = ~start, xmax = ~end, ymin = ~ymin, ymax = ~ymax, 
+    geom_rect(aes_(xmin = ~startMB, xmax = ~endMB, ymin = ~ymin, ymax = ~ymax, 
                    fill = ~fill), data = segments, color = 1, alpha = alpha) +
     ggtitle(title) +
     facet_grid(chrom ~ ., switch = "y") + 
     scale_x_continuous(expand = c(0.01, 0.01)) +
     scale_fill_manual(values = col) + 
-    guides(fill = guide_legend(colBy[1])) +
-    theme_void(base_size = 16) + 
+    labs(fill = legendTitle) +
+    guides(fill = guide_legend(byrow = TRUE)) +
+    theme_void(base_size = base_size) + 
     theme(plot.margin = margin(4, 4, 4, 4),
-          plot.title = element_text(size = 16, 
-                                    margin = margin(b = 10, unit = "pt")),
+          plot.title = element_text(size = base_size, margin = margin(b = 10, unit = "pt")),
           strip.text.y.left = element_text(angle = 0, hjust = 1, vjust = 0.5),
-          legend.position = c(0.97, 0),
+          legend.position = c(0.99, 0),
           legend.justification = c(1, 0),
+          legend.key.height = unit(1/25, "snpc"),
+          legend.key.width = unit(1/25, "snpc"),
+          legend.spacing.y = unit(1/100, "snpc"),
           panel.spacing.y = unit(0.3, "lines"))
 }
 
@@ -305,8 +314,8 @@ prepare_segments = function(segments, chrom = 1:22, colBy = NULL) {
   
   df$fill = factor(fill)
   
-  names(df)[1:3] = c("chrom", "start", "end")
-  df = df[c("chrom", "start", "end", "fill")]
+  names(df)[1:3] = c("chrom", "startMB", "endMB")
+  df = df[c("chrom", "startMB", "endMB", "fill")]
   
   # Early return if empty
   if(N == 0) 
@@ -314,15 +323,15 @@ prepare_segments = function(segments, chrom = 1:22, colBy = NULL) {
   
   # Sort
   if(N > 1)
-    df = df[order(as.numeric(df$chrom), df$start, df$end), , drop = FALSE]
+    df = df[order(as.numeric(df$chrom), df$startMB, df$endMB), , drop = FALSE]
   
-  if(max(df$end) > 250e3) {
-    df$start = df$start/1e6
-    df$end = df$end/1e6
+  if(max(df$endMB) > 250e3) {
+    df$startMB = df$startMB/1e6
+    df$endMB = df$endMB/1e6
     message("Converting positions to Mb by diving by 1e6")
-  } else if(max(df$end) > 250) {
-    df$start = df$start/1e3
-    df$end = df$end/1e3
+  } else if(max(df$endMB) > 250) {
+    df$startMB = df$startMB/1e3
+    df$endMB = df$endMB/1e3
     message("Converting positions to Mb by diving by 1000")
   }
   

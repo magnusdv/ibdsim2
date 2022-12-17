@@ -7,6 +7,8 @@
 #'   from the `sims` object.
 #' @param threshold A nonnegative number (default:0). Only IBD segments longer
 #'   than this are included in the computation.
+#' @param unit The unit of measurement for `threshold`: Either "mb" or "cm"
+#'   (default).
 #'
 #' @return A list with the following two entries:
 #'
@@ -32,11 +34,12 @@
 #' # Probability of zero ibd segments. (By default all segs are used)
 #' zeroIBD(s, ids = cous)
 #'
-#' # Re-compute with positive threshold
-#' zeroIBD(s, ids = cous, threshold = 1)
+#' # Re-compute with nonzero threshold
+#' zeroIBD(s, ids = cous, threshold = 1, unit = "cm")
+#' zeroIBD(s, ids = cous, threshold = 1, unit = "mb")
 #'
 #' @export
-zeroIBD = function(sims, ids = NULL, threshold = 0) {
+zeroIBD = function(sims, ids = NULL, threshold = 0, unit = "cm") {
   if(!is.numeric(threshold) || length(threshold) != 1 || threshold < 0)
     stop2("`threshold` must be a nonnegative number")
   
@@ -55,6 +58,11 @@ zeroIBD = function(sims, ids = NULL, threshold = 0) {
   if(!is.list(sims))
     sims = list(sims)
   
+  # Names of start/end columns
+  startCol = switch(unit, mb = "startMB", cm = "startCM")
+  endCol = switch(unit, mb = "endMB", cm = "endCM")
+  
+  # Summarise each simulation
   ibdCount = lapply(sims, function(s) {
     
     if(length(idsims) > 2 || !"IBD" %in% colnames(s)) {
@@ -62,8 +70,8 @@ zeroIBD = function(sims, ids = NULL, threshold = 0) {
       s = mergeSegments(s0, by = "IBD")
     }
     
+    len = s[, endCol] - s[, startCol]
     ibdstate = s[, 'IBD']
-    len = s[, 'length']
     
     sum(ibdstate > 0 & len >= threshold)
   })

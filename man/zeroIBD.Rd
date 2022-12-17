@@ -4,7 +4,7 @@
 \alias{zeroIBD}
 \title{Probability of zero IBD}
 \usage{
-zeroIBD(sims, ids = NULL, threshold = 0)
+zeroIBD(sims, ids = NULL, threshold = 0, unit = "cm")
 }
 \arguments{
 \item{sims}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
@@ -14,6 +14,9 @@ from the \code{sims} object.}
 
 \item{threshold}{A nonnegative number (default:0). Only IBD segments longer
 than this are included in the computation.}
+
+\item{unit}{The unit of measurement for \code{threshold}: Either "mb" or "cm"
+(default).}
 }
 \value{
 A list with the following two entries:
@@ -43,7 +46,8 @@ s = ibdsim(x, N = 10)
 # Probability of zero ibd segments. (By default all segs are used)
 zeroIBD(s, ids = cous)
 
-# Re-compute with positive threshold
-zeroIBD(s, ids = cous, threshold = 1)
+# Re-compute with nonzero threshold
+zeroIBD(s, ids = cous, threshold = 1, unit = "cm")
+zeroIBD(s, ids = cous, threshold = 1, unit = "mb")
 
 }

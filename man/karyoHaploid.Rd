@@ -12,7 +12,9 @@ karyoHaploid(
   separate = TRUE,
   alpha = 1,
   bgcol = "gray92",
-  title = NULL
+  title = NULL,
+  legendTitle = NULL,
+  base_size = 16
 )
 }
 \arguments{
@@ -24,23 +26,27 @@ possibly a column indicated by \code{colBy}.}
 
 \item{chrom}{A vector indicating which chromosomes to include.}
 
-\item{colBy}{A character vector naming the columns to be used for
-colouring. If NULL (default), all segments have the same colour.}
+\item{colBy}{A character vector naming the columns to be used for colouring.
+If NULL (default), all segments have the same colour.}
 
-\item{col}{A single fill colour for all the segments, or (if \code{colBy} is
-used) a named vector of colours. In the latter case, the names should
-include all entries in the \code{colBy} column.}
+\item{col}{A single fill colour for all the segments, or (if \code{colBy} is used)
+a named vector of colours. In the latter case, the names should include all
+entries in the \code{colBy} column.}
 
-\item{separate}{A logical; relevant only if the \code{colBy} column has more
-than one level. If FALSE, all segments are drawn in full height. This may
-not be optimal if segments of different colours overlap. If TRUE the levels
-are drawn in separate bands on the chromosomes.}
+\item{separate}{A logical; relevant only if the \code{colBy} column has more than
+one level. If FALSE, all segments are drawn in full height. This may not be
+optimal if segments of different colours overlap. If TRUE the levels are
+drawn in separate bands on the chromosomes.}
 
 \item{alpha}{A single numeric in \verb{[0,1]} indicating colour transparency.}
 
 \item{bgcol}{The background colour of the chromosomes.}
 
 \item{title}{Plot title.}
+
+\item{legendTitle}{Legend title.}
+
+\item{base_size}{Font size, passed onto \code{ggplot2::theme()}.}
 }
 \value{
 The plot object is returned invisibly, so that additional \code{ggplot}

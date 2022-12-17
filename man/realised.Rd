@@ -8,18 +8,21 @@
 \alias{realisedIdentity}
 \title{Realised relatedness}
 \usage{
-realisedInbreeding(sims, id = NULL)
+realisedInbreeding(sims, id = NULL, unit = "cm")
 
-realisedKinship(sims, ids = NULL)
+realisedKinship(sims, ids = NULL, unit = "cm")
 
-realisedKappa(sims, ids = NULL)
+realisedKappa(sims, ids = NULL, unit = "cm")
 
-realisedIdentity(sims, ids = NULL)
+realisedIdentity(sims, ids = NULL, unit = "cm")
 }
 \arguments{
 \item{sims}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
 
 \item{id, ids}{A vector with one or two ID labels.}
+
+\item{unit}{Either "mb" (megabases) or "cm" (centiMorgan); the length unit
+for genomic segments. Default is "cm", which normally gives lower variance.}
 }
 \description{
 Compute the realised values of various pedigree coefficients, from simulated

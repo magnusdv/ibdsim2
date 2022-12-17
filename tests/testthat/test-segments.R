@@ -10,8 +10,8 @@ test_that("alleleFlow() catches errors", {
 })
 
 test_that("alleleFlow() adds states correctly", {
-  ans1 = cbind(chrom=1, start=0, end=100, length=100, `1:p`=1,`1:m`=2)
-  ans2 = cbind(chrom=1, start=0, end=100, length=100, `1:p`=1, `1:m`=2, `2:p`=3, `2:m`=4)
+  ans1 = cbind(chrom=1, startMB=0, endMB=100, startCM=0, endCM=100, `1:p`=1,`1:m`=2)
+  ans2 = cbind(chrom=1, startMB=0, endMB=100, startCM=0, endCM=100, `1:p`=1, `1:m`=2, `2:p`=3, `2:m`=4)
   expect_equal(alleleFlow(s, ids = 1, addState = FALSE), ans1) 
   expect_equal(alleleFlow(s, ids = 1, addState = TRUE), cbind(ans1, Aut = 0))
   expect_equal(alleleFlow(s, ids = 1:2, addState = FALSE), ans2) 

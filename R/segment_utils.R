@@ -8,14 +8,15 @@ alleleFlow = function(x, ids, addState = TRUE) {
     stop2("Unknown ID label: ", setdiff(ids, xids))
   
   n = length(ids)
+  clnms = colnames(x)
   
   # If nothing to do, return early
   if(setequal(ids, xids)) {
     if(n > 2 || !addState) 
       return(x)
-    if(n == 1 && "Aut" %in% colnames(x))
+    if(n == 1 && "Aut" %in% clnms)
       return(x)
-    if(n == 2 && "Sigma" %in% colnames(x))
+    if(n == 2 && "Sigma" %in% clnms)
       return(x)
   }
   
@@ -24,32 +25,80 @@ alleleFlow = function(x, ids, addState = TRUE) {
   y = mergeSegments(x, by = cols)
   
   # Keep only allele columns of selected ids
-  y = y[, c(1:4, which(colnames(x) %in% cols)), drop = FALSE]
+  y = y[, c(clnms[1:5], cols), drop = FALSE]
   
   if(addState)
-    y = addStates(y)
+    y = addStates(y, cols)
   
   y
 }
 
 
+stackIntervals = function(start, end, chrom = NULL, sort = TRUE) {
+  
+  n = length(start)
+  if(n < 2)
+    return(rep_len(1, n))
+  
+  lay = integer(n)
+  
+  if(!is.null(chrom)) {
+    for(chr in unique.default(chrom)) {
+      idx = chrom == chr
+      lay[idx] = stackIntervals(start = start[idx], end = end[idx], sort = sort)
+    }
+    return(lay)
+  }
+    
+  if(any(start > end))
+    stop2("Inverted segment")
+  
+  if(sort) {
+    ord = order(start, -end, method = "shell")
+    start = start[ord]
+    end = end[ord]
+  }
+  
+  # Current end of each layer
+  layerEnds = numeric(n) # theoretical max
+  layerEnds[1] = end[1]
+  
+  lay[1] = 1
+  for (k in seq.int(2, n)) {
+    for(i in 1:n) {
+      if(layerEnds[i] < start[k]) {
+        lay[k] = i
+        layerEnds[i] = end[k]
+        break
+      }
+    }
+  }
+  
+  if(sort)
+    lay = lay[order(ord, method = "shell")]
+  lay
+}
+
 groupOverlaps = function(x) { # assumes sorted on chrom, start, end
   
   # Storage vector for group number and group size
   g = n = gidx = numeric(nrow(x))
+  chrom = x[, 1]
+  start = x[, 2]
+  end = x[, 3]
   
-  for(chr in unique.default(x[,1])) {
-    idx = x[,1] == chr
-    start = x[idx, 2]
-    end = x[idx, 3]
-    gchr = cumsum(cummax(c(0, end[-length(end)])) <= start)
+  for(chr in unique.default(chrom)) {
+    idx = chrom == chr
+    sta = start[idx]
+    sto = end[idx]
+    gchr = cumsum(cummax(c(0, sto[-length(sto)])) <= sta)
     tb = tabulate(gchr)
     g[idx] = gchr
     n[idx] = tb[gchr]
     gidx[idx] = unlist(lapply(tb, seq_len), use.names = FALSE)
   }
   
-  cbind(x, group = paste(x[,1], g, sep = "-"), gsize = n, gidx = gidx)
+  cbind(x, group = paste(chrom, g, sep = "-"), gsize = n, gidx = gidx)
 }
 
 # Merge segments (on the same chrom) with equal entries in `by` (single vector or column names)
@@ -69,8 +118,10 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
     if(is.character(by) && all(by %in% colnames(x))) { # Interpret as column names
       if(byLen == 1)
         byEq = x[-1, by] == x[-k, by]
-      else
-        byEq = rowSums(x[-1, by, drop = FALSE] == x[-k, by, drop = FALSE]) == byLen
+      else {
+        chck = x[-1, by, drop = FALSE] == x[-k, by, drop = FALSE]
+        byEq = .rowSums(chck, m = k - 1, n = byLen) == byLen
+      }
     }
     else if(byLen == k && (is.numeric(by) || is.character(by))) {
       byEq = by[-1] == by[-k]
@@ -83,7 +134,7 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
  
   # Segment adjacency
   if(checkAdjacency) {
-    adjac = x[-1, 'start'] == x[-k, 'end']
+    adjac = x[-1, 'startMB'] == x[-k, 'endMB']
     mergeRow = mergeRow & adjac
   }
  
@@ -94,11 +145,12 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
   toRow = c(fromRow[-1] - 1, k)
   
   y = x[fromRow, , drop = FALSE]
-  y[, 'end'] = x[toRow, 'end']
+  y[, 'endMB'] = x[toRow, 'endMB']
+  y[, 'endCM'] = x[toRow, 'endCM']
   
   # Recompute lengths if included
-  if("length" %in% colnames(y))
-    y[, 'length'] = y[, 'end'] - y[, 'start'] 
+  #if("length" %in% colnames(y))
+  #  y[, 'length'] = y[, 'end'] - y[, 'start'] 
   
   rownames(y) = NULL
   y
@@ -113,7 +165,9 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
 #' @param quantiles A vector of quantiles to include in the summary.
 #' @param returnAll A logical, by default FALSE. If TRUE, the output includes a
 #'   vector `allSegs` containing the lengths of all segments in all simulations.
-#'
+#' @param unit Either "mb" (megabases) or "cm" (centiMorgan); the length unit
+#'   for genomic segments.
+#'   
 #' @return A list containing a data frame `perSim`, a matrix `summary` and (if
 #'   `returnAll` is TRUE) a vector `allSegs`.
 #'
@@ -142,17 +196,24 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
 #' segs = findPattern(sims, pattern = list(carriers = 3:5))
 #'
 #' # Summarise
-#' segmentStats(segs)
+#' segmentStats(segs, unit = "mb")
+#' 
+#' # The unit does not matter in this case (since the map is trivial)
+#' segmentStats(segs, unit = "cm")
 #'
 #' @importFrom stats quantile
 #' @export
-segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975), returnAll = FALSE) {
+segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975), returnAll = FALSE, unit = "mb") {
   
   if(is.matrix(x))
     x = list(x)
   
+  # Names of start/end columns
+  startCol = switch(unit, mb = "startMB", cm = "startCM")
+  endCol = switch(unit, mb = "endMB", cm = "endCM")
+  
   # List of lengths
-  lenDat = lapply(x, function(m) m[, 'length'])
+  lenDat = lapply(x, function(s) s[, endCol] - s[, startCol])
   
   # Collect data for each sim
   perSim = data.frame(
@@ -163,8 +224,8 @@ segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975), returnAll = FALSE) 
     `Longest`  = vapply(lenDat, safeMax, FUN.VALUE = numeric(1)))
   
   # Summarising function
-  sumfun = function(v) c(mean = safeMean(v), sd = sd(v), min = safeMin(v), quantile(v, quantiles), max = safeMax(v))
-  
+  sumfun = function(v) c(mean = safeMean(v), sd = sd(v), min = safeMin(v), 
+                         quantile(v, quantiles), max = safeMax(v))
   # Summary
   sumList = lapply(perSim, sumfun)
   
@@ -181,63 +242,34 @@ segmentStats = function(x, quantiles = c(0.025, 0.5, 0.975), returnAll = FALSE) 
 }
 
 
-# TODO: Remove. Superseded by the new `mergeSegments()`
-mergeConsecutiveSegments = function(df, mergeBy, segStart = "start", 
-                                    segEnd = "end", segLength = "length") {
-  N = nrow(df)
-  if(N < 2) return(df)
-  
-  if(length(mergeBy) == 1)
-    mergeBy = df[, mergeBy]
-  else if(length(mergeBy) != N)
-    mergeBy = apply(df[, mergeBy], 1, paste, collapse = ":")
-  
-  newSeg = c(TRUE, df[-N, segEnd] != df[-1, segStart])
-  mergeBy = paste(mergeBy, cumsum(newSeg), sep = "_chunk")
-  
-  # Runs of consecutive segs; row numbers of start/end
-  runs = rle(mergeBy)
-  ends = cumsum(runs$lengths)
-  starts = ends - runs$lengths + 1
-  
-  # Keep only rows starting a new segment
-  newdf = df[starts, , drop = FALSE]
-  
-  # Fix endpoints
-  newdf[, segEnd] = df[ends, segEnd]
-  
-  # Fix lengths if present
-  if(!is.null(segLength) && segLength %in% colnames(df))
-    newdf[, segLength] = newdf[, segEnd] - newdf[, segStart] 
-  
-  newdf
-}
-
-
-
 # Add columns with IBD states (if 1 or 2 ids)
-addStates = function(x) {
+addStates = function(x, acols) {
   
-  nids = (ncol(x) - 4)/2 
-  Xchrom = any(x[, 1] == 23)
+  nc = length(acols)
+  Xchrom = any(x[, "chrom"] == 23)
   
-  if(nids == 1) {
-    a1 = x[, 5]; a2 = x[, 6]
+  if(nc == 2) {
+    a1 = x[, acols[1]]
+    a2 = x[, acols[2]]
     aut = a1 == a2 
     if(Xchrom) # convention: hemizygous = autozygous
       aut = aut | a1 == 0 
     aut = as.numeric(aut)  # x is a numeric (not integer) matrix
     x = cbind(x, Aut = aut)
   }
-  else if(nids == 2) {
-    a1 = x[, 5]; a2 = x[, 6] 
-    b1 = x[, 7]; b2 = x[, 8]
+  else if(nc == 4) {
+    a1 = x[, acols[1]]
+    a2 = x[, acols[2]]
+    b1 = x[, acols[3]]
+    b2 = x[, acols[4]]
     
     IBD = ibdState(a1, a2, b1, b2, Xchrom = Xchrom)
     Sigma = jacquardState(a1, a2, b1, b2, Xchrom = Xchrom)
     
     x = cbind(x, IBD = IBD, Sigma = Sigma)
   }
+  else
+    stop2("addStates requires 2 or 4 columns, not: ", nc)
   
   x
 }
