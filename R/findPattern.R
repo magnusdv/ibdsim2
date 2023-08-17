@@ -50,12 +50,17 @@ findPattern = function(sims, pattern, merge = TRUE, cutoff = 0, unit = "mb") {
   if(single <- is.matrix(sims))
     sims = list(sims)
   
-  names(pattern) = match.arg(names(pattern), 
-                             c("autozygous", "heterozygous", "carriers", "noncarriers"), 
-                             several.ok = TRUE)
+  # Allowed names in `pattern` list
+  PNAM = c("autozygous", "heterozygous", "carriers", "noncarriers")
   
-  pattern = lapply(pattern, as.character)
+  # Names occurring in input, expand abbreviations
+  inputPnam = match.arg(names(pattern), PNAM, several.ok = TRUE)
   
+  # Merge if multiple of same type, and make character
+  uniqPnam = unique.default(inputPnam)
+  pattern = sapply(uniqPnam, function(b) pattern[inputPnam == b] |> unlist(use.names = FALSE) |> as.character(), 
+                simplify = FALSE)
+
   aut = pattern$autozygous
   het = pattern$heterozygous
   car = setdiff(pattern$carriers, c(aut, het))
@@ -67,9 +72,11 @@ findPattern = function(sims, pattern, merge = TRUE, cutoff = 0, unit = "mb") {
   # All carriers
   allcarr = c(aut, het, car)
   
-  # If no carriers, return. TODO: Why return all of sims???
-  if(!length(allcarr)) 
-    return(sims)
+  # If no carriers, return unbroken chromosomes.
+  if(!length(allcarr)) {
+    res = lapply(sims, function(s) mergeSegments(s)[, 1:5])
+    return(if(single) res[[1]] else res)
+  }
 
   if(length(err <- intersect(non, allcarr)))
     stop2("Individuals indicated as both carrier and noncarrier: ", err)
