@@ -41,15 +41,21 @@ sampling of founder alleles for each marker. Given those, all other genotypes
 in the pedigree are determined by the underlying IBD pattern.
 }
 \examples{
-# A pedigree with two siblings
-x = nuclearPed(2, sex = 1:2)
 
-# Attach 3 linked markers on chromosome 1
-pos = c(20, 50, 70)   # marker positions in megabases
-mlist = lapply(pos, function(i)
-  marker(x, alleles = letters[1:10], chrom = 1, posMb = i))
-x = setMarkers(x, mlist)
+# Brother-sister pedigree
+ped = nuclearPed(2, sex = 1:2)
 
+# Alleles
+als = letters[1:10]
+
+
+### Autosomal simulation
+
+x = ped |> 
+  addMarker(alleles = als, chrom = 1, posMb = 20) |> 
+  addMarker(alleles = als, chrom = 1, posMb = 50) |> 
+  addMarker(alleles = als, chrom = 1, posMb = 70)
+  
 # Simulate the underlying IBD pattern in the pedigree
 sim = ibdsim(x, map = uniformMap(M = 1, chrom = 1), seed = 123)
 
@@ -61,16 +67,17 @@ profileSimIBD(x, sim, ids = 3:4, seed = 124)
 
 
 ### X chromosomal simulation
-mlistX = list(marker(x, alleles = 1:4, chrom = "X", posMb = 1),
-              marker(x, alleles = 1:4, chrom = "X", posMb = 50),
-              marker(x, alleles = 1:4, chrom = "X", posMb = 100))
-x = setMarkers(x, mlistX)
 
-simX = ibdsim(x, N = 1, map = loadMap("decode19", chrom = 23), seed = 11)[[1]]
+y = ped |> 
+  addMarker(alleles = als, chrom = "X", posMb = 1) |> 
+  addMarker(alleles = als, chrom = "X", posMb = 50) |> 
+  addMarker(alleles = als, chrom = "X", posMb = 100)
 
-profileSimIBD(x, simX, seed = 12)
+simy = ibdsim(y, map = loadMap("decode19", chrom = 23), seed = 11)
+
+profileSimIBD(y, simy, seed = 12)
 
 }
 \seealso{
-\code{\link[=ibdsim]{ibdsim()}}
+\code{\link[=ibdsim]{ibdsim()}}, \code{forrel::profileSim()}.
 }
