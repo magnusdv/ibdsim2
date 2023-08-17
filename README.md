@@ -37,7 +37,7 @@ suite](https://magnusdv.github.io/pedsuite/) collection of packages for
 pedigree analysis in R. A detailed presentation of these packages,
 including a separate chapter on **ibdsim2**, is available in the book
 [Pedigree analysis in
-R](https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2)
+R](https://www.google.com/books/edition/Pedigree_Analysis_in_R/uhkIEAAAQBAJ)
 (Vigeland, 2021).
 
 ## Installation
@@ -163,7 +163,7 @@ s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 4.79 secs
+#> Total time used: 6.27 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option
