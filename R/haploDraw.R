@@ -40,11 +40,11 @@
 #'
 #' haploDraw(x, s)
 #'
-#' # Nicer colours and position of haplotypes
+#' # Custom colours and placements
 #' haploDraw(x, s, cols = c(3,7,2,4), pos = c(2,4,2,4))
 #'
 #' # Standard plot options apply
-#' haploDraw(x, s, margins = 3, cex = 1.5)
+#' haploDraw(x, s, margins = 3, cex = 1.5, title = "Full sibs")
 #'
 #'
 #' ###########################
@@ -53,12 +53,11 @@
 #'
 #' x = halfCousinPed(0, child = TRUE)
 #' map = uniformMap(M = 1)
-#' s = ibdsim(x, map = map, skipRecomb = c(1,3), seed = 19499)
+#' s = ibdsim(x, map = map, skipRecomb = c(1,3), seed = 2)
 #'
-#' # Grey colour (8) for irrelevant founder alleles
-#' haploDraw(x, s, pos = c(0,1,0,2,4,4), cols = c(8,8,3,7,8,8))
-#'
-#'
+#' # Only include relevant individuals (skip 1 and 3)
+#' haploDraw(x, s, ids = c(2,4,5,6), pos = c(1,2,4,4))
+#' 
 #' ###############################
 #' # Example 3: X-chromosomal sims
 #' ###############################
@@ -138,8 +137,24 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, po
     ibd = ibd[chrvec == chrom, , drop = FALSE]
   }
   
-  if(is.null(cols))
-    cols = seq_len(2*length(founders(x)))
+  if(is.null(cols)) {
+    DEFCOLS = list(
+      red    = c("#FFC1C1", "#B20000"), 
+      blue   = c("#C1D4FF", "#0033B2"), 
+      orange = c("#FFD4A5", "#FF6600"), #"#FFDAC1",
+      green  = c("#C1FFC1", "#006600"),
+      yellow = c("#FFFFC1", "#FFD700"), 
+      purple = c("#E0C1FF", "#800080"), 
+      teal   = c("#C1FFFF", "#008080"),
+      pink   = c("#FFC1E0", "#FF1493"), 
+      brown  = c("#D5C1B9", "#8B4513"), 
+      gray   = c("#D1D1D1", "#4B4B4B"))
+    
+    cols = unlist(DEFCOLS[seq_along(founders(x))], use.names = FALSE)
+    #cols = seq_len(2*length(founders(x)))
+  }
+  
+    
   
   # Names of start/end columns
   startCol = switch(unit, mb = "startMB", cm = "startCM")
