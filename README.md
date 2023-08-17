@@ -13,7 +13,7 @@ status](https://www.r-pkg.org/badges/version/ibdsim2)](https://CRAN.R-project.or
 
 <br>
 
-> <span style="color:red; font-size:150%"> NEW! Try the online app for
+> <span style="color:red; font-size:150%"> Try the online app for
 > visualising IBD distributions:
 > [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
 
@@ -87,19 +87,18 @@ Now run the simulation! The `seed` argument ensures reproducibility.
 sim = ibdsim(x, N = 1, map = chr1, seed = 1234, verbose = F)
 ```
 
-The output of `ibdsim()` is a list of length `N` (the number of
-simulations), where each simulation result is contained in matrix form.
-Here are the first few rows of the single simulation we just made:
+The output of `ibdsim()` is a matrix (or a list of matrices, if
+`N > 1`). Here are the first few rows of the simulation we just made:
 
 ``` r
-head(sim[[1]])
-#>      chrom     start       end     length 1:p 1:m 2:p 2:m 3:p 3:m 4:p 4:m
-#> [1,]     1  1.431813  6.386532  4.9547193   1   2   3   4   2   4   2   4
-#> [2,]     1  6.386532 19.733718 13.3471854   1   2   3   4   2   4   2   3
-#> [3,]     1 19.733718 20.220621  0.4869035   1   2   3   4   1   4   2   3
-#> [4,]     1 20.220621 58.236210 38.0155893   1   2   3   4   1   4   2   4
-#> [5,]     1 58.236210 59.425280  1.1890698   1   2   3   4   1   3   2   4
-#> [6,]     1 59.425280 82.385463 22.9601825   1   2   3   4   1   3   2   3
+head(sim)
+#>      chrom   startMB      endMB   startCM      endCM 1:p 1:m 2:p 2:m 3:p 3:m 4:p 4:m
+#> [1,]     1  1.431813   2.933317  0.000000   1.594905   1   2   3   4   1   3   2   4
+#> [2,]     1  2.933317  17.311158  1.594905  32.879029   1   2   3   4   2   3   2   4
+#> [3,]     1 17.311158  20.230184 32.879029  40.490928   1   2   3   4   2   3   2   3
+#> [4,]     1 20.230184  54.938719 40.490928  77.308688   1   2   3   4   2   3   2   4
+#> [5,]     1 54.938719  58.982628 77.308688  83.152790   1   2   3   4   2   4   2   4
+#> [6,]     1 58.982628 159.794234 83.152790 154.725693   1   2   3   4   1   4   2   4
 ```
 
 Each row of the matrix corresponds to a segment of the genome, and
@@ -108,13 +107,12 @@ individual has two columns, one with the paternal allele (marked by the
 suffix “:p”) and one with the maternal (suffix “:m”). The founders (the
 parents in our case) are assigned alleles 1, 2, 3 and 4.
 
-The function `haploDraw()` interprets the alleles 1-4 as colours and
+The function `haploDraw()` interprets the founder alleles as colours and
 draws the resulting haplotypes onto the pedigree. See `?haploDraw` for
-explanation of the arguments.
+an explanation of `pos` and other arguments.
 
 ``` r
-haploDraw(x, sim[[1]], pos = c(2, 4, 1, 1), cols = c(3, 7, 2, 4), 
-          margin = c(6, 4, 3, 4))
+haploDraw(x, sim, pos = c(2, 4, 1, 1))
 ```
 
 <img src="man/figures/README-quartet-haplo-1.png" style="display: block; margin: auto;" />
@@ -124,9 +122,9 @@ haploDraw(x, sim[[1]], pos = c(2, 4, 1, 1), cols = c(3, 7, 2, 4),
 In this example we will compare the distributions of counts/lengths of
 IBD segments between the following pairwise relationships:
 
--   Grandparent/grandchild (GR)
--   Half siblings (HS)
--   Half uncle/nephew (HU)
+- Grandparent/grandchild (GR)
+- Half siblings (HS)
+- Half uncle/nephew (HU)
 
 Note that GR and HS have the same relatedness coefficients
 `kappa = (1/2, 1/2, 0)`, meaning that they are genetically
@@ -137,7 +135,7 @@ For simplicity we create a pedigree containing all the three
 relationships we are interested in.
 
 ``` r
-x = addSon(halfSibPed(), parent = 5)
+x = halfSibPed() |> addSon(5)
 plot(x)
 ```
 
@@ -165,7 +163,7 @@ s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 11.4 secs
+#> Total time used: 4.79 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option
@@ -180,8 +178,9 @@ plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
 <img src="man/figures/README-ibdsim2-example-distplot-1.png" style="display: block; margin: auto;" />
 
 We conclude that the three distributions are almost completely disjoint.
-In particular, GR and HS are separable on the basis of their IBD
-segments, if these can be determined accurately enough.
+Hence the three relationships can typically be distinguished on the
+basis of their IBD segments, if these can be determined accurately
+enough.
 
 *A Shiny app for visualising IBD distributions is now available here:
 <https://magnusdv.shinyapps.io/ibdsim2-shiny/>.*
