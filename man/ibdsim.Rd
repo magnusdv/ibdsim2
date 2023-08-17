@@ -11,6 +11,7 @@ ibdsim(
   map = "decode",
   model = c("chi", "haldane"),
   skipRecomb = NULL,
+  simplify1 = TRUE,
   seed = NULL,
   verbose = TRUE
 )
@@ -42,12 +43,19 @@ random strand of each chromosome.) The default action is to skip
 recombination in founders who are uninformative for IBD sharing in the
 \code{ids} individuals.}
 
+\item{simplify1}{A logical, by default TRUE, removing the outer list layer
+when N = 1. See Value.}
+
 \item{seed}{An integer to be passed on to \code{\link[=set.seed]{set.seed()}}).}
 
 \item{verbose}{A logical.}
 }
 \value{
 A list of \code{N} objects of class \code{genomeSim}.
+
+If N = 1 the outer list layer is removed by default, which is typically
+desired in interactive use (especially when piping). To enforce a list
+output, add \code{simplify1 = FALSE}.
 
 A \code{genomeSim} object is essentially a numerical matrix describing the
 allele flow through the pedigree in a single simulated. Each row
@@ -58,7 +66,7 @@ the male and female values. Then follow the allele columns, two for each
 individual in \code{ids}, suffixed by ":p" and ":m" signifying the paternal and
 maternal alleles, respectively.
 
-If \code{ids} has length 1, a column named "Aut" is added, whose entries are 1
+If \code{ids} has length 1, a column named \code{Aut} is added, whose entries are 1
 for autozygous segments and 0 otherwise.
 
 If \code{ids} has length 2, two columns are added:
@@ -71,7 +79,7 @@ more informative than the \code{IBD} column.
 \item \code{Sigma} : The condensed identity ("Jacquard") state of each segment,
 given as an integer in the range 1-9. The numbers correspond to the
 standard ordering of the condensed states. In particular, for non-inbred
-individuals the states 9, 8, 7 correspond to IBD status 0, 1, 2
+individuals, the states 9, 8, 7 correspond to IBD status 0, 1, 2
 respectively.
 }
 }
@@ -101,19 +109,23 @@ be replaced by simpler maps with constant recombination rates. See
 }
 \examples{
 
+### Example 1: Half siblings ###
+
 hs = halfSibPed()
-sims = ibdsim(hs, N = 2, map = uniformMap(M = 1), seed = 10)
-sims
+sim = ibdsim(hs, map = uniformMap(M = 1), seed = 10)
+sim
 
-# Inspect the first simulation
-sims[[1]]
-haploDraw(hs, sims[[1]], pos = 2)
+# Plot haplotypes
+haploDraw(hs, sim)
 
-# Full sib mating: all 9 states are possible
+#' ### Example 2: Full sib mating ###
+
 x = fullSibMating(1)
-sim = ibdsim(x, N = 1, ids = 5:6, map = uniformMap(M = 10), seed = 1)
-s = sim[[1]]
-stopifnot(setequal(s[, 'Sigma'], 1:9))
+sim = ibdsim(x, ids = 5:6, map = uniformMap(M = 10), seed = 1)
+head(sim)
+
+# All 9 identity states are present
+stopifnot(setequal(sim[, 'Sigma'], 1:9))
 
 }
 \references{

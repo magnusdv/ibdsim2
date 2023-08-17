@@ -42,17 +42,16 @@ allele sharing specified by \code{pattern}. That is, segments where, for some al
 \examples{
 x = nuclearPed(3)
 s = ibdsim(x, N = 1, map = uniformMap(M = 1), seed = 1729)
-s1 = s[[1]]
 
 # Segments where some allele is shared by 3 and 4, but not 5
 pattern = list(carriers = 3:4, noncarriers = 5)
-findPattern(s1, pattern)
+findPattern(s, pattern)
 
 # Exclude segments less than 7 cM
-findPattern(s1, pattern, cutoff = 7)
+findPattern(s, pattern, cutoff = 7)
 
 # Visual confirmation:
-haploDraw(x, s1, margin = c(5,3,3,3))
+haploDraw(x, s)
 
 }
 \seealso{

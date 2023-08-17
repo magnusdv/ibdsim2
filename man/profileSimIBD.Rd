@@ -51,7 +51,7 @@ mlist = lapply(pos, function(i)
 x = setMarkers(x, mlist)
 
 # Simulate the underlying IBD pattern in the pedigree
-sim = ibdsim(x, 1, map = uniformMap(M = 1, chrom = 1), seed = 123)[[1]]
+sim = ibdsim(x, map = uniformMap(M = 1, chrom = 1), seed = 123)
 
 # Simulate genotypes for the sibs conditional on the given IBD pattern
 profileSimIBD(x, sim, ids = 3:4, seed = 123)

@@ -7,8 +7,7 @@
 karyogram2(sim, ids = NULL, verbose = TRUE, ...)
 }
 \arguments{
-\item{sim}{A \code{genomeSim} object, or a \code{genomeSimList} of length 1, e.g.
-produced by \code{ibdsim(..., N = 1)}.}
+\item{sim}{A \code{genomeSim} object.}
 
 \item{ids}{A vector of one or two ID labels.}
 

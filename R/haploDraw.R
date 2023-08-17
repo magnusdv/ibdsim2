@@ -37,8 +37,7 @@
 #'
 #' x = nuclearPed(2)
 #' map = uniformMap(M = 1)
-#' s = ibdsim(x, N = 1, map = map, seed = 4276)
-#' s[[1]]
+#' s = ibdsim(x, map = map, seed = 4276)
 #'
 #' haploDraw(x, s)
 #' 
@@ -55,8 +54,7 @@
 #'
 #' x = halfCousinPed(0, child = TRUE)
 #' map = uniformMap(M = 1)
-#' s = ibdsim(x, N = 1, map = map, skipRecomb = c(1,3), seed = 19499)
-#' s[[1]]
+#' s = ibdsim(x, map = map, skipRecomb = c(1,3), seed = 19499)
 #'
 #' # Grey colour (8) for irrelevant founder alleles
 #' haploDraw(x, s, pos = c(0,1,0,2,4,4), cols = c(8,8,3,7,8,8))
@@ -68,12 +66,10 @@
 #'
 #' x = nuclearPed(2, sex = 2:1)
 #' s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 123)
-#' s[[1]]
-#'
-#' haploDraw(x, s[[1]], pos = c(2,4,2,4))
 #'
 #' # Restore graphics parameters
 #' par(op)
+#' haploDraw(x, s)
 #'
 #' @importFrom graphics rect plot
 #' @export

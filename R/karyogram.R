@@ -5,8 +5,7 @@
 #' [ibdsim()] for one or two specified individuals. The actual plotting is done
 #' by functions `karyoHaploid()` and `karyoDiploid()`.
 #'
-#' @param sim A `genomeSim` object, or a `genomeSimList` of length 1, e.g.
-#'   produced by `ibdsim(..., N = 1)`.
+#' @param sim A `genomeSim` object.
 #' @param ids A vector of one or two ID labels.
 #' @param verbose A logical.
 #' @param ... Further arguments passed on to `karyoHaploid()`.

@@ -1,7 +1,7 @@
 
 # Setup example
 x = fullSibMating(1)
-s = ibdsim(x, N = 1, map = uniformMap(M=1), seed = 1234, verbose = F)[[1]]
+s = ibdsim(x, N = 1, map = uniformMap(M=1), seed = 1234, verbose = F)
 
 
 test_that("findPattern() catches errors", {

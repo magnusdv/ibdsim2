@@ -136,7 +136,7 @@ estimateInbreeding = function(x, id, Nsim, Xchrom = FALSE, verbose = FALSE, ...)
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
-  simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", simplify1 = FALSE, verbose = verbose, ...)
   
   # For each sim, extract autozygosity status
   f2 = vapply(simdata, function(a) a[[1, "Aut"]], FUN.VALUE = 1)
@@ -181,7 +181,7 @@ estimateTwoLocusInbreeding = function(x, id, rho = NULL, cM = NULL, Nsim,
   map = uniformMap(cM = cM, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
-  simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = id, map = map, model = "haldane", simplify1 = FALSE, verbose = verbose, ...)
   
   # For each sim, check if autozygous at both ends
   f2 = vapply(simdata, function(a) a[[1, "Aut"]] == 1 && a[[nrow(a), "Aut"]] == 1, FUN.VALUE = FALSE)
@@ -205,7 +205,7 @@ estimateKinship = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
-  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", simplify1 = FALSE, verbose = verbose, ...)
   
   # For each sim, extract entry in column "Sigma".
   jacq = vapply(simdata, function(a) a[[1, 'Sigma']], FUN.VALUE = 1)
@@ -249,7 +249,7 @@ estimateTwoLocusKinship = function(x, ids, rho = NULL, cM = NULL, Nsim,
   map = uniformMap(cM = cM, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
-  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", simplify1 = FALSE, verbose = verbose, ...)
   
   # For each sim, extract Sigma states at both ends
   jacq = lapply(simdata, function(a) a[c(1, nrow(a)), "Sigma"])
@@ -270,7 +270,7 @@ estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
-  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", simplify1 = FALSE, verbose = verbose, ...)
   
   # For each sim, extract entry in column "IBD".
   ibdres = vapply(simdata, function(a) a[[1, 'IBD']], FUN.VALUE = 1)
@@ -320,7 +320,7 @@ estimateTwoLocusKappa = function(x, ids, rho = NULL, cM = NULL, Nsim,
   map = uniformMap(cM = cM, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
-  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", simplify1 = FALSE, verbose = verbose, ...)
 
   # For each sim, extract first and last rows entry of column "IBD".
   ibd.list = lapply(simdata, function(a) a[c(1, nrow(a)), 'IBD'])
@@ -358,7 +358,7 @@ estimateIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) 
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
-  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", simplify1 = FALSE, verbose = verbose, ...)
   
   # For each sim, extract entry in column "Sigma".
   ibdres = vapply(simdata, function(a) a[[1, 'Sigma']], FUN.VALUE = 1)
@@ -415,7 +415,7 @@ estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim,
   map = uniformMap(cM = cM, chrom = if (Xchrom) "X" else 1)
   
   # Simulate data
-  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", verbose = verbose, ...)
+  simdata = ibdsim(x, N = Nsim, ids = ids, map = map, model = "haldane", simplify1 = FALSE, verbose = verbose, ...)
   
   # For each sim, extract first and last rows entry of column "IBD".
   sigma.list = lapply(simdata, function(a) a[c(1, nrow(a)), 'Sigma'])
