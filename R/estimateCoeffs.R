@@ -70,7 +70,10 @@
 #' rho = 0.25
 #' Nsim = 10 # Increase!
 #' estimateTwoLocusInbreeding(x, id = 5, rho = rho, Nsim = Nsim, seed = 123)
-#'
+#' 
+#' # Exact:
+#' ribd::twoLocusInbreeding(x, id = 5, rho = rho)
+#' 
 #' ########################################
 #' ### Two-locus kappa:                 ###
 #' ### Grandparent vs half sib vs uncle ###
@@ -95,7 +98,7 @@
 #' R # exact
 #'
 #' # Uncle
-#' U = cousinPed(0, removal = 1); U.ids = c(3,6); # plot(U, hatched = U.ids)
+#' U = avuncularPed(); U.ids = c(3,6); # plot(U, hatched = U.ids)
 #' estimateTwoLocusKappa(U, U.ids, rho = rho, Nsim = Nsim, seed = 123)[2,2]
 #' (1-rho) * R + rho/4 # exact
 #'

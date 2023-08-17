@@ -2,14 +2,14 @@
 
 ## Breaking changes
 
-* As of version 2.0.0 the main data structure for IBD segments now includes both centiMorgan (CM) and megabase (MB) measurements. This changes the number of columns and is not compatible with previous versions of the package.
+* As of version 2.0.0, the main data structure for IBD segments includes both megabase (MB) and centiMorgan (CM) coordinates. This allows the user to choose length unit in all downstream analyses. However, the new format is not compatible with previous versions of the package.
 
 * `ibdsim()` has a new argument `simplify1`, by default TRUE. This means that `ibdsim(..., N = 1)` now simply returns a matrix, without the outer list layer. This typically the desired behaviour in interactive use, especially when piping. To enforce a list output, add `simplify1 = FALSE`.
 
 
 ## New features
 
-* Downstream functions dealing with segment lengths (e.g. `findPattern()`, `segmentStats()`, `plotSegmentDistribution()`) has a new argument `unit`, allowing the user to choose between "cm" (centiMorgan) and  "mb" (megabases).
+* All downstream functions depending on segment lengths (e.g. `segmentStats()` and `plotSegmentDistribution()`) have a new argument `unit`, allowing the user to choose between "cm" (centiMorgan) and  "mb" (megabases).
 
 * `haploDraw()` has nicer default colours and automatically produces sensible margins.
 
@@ -17,7 +17,7 @@
 
 * `convertPos()` has been rewritten using Rcpp, making it much more efficient.
 
-* General overhaul of documentation, examples and README
+* General overhaul of documentation, examples and README.
 
 
 # ibdsim2 1.5.0
