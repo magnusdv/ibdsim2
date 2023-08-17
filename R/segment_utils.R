@@ -148,10 +148,6 @@ mergeSegments = function(x, by = NULL, checkAdjacency = FALSE) {
   y[, 'endMB'] = x[toRow, 'endMB']
   y[, 'endCM'] = x[toRow, 'endCM']
   
-  # Recompute lengths if included
-  #if("length" %in% colnames(y))
-  #  y[, 'length'] = y[, 'end'] - y[, 'start'] 
-  
   rownames(y) = NULL
   y
 }
