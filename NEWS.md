@@ -1,14 +1,36 @@
+# ibdsim2 2.0.0
+
+## Breaking changes
+
+* As of version 2.0.0 the main data structure for IBD segments now includes both centiMorgan (CM) and megabase (MB) measurements. This changes the number of columns and is not compatible with previous versions of the package.
+
+* `ibdsim()` has a new argument `simplify1`, by default TRUE. This means that `ibdsim(..., N = 1)` now simply returns a matrix, without the outer list layer. This typically the desired behaviour in interactive use, especially when piping. To enforce a list output, add `simplify1 = FALSE`.
+
+
+## New features
+
+* Downstream functions dealing with segment lengths (e.g. `findPattern()`, `segmentStats()`, `plotSegmentDistribution()`) has a new argument `unit`, allowing the user to choose between "cm" (centiMorgan) and  "mb" (megabases).
+
+* `haploDraw()` has nicer default colours and automatically produces sensible margins.
+
+* New (experimental) function `karyoHaploid()` for visualising IBD segments in karyogram plots.
+
+* `convertPos()` has been rewritten using Rcpp, making it much more efficient.
+
+* General overhaul of documentation, examples and README
+
+
 # ibdsim2 1.5.0
 
 ## New features
 
-* X-chromosomal simulations are now implemented
+* X-chromosomal simulations are now implemented.
 
-* `haploDraw()` now handles and displays X-chromosomal simulations
+* `haploDraw()` now handles and displays X-chromosomal simulations.
 
 ## Other
 
-* Fix labelling bug in `haploDraw()`
+* Fix labelling bug in `haploDraw()`.
 
 * `profileSimIBD()` has been overhauled, fixing several glitches and with significant speed improvements. Note: Simulations with a given `seed` may differ across versions.
 
