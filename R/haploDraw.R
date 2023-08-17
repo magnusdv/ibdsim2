@@ -23,14 +23,13 @@
 #'   pedigree symbol widths.
 #' @param dist The distance between pedigree symbols and the closest haplotype,
 #'   measured in pedigree symbol widths.
-#' @param margins Plot margins, passed on to `plot.ped()`.
-#' @param ... Further arguments passed on to `plot.ped()`.
+#' @param ... Further arguments passed on to `plot.ped()`, e.g. `margins`,
+#'   `cex`, `keep.par`.
 #'
 #' @return None.
 #'
 #' @examples
-#' op = par(no.readonly = TRUE)
-#'
+#' 
 #' ###############################
 #' # Example 1: A family quartet #
 #' ###############################
@@ -40,7 +39,7 @@
 #' s = ibdsim(x, map = map, seed = 4276)
 #'
 #' haploDraw(x, s)
-#' 
+#'
 #' # Nicer colours and position of haplotypes
 #' haploDraw(x, s, cols = c(3,7,2,4), pos = c(2,4,2,4))
 #'
@@ -67,17 +66,22 @@
 #' x = nuclearPed(2, sex = 2:1)
 #' s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 123)
 #'
-#' # Restore graphics parameters
-#' par(op)
 #' haploDraw(x, s)
 #'
-#' @importFrom graphics rect plot
+#' 
+#' @importFrom graphics par plot rect
 #' @export
 haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, pos = 1, cols = NULL, 
-                     height = 4, width = 0.75, sep = 0.75, dist = 1, margins = 1, ...) {
+                     height = 4, width = 0.75, sep = 0.75, dist = 1, ...) {
   
   if(!is.ped(x))
     stop2("Argument `x` must be a `ped` object")
+  
+  # Unless explicit `keep.par = TRUE`, ensure par is reset
+  if(!isTRUE(list(...)$`keep.par`)) {
+    op = par(no.readonly = TRUE)
+    on.exit(par(op), add = TRUE)
+  }
   
   labs = labels(x)
   idsIBD = extractIds(ibd)
@@ -146,7 +150,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, po
     L = sum(ibd[, endCol] - ibd[, startCol])
   
   # Get pedigree layout and scaling
-  p = plot(x, labs = "", keep.par = TRUE, margins = margins, draw = FALSE, ...)
+  p = plot(x, labs = "", keep.par = TRUE, draw = FALSE, ...)
   xpos = p$alignment$x
   ypos = p$alignment$y
   
@@ -186,8 +190,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, po
   ylim = c(min(usr[3:4], Y - H/2, na.rm = TRUE),
            max(usr[3:4], Y + H/2, na.rm = TRUE))
 
-  pedtools::drawPed(p$alignment, p$annotation, margins = margins, 
-                    xlim = xlim, ylim = ylim, keep.par = TRUE, ...)
+  pedtools::drawPed(p$alignment, p$annotation, xlim = xlim, ylim = ylim, keep.par = TRUE, ...)
   
   # Draw rectangles!
   for(i in seq_len(N)) {  
@@ -215,6 +218,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, po
               sta = segsMat[, startCol]/L, col = cols[segsMat[, matCol]])
     }
   }
+  
   invisible(p)
 }
 

@@ -17,7 +17,6 @@ haploDraw(
   width = 0.75,
   sep = 0.75,
   dist = 1,
-  margins = 1,
   ...
 )
 }
@@ -54,9 +53,8 @@ pedigree symbol widths.}
 \item{dist}{The distance between pedigree symbols and the closest haplotype,
 measured in pedigree symbol widths.}
 
-\item{margins}{Plot margins, passed on to \code{plot.ped()}.}
-
-\item{...}{Further arguments passed on to \code{plot.ped()}.}
+\item{...}{Further arguments passed on to \code{plot.ped()}, e.g. \code{margins},
+\code{cex}, \code{keep.par}.}
 }
 \value{
 None.
@@ -66,7 +64,6 @@ Visualise the IBD pattern of a single chromosome, by drawing haplotypes onto
 the pedigree.
 }
 \examples{
-op = par(no.readonly = TRUE)
 
 ###############################
 # Example 1: A family quartet #
@@ -74,8 +71,7 @@ op = par(no.readonly = TRUE)
 
 x = nuclearPed(2)
 map = uniformMap(M = 1)
-s = ibdsim(x, N = 1, map = map, seed = 4276)
-s[[1]]
+s = ibdsim(x, map = map, seed = 4276)
 
 haploDraw(x, s)
 
@@ -92,8 +88,7 @@ haploDraw(x, s, margins = 3, cex = 1.5)
 
 x = halfCousinPed(0, child = TRUE)
 map = uniformMap(M = 1)
-s = ibdsim(x, N = 1, map = map, skipRecomb = c(1,3), seed = 19499)
-s[[1]]
+s = ibdsim(x, map = map, skipRecomb = c(1,3), seed = 19499)
 
 # Grey colour (8) for irrelevant founder alleles
 haploDraw(x, s, pos = c(0,1,0,2,4,4), cols = c(8,8,3,7,8,8))
@@ -105,11 +100,8 @@ haploDraw(x, s, pos = c(0,1,0,2,4,4), cols = c(8,8,3,7,8,8))
 
 x = nuclearPed(2, sex = 2:1)
 s = ibdsim(x, N = 1, map = uniformMap(M = 1, chrom = "X"), seed = 123)
-s[[1]]
 
-haploDraw(x, s[[1]], pos = c(2,4,2,4))
+haploDraw(x, s)
 
-# Restore graphics parameters
-par(op)
 
 }
