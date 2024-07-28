@@ -1,0 +1,60 @@
+.body {font-size: small}
+
+.well {padding-top: 10px;}
+
+.selectize-dropdown {width: 250px !important;}
+
+.fa-arrow-left { font-size:xx-large; color:#E87722; margin-top:6px}
+
+.fa-check { font-size:xx-large; color:Lime; margin-top:6px}
+
+#title-h2 {background-color: gray; color: white; padding: 15px}
+
+#bottomwell1, #bottomwell2 {padding-bottom: 1px; margin-bottom: 10px}
+
+#unit, #analysis {margin-bottom: 10px}
+
+.progress.shiny-file-input-progress { display: none !important;}
+
+.form-control {height: 30px; padding-left: 8px; padding-right: 4px;}
+.shiny-input-textarea.form-control {min-height: 70px}
+
+.shiny-input-number.form-control {padding: 4px 4px 4px 10px; }
+.leftinput {padding-right:5px}
+.rightinput {padding-left:5px}
+
+.btn-file {padding: 4px 10px;}
+
+#opt1 .form-group  {font-size:97%; margin-bottom: 10px}
+#opt2 .form-group  {font-size:97%; margin-bottom: 10px}
+#opt1 .form-control {font-size:97%; height: 80%;}
+#opt2 .form-control {font-size:97%; height: 80%;}
+#opt1, #opt2 {margin-bottom: 0}
+
+#paramHeading {
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        width: 100%;
+        font-size: 15px;
+        letter-spacing: 2px;
+        margin-top: 8px;
+}
+
+#banner {
+ position: absolute;
+ height: 80px;
+ top: 8px;
+ right: 10%;
+ background-color: lightgreen;
+ color: #333;  /* Dark text color */
+ padding: 5px 20px;
+ border-radius: 2px;
+ font-size: 18px;
+ text-align: center;
+ box-shadow: 0 3px 6px rgba(0,0,0,0.1);  /* Subtle shadow for depth */
+ z-index: 1000;
+}
+
+#banner p {margin: 0}
+#big-text { font-size: 30px; font-family: 'Lobster', cursive;}
+#small-text { font-size: 11px;}
