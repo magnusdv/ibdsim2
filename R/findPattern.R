@@ -104,7 +104,10 @@ findPattern = function(sims, pattern, merge = TRUE, cutoff = 0, unit = "mb") {
     a2 = mat(s, id1)
     
     # Initialise logical vectors indicating matching rows
-    eq1 = eq2 = rep(TRUE, length = nrow(s))
+    # Changed to accommodate X-chrom, which has 0-alleles
+    # eq1 = eq2 = rep(TRUE, length = nrow(s))
+    eq1 = a1 > 0
+    eq2 = a2 > 0
     
     ### Find rows satisfying pattern
     
