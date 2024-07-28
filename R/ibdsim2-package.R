@@ -4,7 +4,7 @@
 ## usethis namespace: start
 #' @import pedtools
 #' @importFrom stats rpois runif
-
+#' 
 #' @importFrom Rcpp sourceCpp evalCpp
 #' @useDynLib ibdsim2, .registration = TRUE
 #' @importFrom Rcpp sourceCpp

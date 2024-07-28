@@ -1,3 +1,29 @@
+# ibdsim2 2.1.0
+
+This version includes a major update of the *ibdsim2 shiny app*, which from now on is shipped as part of the ibdsim2 package (in addition to being hosted on `shinyapps.io` as before). 
+
+## New app features
+
+* The simulations are now much faster than before. As a result, the default number of simulations has been increased from 50 to 500.
+
+* X-chromosomal IBD simulations are now supported.
+
+* The user can now choose the length unit for IBD segments; either centiMorgan ("cM", default) or megabytes ("Mb").
+
+* Fixed buggish unit conversion in the previous version: In some cases the segments were measured in Mb while the plot labels said "cM".
+
+* The random number seed can now be selected by the user.
+
+* More coherent layout and better pedigree plots.
+
+* New function `launchApp()` for running the app from within R.
+
+## Other 
+
+* `findPattern()` now works as intended also for X-chromosomal simulations. 
+* Various updates of docs and examples.
+
+
 # ibdsim2 2.0.0
 
 ## Breaking changes

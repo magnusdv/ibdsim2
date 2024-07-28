@@ -10,22 +10,6 @@ suppressPackageStartupMessages({
 })
 
 
-# TODO
-# -- Apply cm/mb
-# -- Update R code in output
-# -- Move to ibdsim2 package
-# -- X
-# -- Distribution plots: put axis at y=0
-# * Distribution plots: reduce tails
-# -- Haldane as default? increase to 500 sims
-# -- Add uncle-niece and aunt-nephew
-# * Tooltip help
-# -- Pedigree colour selected
-# -- Overhaul/simplify errModal
-# -- Plot margins respond to window size
-# -- Banner
-# -- Seed
-# 
 .VERSION = packageDescription("ibdsim2")$Version
 
 # Variables used in both side panels
@@ -41,7 +25,7 @@ ui = fluidPage(
   
   tags$div(id = "banner",
         p(id="big-text", "Major app update!"),
-        p("Discover the ", mylink("new features", href="https://github.com/magnusdv/ibdsim2/blob/master/NEWS.md", 
+        p("Check out the ", mylink("NEWS", href="https://github.com/magnusdv/ibdsim2/blob/master/NEWS.md", 
                                   style = "font-weight:bold;")),
         #p(id="small-text", "The old version still available ", 
         #  mylink("here", href="https://magnusdv.shinyapps.io/ibdsim2-14/"))
@@ -55,14 +39,14 @@ ui = fluidPage(
 or within inbred individuals (autozygosity)."),
   
   p(style = "margin-bottom: 4px", bold("Method: "), 
-"Recombination is simulated down through the pedigree, using realistic sex-specific crossover rates for the human genome ",
-mylink("Halldorsson et al., 2019)", "https://doi.org/10.1126/science.aau1043"), "."),
+"Recombination is simulated down through the pedigree, using detailed, sex-specific crossover rates for the human genome (",
+mylink("Halldorsson et al., 2019", "https://doi.org/10.1126/science.aau1043"), ")."),
 
   p(style = "margin-bottom: 4px", bold("More information: "),
     "This program is a frontend for the R package ", mylink("ibdsim2", "https://github.com/magnusdv/ibdsim2"), 
     ", which is part of the ", mylink("pedsuite", "https://magnusdv.github.io/pedsuite"), " ecosystem for pedigree analysis.", 
-    "Details about the simulations and the various parameters can be found in the documentation of ibdsim2 (and also in the book ",
-    mylink("Pedigree analysis in R", "https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2"), ")."), 
+    "Details about the simulations and the various parameters can be found in the package documentation, and in the book ",
+    mylink("Pedigree analysis in R", "https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2"), "."), 
 
 # Widgets --------------------------------------------------------------
 fluidRow(
@@ -82,7 +66,7 @@ fluidRow(
     div(id = "opt1", h3("PARAMETERS", id = "paramHeading"),
       radioButtons("chrom1", "Chromosome", choices = c("1 - 22" = "aut", "X" = "X"), 
                    selected = "aut", inline = TRUE),
-      radioButtons("model1", "Model", choiceNames = .MODNAMES, choiceValues = .MODVALS, 
+      radioButtons("model1", "Crossover model", choiceNames = .MODNAMES, choiceValues = .MODVALS, 
                    selected = "chi", inline = TRUE),
       radioButtons("sexspec1", "Sex-specific map", choices = c("On", "Off"), 
                    selected = "On", inline = TRUE),
@@ -126,7 +110,7 @@ fluidRow(
     div(id = "opt2", h3("PARAMETERS", id = "paramHeading"),
       radioButtons("chrom2", "Chromosome", choices = c("1 - 22" = "aut", "X" = "X"), 
                    selected = "aut", inline = TRUE),
-      radioButtons("model2", "Model", choiceNames = .MODNAMES, choiceValues = .MODVALS, 
+      radioButtons("model2", "Crossover model", choiceNames = .MODNAMES, choiceValues = .MODVALS, 
                    selected = "chi", inline = TRUE),
       radioButtons("sexspec2", "Sex-specific map", choices = c("On", "Off"), 
                    selected = "On", inline = TRUE),
