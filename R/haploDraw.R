@@ -16,20 +16,22 @@
 #'   should be drawn relative to the pedigree symbols: 0 = no haplotypes; 1 =
 #'   below; 2 = left; 3 = above; 4 = right. By default, all are placed below.
 #' @param cols A colour vector corresponding to the alleles in `ibd`.
-#' @param height The haplotype height divided by the height of a pedigree
-#'   symbol.
-#' @param width The haplotype width, divided by the width of a pedigree symbol.
+#' @param height The height of the haplotype rectangles in units of the pedigree
+#'   symbol height. Default: 4.
+#' @param width The width of the haplotype rectangles in units of the pedigree
+#'   symbol width. Default: 0.75.
 #' @param sep The separation between haplotypes within a pair, measured in
 #'   pedigree symbol widths.
 #' @param dist The distance between pedigree symbols and the closest haplotype,
 #'   measured in pedigree symbol widths.
-#' @param ... Further arguments passed on to `plot.ped()`, e.g. `margins`,
-#'   `cex`, `keep.par`.
+#' @param keep.par A logical, by default FALSE; passed on to `plot.ped()`.
+#' @param ... Further arguments passed on to `plot.ped()`, e.g. `margins` and
+#'   `cex`. See `?plotmethods` for a complete list.
 #'
 #' @return None.
 #'
 #' @examples
-#' 
+#'
 #' ###############################
 #' # Example 1: A family quartet #
 #' ###############################
@@ -45,8 +47,8 @@
 #'
 #' # Standard plot options apply
 #' haploDraw(x, s, margins = 3, cex = 1.5, title = "Full sibs")
-#'
-#'
+#'  
+#' 
 #' ###########################
 #' # Example 2: Autozygosity #
 #' ###########################
@@ -57,7 +59,7 @@
 #'
 #' # Only include relevant individuals (skip 1 and 3)
 #' haploDraw(x, s, ids = c(2,4,5,6), pos = c(1,2,4,4))
-#' 
+#'
 #' ###############################
 #' # Example 3: X-chromosomal sims
 #' ###############################
@@ -67,24 +69,25 @@
 #'
 #' haploDraw(x, s)
 #'
-#' 
+#'
 #' @importFrom graphics par plot rect
 #' @export
-haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, pos = 1, cols = NULL, 
-                     height = 4, width = 0.75, sep = 0.75, dist = 1, ...) {
+haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, 
+                     pos = 1, cols = NULL, height = 4, width = 0.75, sep = 0.75, 
+                     dist = 1, keep.par = FALSE, ...) {
   
-  if(!is.ped(x))
-    stop2("Argument `x` must be a `ped` object")
+  #if(!is.ped(x))
+  #  stop2("Argument `x` must be a `ped` object")
   
   # Unless explicit `keep.par = TRUE`, ensure par is reset
-  if(!isTRUE(list(...)$`keep.par`)) {
+  if(!keep.par) {
     op = par(no.readonly = TRUE)
     on.exit(par(op), add = TRUE)
   }
   
   labs = labels(x)
   idsIBD = extractIds(ibd)
-  N = pedsize(x)
+  N = sum(pedsize(x))
   
   if(is.null(ids))
     ids = idsIBD
@@ -155,7 +158,6 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, po
   }
   
     
-  
   # Names of start/end columns
   startCol = switch(unit, mb = "startMB", cm = "startCM")
   endCol = switch(unit, mb = "endMB", cm = "endCM")
@@ -165,7 +167,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, po
     L = sum(ibd[, endCol] - ibd[, startCol])
   
   # Get pedigree layout and scaling
-  p = plot(x, labs = "", keep.par = TRUE, draw = FALSE, ...)
+  p = plot(x, draw = FALSE, ...)
   xpos = p$alignment$x
   ypos = p$alignment$y
   
@@ -200,7 +202,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL, po
   
   # Possibly extend plot limits (user coords)
   usr = p$scaling$usr
-  xlim = c(min(usr[1:2], X - SEP/2 - W, na.rm = T),
+  xlim = c(min(usr[1:2], X - SEP/2 - W, na.rm = TRUE),
            max(usr[1:2], X + SEP/2 + W, na.rm = TRUE))
   ylim = c(min(usr[3:4], Y - H/2, na.rm = TRUE),
            max(usr[3:4], Y + H/2, na.rm = TRUE))

@@ -17,6 +17,7 @@ haploDraw(
   width = 0.75,
   sep = 0.75,
   dist = 1,
+  keep.par = FALSE,
   ...
 )
 }
@@ -42,10 +43,11 @@ below; 2 = left; 3 = above; 4 = right. By default, all are placed below.}
 
 \item{cols}{A colour vector corresponding to the alleles in \code{ibd}.}
 
-\item{height}{The haplotype height divided by the height of a pedigree
-symbol.}
+\item{height}{The height of the haplotype rectangles in units of the pedigree
+symbol height. Default: 4.}
 
-\item{width}{The haplotype width, divided by the width of a pedigree symbol.}
+\item{width}{The width of the haplotype rectangles in units of the pedigree
+symbol width. Default: 0.75.}
 
 \item{sep}{The separation between haplotypes within a pair, measured in
 pedigree symbol widths.}
@@ -53,8 +55,10 @@ pedigree symbol widths.}
 \item{dist}{The distance between pedigree symbols and the closest haplotype,
 measured in pedigree symbol widths.}
 
-\item{...}{Further arguments passed on to \code{plot.ped()}, e.g. \code{margins},
-\code{cex}, \code{keep.par}.}
+\item{keep.par}{A logical, by default FALSE; passed on to \code{plot.ped()}.}
+
+\item{...}{Further arguments passed on to \code{plot.ped()}, e.g. \code{margins} and
+\code{cex}. See \code{?plotmethods} for a complete list.}
 }
 \value{
 None.
@@ -80,7 +84,7 @@ haploDraw(x, s, cols = c(3,7,2,4), pos = c(2,4,2,4))
 
 # Standard plot options apply
 haploDraw(x, s, margins = 3, cex = 1.5, title = "Full sibs")
-
+ 
 
 ###########################
 # Example 2: Autozygosity #
