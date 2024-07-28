@@ -116,13 +116,11 @@ plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
 # with the same expected inbreeding coefficient (f = 1/8)
 #################################################################
 
-G = swapSex(linearPed(2), 5)           # grandfather/granddaughter
-G = addChildren(G, 1, 5, 1)
-HSpat = swapSex(halfSibPed(), 5)       # paternal half sibs
-HSpat = addChildren(HSpat, 4, 5, 1)
-HSmat = swapSex(HSpat, 1)              # maternal half sibs
+G = linearPed(2) |> swapSex(5) |> addSon(c(1,5))   # grandfath/granddaughter
+HSpat = halfSibPed(sex2 = 2) |> addSon(4:5)        # paternal half sibs
+HSmat = swapSex(HSpat, 2)              # maternal half sibs
 QHFC = quadHalfFirstCousins()          # quad half first cousins
-QHFC = addChildren(QHFC, 9, 10, nch = 1)
+QHFC = addSon(QHFC, 9:10)
 
 peds = list(G = G, HSpat = HSpat, HSmat = HSmat, QHFC = QHFC)
 plotPedList(peds, newdev = TRUE)
