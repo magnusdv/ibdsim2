@@ -19,8 +19,10 @@ suppressPackageStartupMessages({
 
 
 ui = fluidPage(
-  useShinyjs(),  # Set up shinyjs
   includeCSS("www/custom.css"),
+  tags$head(includeHTML(system.file("shiny/www/GA.html", package = "ibdsim2"))),
+  
+  useShinyjs(),
   useBusyIndicators(),
   
   tags$head(tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css2?family=Lobster&display=swap")),
