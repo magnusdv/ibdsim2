@@ -4,8 +4,8 @@
 ^README\.Rmd$
 ^README_cache$
 ^cran-comments\.md$
-^CRAN-RELEASE$
 ^notes-private$
 ^data-raw$
 ^revdep$
 ^CRAN-SUBMISSION$
+^inst/shiny/rsconnect$
