@@ -19,5 +19,8 @@ launchApp = function() {
       stop2(msg)
     }
   }
-  shiny::runApp(system.file("shiny", package = "ibdsim2"))
+  
+  suppressPackageStartupMessages({
+    shiny::runApp(system.file("shiny", package = "ibdsim2"), launch.browser = TRUE)
+  })
 }
