@@ -23,14 +23,18 @@ knitr::opts_chunk$set(
 
 <br>
   
-> <span style="color:red; font-size:150%"> Try the online app for visualising IBD distributions: [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
+<span style="color:red; font-size:150%"> NEWS! Updated online app for IBD simulations: [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
 
-<br>
+As of version 2.1.0, the shiny app is integrated as part of the package. To run it locally, simply run the command
+```{r eval = FALSE}
+ibdsim2::launchApp()
+```
+
 
 ## Introduction
 The purpose of **ibdsim2** is to simulate and analyse the gene flow in pedigrees. In particular, such simulations can be used to study distributions of chromosomal segments shared _identical-by-descent_ (IBD) by pedigree members. In each meiosis, the recombination process is simulated using sex specific recombination rates in the human genome ([Halldorsson et al., 2019](https://doi.org/10.1126/science.aau1043)), or with recombination maps provided by the user. Additional features include calculation of realised relatedness coefficients, distribution plots of IBD segments, and estimation of two-locus relatedness coefficients.
 
-**ibdsim2** is part of the [ped suite](https://magnusdv.github.io/pedsuite/) collection of packages for pedigree analysis in R. A detailed presentation of these packages, including a separate chapter on **ibdsim2**, is available in the book [Pedigree analysis in R](https://www.google.com/books/edition/Pedigree_Analysis_in_R/uhkIEAAAQBAJ) (Vigeland, 2021).
+**ibdsim2** is part of the [pedsuite](https://magnusdv.github.io/pedsuite/) collection of packages for pedigree analysis in R. A detailed presentation of these packages, including a separate chapter on **ibdsim2**, is available in the book [Pedigree analysis in R](https://www.google.com/books/edition/Pedigree_Analysis_in_R/uhkIEAAAQBAJ) (Vigeland, 2021).
 
 ## Installation
 To get **ibdsim2**, install from CRAN as follows:
@@ -63,7 +67,7 @@ chr1 = loadMap("decode19", chrom = 1)
 
 Now run the simulation! The `seed` argument ensures reproducibility.
 ```{r quartet-sim}
-sim = ibdsim(x, N = 1, map = chr1, seed = 1234, verbose = F)
+sim = ibdsim(x, N = 1, map = chr1, seed = 1, verbose = F)
 ```
 
 The output of `ibdsim()` is a matrix (or a list of matrices, if `N > 1`). Here are the first few rows of the simulation we just made:
@@ -75,8 +79,8 @@ Each row of the matrix corresponds to a segment of the genome, and describes the
 
 The function `haploDraw()` interprets the founder alleles as colours and draws the resulting haplotypes onto the pedigree. See `?haploDraw` for an explanation of `pos` and other arguments.
 
-```{r quartet-haplo, fig.height = 3.5, fig.width = 3.5}
-haploDraw(x, sim, pos = c(2, 4, 1, 1))
+```{r quartet-haplo, fig.height = 3.5, fig.width = 3.5, out.width = "45%", fig.keep = "last"}
+haploDraw(x, sim, pos = c(2, 4, 2, 4))
 ```
 
 ## Example 2: Distributions of IBD segments
@@ -113,4 +117,4 @@ plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
 
 We conclude that the three distributions are almost completely disjoint. Hence the three relationships can typically be distinguished on the basis of their IBD segments, if these can be determined accurately enough.
 
-*A Shiny app for visualising IBD distributions is now available here: https://magnusdv.shinyapps.io/ibdsim2-shiny/.*
+*A Shiny app for visualising IBD distributions is available here: https://magnusdv.shinyapps.io/ibdsim2-shiny/.*

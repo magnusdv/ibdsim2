@@ -13,11 +13,16 @@ status](https://www.r-pkg.org/badges/version/ibdsim2)](https://CRAN.R-project.or
 
 <br>
 
-> <span style="color:red; font-size:150%"> Try the online app for
-> visualising IBD distributions:
-> [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
+<span style="color:red; font-size:150%"> NEWS! Updated online app for
+IBD simulations:
+[ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
 
-<br>
+As of version 2.1.0, the shiny app is integrated as part of the package.
+To run it locally, simply run the command
+
+``` r
+ibdsim2::launchApp()
+```
 
 ## Introduction
 
@@ -32,9 +37,9 @@ include calculation of realised relatedness coefficients, distribution
 plots of IBD segments, and estimation of two-locus relatedness
 coefficients.
 
-**ibdsim2** is part of the [ped
-suite](https://magnusdv.github.io/pedsuite/) collection of packages for
-pedigree analysis in R. A detailed presentation of these packages,
+**ibdsim2** is part of the
+[pedsuite](https://magnusdv.github.io/pedsuite/) collection of packages
+for pedigree analysis in R. A detailed presentation of these packages,
 including a separate chapter on **ibdsim2**, is available in the book
 [Pedigree analysis in
 R](https://www.google.com/books/edition/Pedigree_Analysis_in_R/uhkIEAAAQBAJ)
@@ -84,7 +89,7 @@ chr1 = loadMap("decode19", chrom = 1)
 Now run the simulation! The `seed` argument ensures reproducibility.
 
 ``` r
-sim = ibdsim(x, N = 1, map = chr1, seed = 1234, verbose = F)
+sim = ibdsim(x, N = 1, map = chr1, seed = 1, verbose = F)
 ```
 
 The output of `ibdsim()` is a matrix (or a list of matrices, if
@@ -92,13 +97,13 @@ The output of `ibdsim()` is a matrix (or a list of matrices, if
 
 ``` r
 head(sim)
-#>      chrom   startMB      endMB   startCM      endCM 1:p 1:m 2:p 2:m 3:p 3:m 4:p 4:m
-#> [1,]     1  1.431813   2.933317  0.000000   1.594905   1   2   3   4   1   3   2   4
-#> [2,]     1  2.933317  17.311158  1.594905  32.879029   1   2   3   4   2   3   2   4
-#> [3,]     1 17.311158  20.230184 32.879029  40.490928   1   2   3   4   2   3   2   3
-#> [4,]     1 20.230184  54.938719 40.490928  77.308688   1   2   3   4   2   3   2   4
-#> [5,]     1 54.938719  58.982628 77.308688  83.152790   1   2   3   4   2   4   2   4
-#> [6,]     1 58.982628 159.794234 83.152790 154.725693   1   2   3   4   1   4   2   4
+#>      chrom   startMB     endMB   startCM     endCM 1:p 1:m 2:p 2:m 3:p 3:m 4:p 4:m
+#> [1,]     1  1.431813  4.578604  0.000000  8.166722   1   2   3   4   1   3   2   3
+#> [2,]     1  4.578604  9.307115  8.166722 17.248719   1   2   3   4   1   4   2   3
+#> [3,]     1  9.307115 19.734735 17.248719 39.094436   1   2   3   4   2   4   2   3
+#> [4,]     1 19.734735 22.758328 39.094436 43.760248   1   2   3   4   2   4   1   3
+#> [5,]     1 22.758328 41.436476 43.760248 66.998786   1   2   3   4   2   4   1   4
+#> [6,]     1 41.436476 61.366417 66.998786 86.491160   1   2   3   4   2   4   1   3
 ```
 
 Each row of the matrix corresponds to a segment of the genome, and
@@ -112,10 +117,10 @@ draws the resulting haplotypes onto the pedigree. See `?haploDraw` for
 an explanation of `pos` and other arguments.
 
 ``` r
-haploDraw(x, sim, pos = c(2, 4, 1, 1))
+haploDraw(x, sim, pos = c(2, 4, 2, 4))
 ```
 
-<img src="man/figures/README-quartet-haplo-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-quartet-haplo-1.png" width="45%" style="display: block; margin: auto;" />
 
 ## Example 2: Distributions of IBD segments
 
@@ -163,7 +168,7 @@ s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 6.27 secs
+#> Total time used: 2.23 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option
@@ -182,5 +187,5 @@ Hence the three relationships can typically be distinguished on the
 basis of their IBD segments, if these can be determined accurately
 enough.
 
-*A Shiny app for visualising IBD distributions is now available here:
+*A Shiny app for visualising IBD distributions is available here:
 <https://magnusdv.shinyapps.io/ibdsim2-shiny/>.*
