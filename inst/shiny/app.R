@@ -2,10 +2,11 @@ suppressPackageStartupMessages({
   library(shiny)
   library(shinyBS)
   library(shinyjs)
-  library(glue)
-  library(ibdsim2)
+  library(pedtools)
   library(ribd)
+  library(ibdsim2)
   library(lubridate)
+  library(glue)
   library(zip)
 })
 
@@ -52,7 +53,7 @@ mylink("Halldorsson et al., 2019", "https://doi.org/10.1126/science.aau1043"), "
 fluidRow(
   
   # Left sidebar
-  mySidebarPanel(#style = "min-width: 185px;",
+  mySidebarPanel( # style = "padding-top: 5px; padding-bottom:5px",
     h4("Pedigree 1"),
     selectizeInput("builtin1", "Built-in pedigree", selected = "Siblings", 
                    choices = c(Choose = "", names(BUILTIN_PEDS)), size = 10),
@@ -84,6 +85,7 @@ fluidRow(
       column(9, actionButton("simulate1", "Simulate!", width = "100%", class = "btn btn-primary btn-lg")),
       column(3, style = "padding-left:5px;", uiOutput("icon1"))
     ),
+   # actionButton("rcode1", "R code"),
   ),
   
   # Middle region: Plots
@@ -96,7 +98,7 @@ fluidRow(
   ),
   
   # Right sidebar
-  mySidebarPanel(#style = "min-width: 185px;",
+  mySidebarPanel( # style = "padding-top: 5px; padding-bottom:5px",
     h4("Pedigree 2"),
     selectizeInput("builtin2", "Built-in pedigree", selected = "", 
                    choices = c(Choose = "", names(BUILTIN_PEDS)), size = 10),
@@ -161,7 +163,7 @@ fluidRow(
   p(style = "font-size:small", "This is version", .VERSION, "of ibdsim2 (",
   mylink("changelog", "https://github.com/magnusdv/ibdsim2/blob/master/NEWS.md"), ").",
   "For bug reports, feature requests, or other comments, please file an issue at ", 
-  mylink("https://github.com/magnusdv/ibdsim2-shiny/issues"), "."),
+  mylink("https://github.com/magnusdv/ibdsim2/issues"), "."),
 )
 
 
@@ -226,7 +228,7 @@ server = function(input, output, session) {
   })
 
   map2 = reactive({
-    chr = switch(input$chrom1, aut = 1:22, X = 23)
+    chr = switch(input$chrom2, aut = 1:22, X = 23)
     unif = tolower(input$unit) == "cm"
     loadMap("decode19", chrom = chr, uniform = unif, sexAverage = input$sexspec2 == "Off")
   })
@@ -358,6 +360,33 @@ server = function(input, output, session) {
   })
   
 
+# Generate R code----------------------------------------------------------
+
+  # codeTxt = reactiveVal(NULL)
+  # 
+  # # Render in modal dialog, created with createCodeModal when pressing rcode button (see below)
+  # output$showCode = renderText(req(codeTxt()))
+  # 
+  # output$saveCode = downloadHandler(
+  #   filename = "ibdsim.R",
+  #   content = function(con) {
+  #     cat(codeTxt(), file = con)
+  #     removeModal()
+  #   },
+  #   contentType = "text/plain"
+  # )
+  # 
+  # observeEvent(input$rcode1, {
+  #   code = generateCode(ped = ped1(),
+  #                       ids = ids1(),
+  #                       chrom = input$chrom1, model = input$model1, 
+  #                       sexspec = input$sexspec1, cutoff = input$cutoff1, 
+  #                       analysis = input$analysis, 
+  #                       unit = input$unit, nsims = input$nsims, seed = input$seed1)
+  #   codeTxt(code)
+  #   showModal(createCodeModal())
+  # })
+  
 # Download data -----------------------------------------------------------
 
   allParams1 = reactive(list(
@@ -380,7 +409,7 @@ server = function(input, output, session) {
       tmpdir = tempdir()
       files = saveData(segmentData1(), segmentData2(), params1 = allParams1(), 
                        params2 = allParams2(), version = .VERSION, tmpdir = tmpdir)
-      print(files)
+    
       if(!length(files)) return(errModal("No data to save"))
       zip::zip(con, files, root = tmpdir)
     }, 

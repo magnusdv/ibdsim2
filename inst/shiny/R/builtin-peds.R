@@ -1,5 +1,7 @@
+library(pedtools, quietly = TRUE)
+
 BUILTIN_PEDS = list(        
-  "Trio" = nuclearPed(1),
+  "Trio" = pedtools::nuclearPed(1),
   "Siblings" = nuclearPed(2),
   "Sibship of 3" = nuclearPed(3, sex = c(1,2,1)),
   "Half-sibs, maternal" = halfSibPed(1, 1, type = "maternal"),
@@ -28,6 +30,3 @@ BUILTIN_PEDS = list(
   "Full-sib incest" = fullSibMating(1),
   "Half-sib incest" = halfSibStack(2)
 )
-
-
-

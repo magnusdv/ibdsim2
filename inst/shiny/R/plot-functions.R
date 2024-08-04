@@ -99,7 +99,7 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL) {
   
   (g1 | (g2 / g3 / g4)) & # plot_layout(guides = 'collect') & 
   scale_color_manual(values = cols) & 
-  theme(plot.margin = margin(10,10,10,10))
+  theme(plot.margin = margin(10,10,5,10))
 }
 
 

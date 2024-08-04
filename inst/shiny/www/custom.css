@@ -14,6 +14,9 @@
 
 #unit, #analysis {margin-bottom: 10px}
 
+#rcode1 {background: lightgoldenrodyellow; font-family:monospace; font-weight: bolder; padding:0px; 
+         width: 100%; margin-top: 10px; margin-bottom:0}
+
 .progress.shiny-file-input-progress { display: none !important;}
 
 .form-control {height: 30px; padding-left: 8px; padding-right: 4px;}
