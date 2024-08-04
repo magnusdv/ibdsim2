@@ -38,17 +38,15 @@ ui = fluidPage(
   
   p(style = "margin-bottom: 4px", bold("Purpose: "),
 "Estimate and visualise distributions of genomic segments shared identical-by-descent (IBD) between related individuals, 
-or within inbred individuals (autozygosity)."),
-  
-  p(style = "margin-bottom: 4px", bold("Method: "), 
-"Recombination is simulated down through the pedigree, using detailed, sex-specific crossover rates for the human genome (",
+or within inbred individuals (autozygosity). Recombination is simulated down through the pedigree, using detailed, sex-specific crossover rates for the human genome (",
 mylink("Halldorsson et al., 2019", "https://doi.org/10.1126/science.aau1043"), ")."),
 
   p(style = "margin-bottom: 4px", bold("More information: "),
     "This program is a frontend for the R package ", mylink("ibdsim2", "https://github.com/magnusdv/ibdsim2"), 
     ", which is part of the ", mylink("pedsuite", "https://magnusdv.github.io/pedsuite"), " ecosystem for pedigree analysis.", 
-    "Details about the simulations and the various parameters can be found in the package documentation, and in the book ",
-    mylink("Pedigree analysis in R", "https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2"), "."), 
+    "Details about the simulations can be found in the package documentation, and in the book ",
+    mylink("Pedigree analysis in R", "https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2"), 
+    ". Please cite this book if you use the app in your work."), 
 
 # Widgets --------------------------------------------------------------
 fluidRow(
@@ -92,8 +90,8 @@ fluidRow(
   # Middle region: Plots
   myMainPanel(
     fluidRow(
-      column(6, align = "center", plotOutput("pedplot1", height = "300px")), # width = "300px",
-      column(6, align = "center", plotOutput("pedplot2", height = "300px"))
+      column(6, align = "center", plotOutput("pedplot1", height = "295px")),
+      column(6, align = "center", plotOutput("pedplot2", height = "295px"))
     ),
     plotOutput("ibdplot", width = "100%"),
   ),

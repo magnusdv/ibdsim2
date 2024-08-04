@@ -50,7 +50,8 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL) {
           legend.position.inside = c(.99, .99),
           legend.justification = c("right", "top"),
           legend.key.width = unit(1.4, "cm"),
-          legend.text = element_text(size = 16))
+          legend.text = element_text(size = 16), 
+          plot.margin = margin(r = 40))
   
   # Plot 2: Total length distribution
   g2 = ggplot(perSim, aes(.data$Total, color = .data$Relationship)) + 
@@ -98,8 +99,7 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL) {
   }
   
   (g1 | (g2 / g3 / g4)) & # plot_layout(guides = 'collect') & 
-  scale_color_manual(values = cols) & 
-  theme(plot.margin = margin(10,10,5,10))
+  scale_color_manual(values = cols)
 }
 
 

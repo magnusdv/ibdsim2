@@ -1,6 +1,6 @@
 .body {font-size: small}
 
-.well {padding-top: 10px;}
+.well {padding-top: 10px; margin-bottom: 10px}
 
 .selectize-dropdown {width: 250px !important;}
 
@@ -8,7 +8,7 @@
 
 .fa-check { font-size:xx-large; color:Lime; margin-top:6px}
 
-#title-h2 {background-color: gray; color: white; padding: 15px}
+#title-h2 {background-color: #008080; color: white; padding: 15px}
 
 #bottomwell1, #bottomwell2 {padding-bottom: 1px; margin-bottom: 10px}
 
