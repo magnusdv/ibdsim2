@@ -168,6 +168,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL,
   
   # Get pedigree layout and scaling
   p = plot(x, draw = FALSE, ...)
+  
   xpos = p$alignment$x
   ypos = p$alignment$y
   

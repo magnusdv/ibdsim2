@@ -1,6 +1,6 @@
 # ibdsim2 2.1.0
 
-This version includes a major update of the *ibdsim2 shiny app*, which from now on is shipped as part of the ibdsim2 package (in addition to being hosted on `shinyapps.io` as before). 
+This version includes a major update of the shiny app frontend to **ibdsim2**. Previously developed in a separate repository (accessible at https://github.com/magnusdv/ibdsim2-legacy/), the app is now included as part of the ibdsim2 package, and can be run locally with `ibdsim2::launchApp()`. The live version is available at https://magnusdv.shinyapps.io/ibdsim2-shiny/.
 
 ## New app features
 
