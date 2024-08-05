@@ -225,13 +225,15 @@ server = function(input, output, session) {
   map1 = reactive({
     chr = switch(input$chrom1, aut = 1:22, X = 23)
     unif = tolower(input$unit) == "cm"
-    loadMap("decode19", chrom = chr, uniform = unif, sexAverage = input$sexspec1 == "Off")
+    sexspec = if(input$chrom1 == "X") TRUE else input$sexspec1 == "On"
+    loadMap("decode19", chrom = chr, uniform = unif, sexAverage = !sexspec)
   })
 
   map2 = reactive({
     chr = switch(input$chrom2, aut = 1:22, X = 23)
     unif = tolower(input$unit) == "cm"
-    loadMap("decode19", chrom = chr, uniform = unif, sexAverage = input$sexspec2 == "Off")
+    sexspec = if(input$chrom2 == "X") TRUE else input$sexspec2 == "On"
+    loadMap("decode19", chrom = chr, uniform = unif, sexAverage = !sexspec)
   })
   
 
@@ -241,8 +243,8 @@ server = function(input, output, session) {
   sim2 = reactiveVal(NULL)
  
   # Reset if anything changes
-  observe({ped1(); ids1(); map1(); input$nsims; input$seed1; input$analysis; sim1(NULL); enable("simulate1")})
-  observe({ped2(); ids2(); map2(); input$nsims; input$seed2; input$analysis; sim2(NULL); enable("simulate2")})
+  observe({ped1(); ids1(); map1(); input$model1; input$nsims; input$seed1; input$analysis; sim1(NULL); enable("simulate1")})
+  observe({ped2(); ids2(); map2(); input$model2; input$nsims; input$seed2; input$analysis; sim2(NULL); enable("simulate2")})
   
   # Icons
   output$icon1 = renderUI(icon(name = if(is.null(sim1())) "arrow-left" else "check"))
