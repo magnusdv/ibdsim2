@@ -1,4 +1,4 @@
-suppressPackageStartupMessages({
+suppressMessages(suppressPackageStartupMessages({
   library(shiny)
   library(shinyBS)
   library(shinyjs)
@@ -8,7 +8,7 @@ suppressPackageStartupMessages({
   library(lubridate)
   library(glue)
   library(zip)
-})
+}))
 
 
 .VERSION = packageDescription("ibdsim2")$Version
@@ -422,4 +422,4 @@ server = function(input, output, session) {
 }
 
 # Run the application 
-shinyApp(ui = ui, server = server)
+suppressPackageStartupMessages(shinyApp(ui = ui, server = server))
