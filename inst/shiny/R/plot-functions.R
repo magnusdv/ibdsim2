@@ -1,11 +1,12 @@
 library(ggplot2)
 library(patchwork)
 
-plotped = function(ped, ids, col, title, margin = 0.5) {
+plotped = function(ped, ids, col, title, margin = 0.5, straightlegs = FALSE) {
   fill = list(ids) |> setNames(col)
+  align = if(straightlegs) c(0,0) else c(1.5, 2)
   suppressWarnings(
-    plot(ped, fill = fill, title = title, cex.main = 1.5,
-         cex = 1.25, autoscale = TRUE,  margin = margin)
+    plot(ped, fill = fill, title = title, cex.main = 1.5, cex = 1.25, 
+         autoscale = TRUE,  margin = margin, align = align)
   )
 }
 

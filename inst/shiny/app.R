@@ -310,7 +310,8 @@ server = function(input, output, session) {
   })
   
 # Plots ----------------------------------------------------------
-
+  
+  # Red and blue used consistently for the two pedigrees
   COLS = c(2, 4)
   
   output$pedplot1 = renderPlot({
@@ -318,9 +319,11 @@ server = function(input, output, session) {
     lab = input$label1
     plotWidth = session$clientData$output_pedplot1_width
     mar = calculateMargin(plotWidth)
+    isBuiltin = input$builtin1 != ""
     
     tryCatch(
-      plotped(ped, ids = ids1(), col = COLS[1], title = lab, margin = mar),
+      plotped(ped, ids = ids1(), col = COLS[1], title = lab, margin = mar, 
+              straightlegs = isBuiltin),
       error = function(e) {
         plot.new(); box(which = "outer", col = 1); title(lab); 
         text(x = 0.5, y = 0.6, parsePlotError(e), cex = 1.1, col = 2)
@@ -332,9 +335,11 @@ server = function(input, output, session) {
     lab = input$label2
     plotWidth = session$clientData$output_pedplot2_width
     mar = calculateMargin(plotWidth)
+    isBuiltin = input$builtin2 != ""
     
     tryCatch(
-      plotped(ped, ids = ids2(), col = COLS[2], title = lab, margin = mar),
+      plotped(ped, ids = ids2(), col = COLS[2], title = lab, margin = mar,
+              straightlegs = isBuiltin),
       error = function(e) {
         plot.new(); box(which = "outer", col = 1); title(lab); 
         text(x = 0.5, y = 0.6, parsePlotError(e), cex = 1.1, col = 2)
