@@ -56,7 +56,7 @@ fluidRow(
   # Left sidebar
   mySidebarPanel( # style = "padding-top: 5px; padding-bottom:5px",
     h4("Pedigree 1"),
-    selectizeInput("builtin1", "Built-in pedigree", selected = "Siblings", 
+    selectizeInput("builtin1", "Built-in pedigree", selected = "Half-sibs, maternal", 
                    choices = c(Choose = "", names(BUILTIN_PEDS)), size = 10),
     fileInput("loadped1", "Load ped file", buttonLabel = icon("folder-open"),
               accept = c(".ped", ".txt"), width = "100%", placeholder = NULL),
