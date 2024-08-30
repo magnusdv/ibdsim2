@@ -177,33 +177,34 @@ server = function(input, output, session) {
   ids1 = reactive(setdiff(trimws(strsplit(input$ids1, ",")[[1]]), ""))
   ids2 = reactive(setdiff(trimws(strsplit(input$ids2, ",")[[1]]), ""))
   
-  observeEvent(input$builtin1, ped1(BUILTIN_PEDS[[req(input$builtin1)]]))
-  observeEvent(input$builtin2, ped2(BUILTIN_PEDS[[req(input$builtin2)]]))
+  observeEvent(input$builtin1, {
+    choice = req(input$builtin1)
+    ped1(BUILTIN_PEDS[[choice]])
+    updateTextInput(session, "ids1", value = toString(DEFAULT_IDS[[choice]]))
+  })
   
+  observeEvent(input$builtin2, {
+    choice = req(input$builtin2)
+    ped2(BUILTIN_PEDS[[choice]])
+    updateTextInput(session, "ids2", value = toString(DEFAULT_IDS[[choice]]))
+  })
+
   observeEvent(input$loadped1, {
     x = tryCatch(loadPed(input$loadped1$datapath), 
                    error = errModal, warning = errModal)
     ped1(req(x))
-    updateSelectizeInput(session, "builtin1", selected = "")
+    updateTextInput(session, "ids1", value = "")
+    isolate(updateSelectizeInput(session, "builtin1", selected = ""))
   })
   
   observeEvent(input$loadped2, {
     ped = tryCatch(loadPed(input$loadped2$datapath),
                    error = errModal, warning = errModal)
     ped2(req(ped))
-    updateSelectizeInput(session, "builtin2", selected = "")
+    updateTextInput(session, "ids2", value = "")
+    isolate(updateSelectizeInput(session, "builtin2", selected = ""))
   })
 
-  observeEvent(ped1(), {
-    ids = if(!is.ped(x <- ped1())) "" else toString(leaves(x))
-    updateTextInput(session, "ids1", value = ids)
-  })
-  
-  observeEvent(ped2(), {
-    ids = if(!is.ped(x <- ped2())) "" else toString(leaves(x))
-    updateTextInput(session, "ids2", value = ids)
-  })
-  
   observeEvent(input$chrom1, {
     if(input$chrom1 == "X") {
       updateRadioButtons(session, "sexspec1", selected = "On")

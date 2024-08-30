@@ -30,3 +30,11 @@ BUILTIN_PEDS = list(
   "Full-sib incest" = fullSibMating(1),
   "Half-sib incest" = halfSibStack(2)
 )
+# Default individuals to be indicated when a pedigree is loaded
+DEFAULT_IDS = lapply(BUILTIN_PEDS, leaves)
+
+# A few special cases
+DEFAULT_IDS[["Grandparent (female line)"]] = c(2,5)
+DEFAULT_IDS[["Grandparent (male line)"]] = c(1,5)
+DEFAULT_IDS[["Great grandp (female line)"]] = c(2,7)
+DEFAULT_IDS[["Great grandp (male line)"]] = c(1,7)
