@@ -167,14 +167,17 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL,
     L = sum(ibd[, endCol] - ibd[, startCol])
   
   # Get pedigree layout and scaling
-  p = plot(x, draw = FALSE, ...)
+  alignment  = .pedAlignment(x, ...)
+  annotation = .pedAnnotation(x, ...)
+  scaling    = .pedScaling(alignment, annotation)
   
-  xpos = p$alignment$x
-  ypos = p$alignment$y
+  # Symbol coordinates
+  xpos = alignment$x
+  ypos = alignment$y
   
   # Height/width of ped symbols
-  symh = p$scaling$boxh
-  symw = p$scaling$boxw
+  symh = scaling$boxh
+  symw = scaling$boxw
 
   H = height * symh
   W = width  * symw
@@ -202,13 +205,14 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL,
   }
   
   # Possibly extend plot limits (user coords)
-  usr = p$scaling$usr
+  usr = scaling$usr
   xlim = c(min(usr[1:2], X - SEP/2 - W, na.rm = TRUE),
            max(usr[1:2], X + SEP/2 + W, na.rm = TRUE))
   ylim = c(min(usr[3:4], Y - H/2, na.rm = TRUE),
            max(usr[3:4], Y + H/2, na.rm = TRUE))
 
-  pedtools::drawPed(p$alignment, p$annotation, xlim = xlim, ylim = ylim, keep.par = TRUE, ...)
+  # Draw the pedigree
+  p = pedtools::drawPed(alignment, annotation, xlim = xlim, ylim = ylim, keep.par = TRUE, ...)
   
   # Draw rectangles!
   for(i in seq_len(N)) {  

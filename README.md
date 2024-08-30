@@ -168,7 +168,7 @@ s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 2.23 secs
+#> Total time used: 2.94 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option

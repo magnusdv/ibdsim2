@@ -79,7 +79,7 @@ Each row of the matrix corresponds to a segment of the genome, and describes the
 
 The function `haploDraw()` interprets the founder alleles as colours and draws the resulting haplotypes onto the pedigree. See `?haploDraw` for an explanation of `pos` and other arguments.
 
-```{r quartet-haplo, fig.height = 3.5, fig.width = 3.5, out.width = "45%", fig.keep = "last"}
+```{r quartet-haplo, fig.height = 3.5, fig.width = 3.5, out.width = "45%"}
 haploDraw(x, sim, pos = c(2, 4, 2, 4))
 ```
 
