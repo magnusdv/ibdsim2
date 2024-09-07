@@ -1,7 +1,7 @@
 Type: Package
 Package: ibdsim2
 Title: Simulation of Chromosomal Regions Shared by Family Members
-Version: 2.1.0.9000
+Version: 2.1.1
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9134-4962"))
@@ -11,10 +11,10 @@ Description: Simulation of segments shared identical-by-descent (IBD) by
     <doi:10.1126/science.aau1043>), phased chromosomes are simulated for
     all pedigree members. Applications include calculation of realised
     relatedness coefficients and IBD segment distributions. 'ibdsim2' is
-    part of the 'ped suite' collection of packages for pedigree analysis.
+    part of the 'pedsuite' collection of packages for pedigree analysis.
     A detailed presentation of the 'ped suite', including a separate
     chapter on 'ibdsim2', is available in the book 'Pedigree analysis in
-    R' (Vigeland, 2021, ISBN:9780128244302). A 'shiny' app for visualising
+    R' (Vigeland, 2021, ISBN:9780128244302). A 'Shiny' app for visualising
     and comparing IBD distributions is available at
     <https://magnusdv.shinyapps.io/ibdsim2-shiny/>.
 License: GPL-3

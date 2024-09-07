@@ -1,3 +1,17 @@
+# ibdsim2 2.1.1
+
+## App updates
+
+* Tweaked the labels of the built-in pedigrees (some were confusingly named). 
+* Added a few more inbred built-in pedigrees.
+* Revised the default individuals to be selected for each built-in pedigree.
+* Changed the pedigree shown at startup to half siblings.
+
+## Package updates
+
+* Fixed a bug in `haploDraw()` causing an additional empty plot in some situations.
+
+
 # ibdsim2 2.1.0
 
 This version includes a major update of the shiny app frontend to **ibdsim2**. Previously developed in a separate repository (accessible at https://github.com/magnusdv/ibdsim2-legacy/), the app is now included as part of the ibdsim2 package, and can be run locally with `ibdsim2::launchApp()`. The live version is available at https://magnusdv.shinyapps.io/ibdsim2-shiny/.
