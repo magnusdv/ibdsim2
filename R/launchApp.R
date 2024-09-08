@@ -12,7 +12,7 @@
 #'
 #' @export
 launchApp = function() {
-  packages = c("shiny", "shinyjs", "lubridate")
+  packages = c("shiny", "shinyjs", "lubridate", "patchwork", "zip")
   for(pkg in packages) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
       msg = sprintf("Package '%s' is required but not installed.\nPlease run `install.packages('%s')` and try again", pkg, pkg)

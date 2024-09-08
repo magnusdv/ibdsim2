@@ -1,10 +1,12 @@
-suppressWarnings(suppressPackageStartupMessages({
+suppressMessages(suppressPackageStartupMessages({
   library(shiny)
   library(shinyjs)
   library(pedtools)
   library(ribd)
   library(ibdsim2)
   library(lubridate)
+  library(ggplot2)
+  library(patchwork)
   library(glue)
   library(zip)
 }))

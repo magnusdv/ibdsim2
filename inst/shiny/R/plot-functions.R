@@ -1,5 +1,3 @@
-library(ggplot2)
-library(patchwork)
 
 plotped = function(ped, ids, col, title, margin = 0.5, straightlegs = FALSE) {
   fill = list(ids) |> setNames(col)

@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Simulation of segments shared identical-by-descent (IBD) by pedigree members. Using sex specific recombination rates along the human genome (Halldorsson et al. (2019) \doi{10.1126/science.aau1043}), phased chromosomes are simulated for all pedigree members. Applications include calculation of realised relatedness coefficients and IBD segment distributions. 'ibdsim2' is part of the 'ped suite' collection of packages for pedigree analysis. A detailed presentation of the 'ped suite', including a separate chapter on 'ibdsim2', is available in the book 'Pedigree analysis in R' (Vigeland, 2021, ISBN:9780128244302). A 'shiny' app for visualising and comparing IBD distributions is available at \url{https://magnusdv.shinyapps.io/ibdsim2-shiny/}.
+Simulation of segments shared identical-by-descent (IBD) by pedigree members. Using sex specific recombination rates along the human genome (Halldorsson et al. (2019) \doi{10.1126/science.aau1043}), phased chromosomes are simulated for all pedigree members. Applications include calculation of realised relatedness coefficients and IBD segment distributions. 'ibdsim2' is part of the 'pedsuite' collection of packages for pedigree analysis. A detailed presentation of the 'pedsuite', including a separate chapter on 'ibdsim2', is available in the book 'Pedigree analysis in R' (Vigeland, 2021, ISBN:9780128244302). A 'Shiny' app for visualising and comparing IBD distributions is available at \url{https://magnusdv.shinyapps.io/ibdsim2-shiny/}.
 }
 \seealso{
 Useful links:
