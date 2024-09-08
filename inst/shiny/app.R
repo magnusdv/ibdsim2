@@ -22,6 +22,7 @@ suppressMessages(suppressPackageStartupMessages({
 ui = fluidPage(
   includeCSS("www/custom.css"),
   tags$head(includeHTML(system.file("shiny/www/GA.html", package = "ibdsim2"))),
+  tags$head(tags$script(src = "scripts.js")),
   
   useShinyjs(),
   useBusyIndicators(),
@@ -172,6 +173,8 @@ fluidRow(
 # Server logic
 server = function(input, output, session) {
 
+  observeEvent(input$browserClosed, stopApp())
+  
   ped1 = reactiveVal(NULL)
   ped2 = reactiveVal(NULL)
   
@@ -430,5 +433,5 @@ server = function(input, output, session) {
 
 # Run the application 
 suppressMessages(suppressPackageStartupMessages(
-  shinyApp(ui = ui, server = server)
+  shinyApp(ui = ui, server = server, options = list(launch.browser = TRUE))
 ))
