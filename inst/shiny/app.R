@@ -1,6 +1,5 @@
-suppressMessages(suppressPackageStartupMessages({
+suppressWarnings(suppressPackageStartupMessages({
   library(shiny)
-  library(shinyBS)
   library(shinyjs)
   library(pedtools)
   library(ribd)
@@ -428,4 +427,6 @@ server = function(input, output, session) {
 }
 
 # Run the application 
-suppressPackageStartupMessages(shinyApp(ui = ui, server = server))
+suppressMessages(suppressPackageStartupMessages(
+  shinyApp(ui = ui, server = server)
+))
