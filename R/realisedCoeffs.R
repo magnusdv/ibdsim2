@@ -34,7 +34,9 @@
 #' @param id,ids A vector with one or two ID labels.
 #' @param unit Either "mb" (megabases) or "cm" (centiMorgan); the length unit
 #'   for genomic segments. Default is "cm", which normally gives lower variance.
-#'   
+#' @param merge A logical, by default TRUE, indicating if adjacent IBD segments
+#'   should be merged before calculating summary statistics.
+#'
 #' @examples
 #'
 #' # Realised IBD coefficients between full siblings
@@ -66,7 +68,7 @@ NULL
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedInbreeding = function(sims, id = NULL, unit = "cm") {
+realisedInbreeding = function(sims, id = NULL, unit = "cm", merge = TRUE) {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -90,10 +92,11 @@ realisedInbreeding = function(sims, id = NULL, unit = "cm") {
   # Summarise each simulation
   resList = lapply(sims, function(s) {
     
-    if(length(idsims) > 1 || !"Aut" %in% colnames(s)) {
-      s0 = alleleFlow(s, ids = id, addState = TRUE)
-      s = mergeSegments(s0, by = "Aut")
-    }
+    if(length(idsims) > 1 || !"Aut" %in% colnames(s))
+      s = alleleFlow(s, ids = id, addState = TRUE)
+    
+    if(merge)
+      s = mergeSegments(s, by = "Aut")
 
     # Which segments are autozygous
     isAut = as.logical(s[, "Aut"])
@@ -126,7 +129,7 @@ realisedInbreeding = function(sims, id = NULL, unit = "cm") {
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedKinship = function(sims, ids = NULL, unit = "cm") {
+realisedKinship = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -150,10 +153,11 @@ realisedKinship = function(sims, ids = NULL, unit = "cm") {
   # Summarise each simulation
   resList = vapply(sims, function(s) {
     
-    if(!"Sigma" %in% colnames(s)) {
-      s0 = alleleFlow(s, ids = ids, addState = TRUE)
-      s = mergeSegments(s0, by = "Sigma")
-    }
+    if(!"Sigma" %in% colnames(s))
+      s = alleleFlow(s, ids = ids, addState = TRUE)
+    
+    if(merge)
+      s = mergeSegments(s, by = "Sigma")
     
     len = s[, endCol] - s[, startCol]
     jacq = s[, 'Sigma']  
@@ -177,7 +181,7 @@ realisedKinship = function(sims, ids = NULL, unit = "cm") {
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedKappa = function(sims, ids = NULL, unit = "cm") {
+realisedKappa = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -200,11 +204,12 @@ realisedKappa = function(sims, ids = NULL, unit = "cm") {
   
   resList = lapply(sims, function(s) {
     
-    if(!"IBD" %in% colnames(s)) {
-      s0 = alleleFlow(s, ids = ids, addState = TRUE)
-      s = mergeSegments(s0, by = "IBD")
-    }
+    if(!"IBD" %in% colnames(s))
+      s = alleleFlow(s, ids = ids, addState = TRUE)
     
+    if(merge)
+      s = mergeSegments(s, by = "IBD")
+ 
     len = s[, endCol] - s[, startCol]
     ibd = s[, 'IBD']  
     
@@ -232,7 +237,7 @@ realisedKappa = function(sims, ids = NULL, unit = "cm") {
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedIdentity = function(sims, ids = NULL, unit = "cm") {
+realisedIdentity = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -255,10 +260,12 @@ realisedIdentity = function(sims, ids = NULL, unit = "cm") {
   
   resList = lapply(sims, function(s) {
     
-    if(!"Sigma" %in% colnames(s)) {
-      s0 = alleleFlow(s, ids = ids, addState = TRUE)
-      s = mergeSegments(s0, by = "Sigma")
-    }
+    if(!"Sigma" %in% colnames(s))
+      s = alleleFlow(s, ids = ids, addState = TRUE)
+    
+    if(merge)
+      s = mergeSegments(s, by = "Sigma")
+    
     
     len = s[, endCol] - s[, startCol]
     j = s[, 'Sigma']  
