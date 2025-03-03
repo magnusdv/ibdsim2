@@ -19,7 +19,7 @@
 
 .progress.shiny-file-input-progress { display: none !important;}
 
-.form-control {height: 30px; padding-left: 8px; padding-right: 4px;}
+.form-control {height: 30px; padding-left: 8px; padding-right: 4px; line-height:1em}
 .shiny-input-textarea.form-control {min-height: 70px}
 
 .shiny-input-number.form-control {padding: 4px 4px 4px 10px; }
