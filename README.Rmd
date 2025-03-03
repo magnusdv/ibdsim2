@@ -23,9 +23,9 @@ knitr::opts_chunk$set(
 
 <br>
   
-<span style="color:red; font-size:150%"> NEWS! Updated online app for IBD simulations: [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
+<span style="color:red; font-size:150%"> Online app for IBD simulations here: [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
 
-As of version 2.1.0, the shiny app is integrated as part of the package. To run it locally, simply run the command
+As of version 2.1.0, the Shiny app is integrated as part of the package. To run it locally, simply run the command
 ```{r eval = FALSE}
 ibdsim2::launchApp()
 ```
@@ -42,10 +42,10 @@ To get **ibdsim2**, install from CRAN as follows:
 install.packages("ibdsim2")
 ```
 
-Alternatively, the latest development version can be installed from GitHub:
+Alternatively, install the latest development version from GitHub:
 ```{r, eval = FALSE}
-# install.packages("devtools") # if needed
-devtools::install_github("magnusdv/ibdsim2")
+# install.packages("remotes")
+remotes::install_github("magnusdv/ibdsim2")
 ```
 
 ## Example 1: A simple simulation

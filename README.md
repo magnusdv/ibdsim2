@@ -13,11 +13,11 @@ status](https://www.r-pkg.org/badges/version/ibdsim2)](https://CRAN.R-project.or
 
 <br>
 
-<span style="color:red; font-size:150%"> NEWS! Updated online app for
-IBD simulations:
-[ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
+<span style="color:red; font-size:150%"> Online app for IBD simulations
+here: [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/)
+</span>
 
-As of version 2.1.0, the shiny app is integrated as part of the package.
+As of version 2.1.0, the Shiny app is integrated as part of the package.
 To run it locally, simply run the command
 
 ``` r
@@ -53,12 +53,11 @@ To get **ibdsim2**, install from CRAN as follows:
 install.packages("ibdsim2")
 ```
 
-Alternatively, the latest development version can be installed from
-GitHub:
+Alternatively, install the latest development version from GitHub:
 
 ``` r
-# install.packages("devtools") # if needed
-devtools::install_github("magnusdv/ibdsim2")
+# install.packages("remotes")
+remotes::install_github("magnusdv/ibdsim2")
 ```
 
 ## Example 1: A simple simulation
@@ -168,7 +167,7 @@ s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 2.94 secs
+#> Total time used: 3.9 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option
