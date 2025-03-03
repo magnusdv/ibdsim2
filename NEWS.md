@@ -1,3 +1,18 @@
+# ibdsim2 2.2.0
+
+## App updates
+
+* `launchApp()` now opens the app in the default browser.
+* The app now stops automatically when the browser is closed (locally).
+* Minor appearance tweaks.
+
+## Other
+
+* Added `merge = TRUE` argument to `realisedKappa()` and other `realised...` functions. Previously, IBD segment merging was handled inconsistently, sometimes causing unexpected results. (Thanks, @mkruijver.)
+* Added all required packages for the app to 'Suggests'.
+* Remove unused `shinyBS` import
+
+
 # ibdsim2 2.1.1
 
 ## App updates
