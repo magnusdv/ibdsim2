@@ -334,3 +334,52 @@ ibdState = function(a1, a2, b1, b2, Xchrom = FALSE) {
   res
 }
 
+
+### Modified from range-utils in IBDsim
+
+# x: list of matrices of two column: start, end
+rangeUnion = function(x) {
+  nrws = lengths(x, use.names = FALSE)/2
+  if (sum(nrws) == 0) return(matrix(numeric(0), ncol=2))
+  
+  n = length(nrws)
+  vec = unlist(x, recursive = TRUE, use.names = FALSE)
+  
+  # 1 = interval start; -1 = interval stop
+  event = rep.int(rep.int(c(1,-1), n), rep.int(nrws, rep.int(2,n))) 
+  
+  # Extend all regions by 1bp in both directions (to count consecutive regions as overlapping) 
+  eps = 1e-6
+  extvec = vec - event * eps
+  
+  # Sort the extended vector
+  ord = order(extvec, event, na.last = TRUE, decreasing = FALSE) # NB: in rangeIntersect use '-startstop'
+  m = extvec[ord]
+  eventSorted = event[ord]
+  
+  #print(cbind(m,eventSorted,cumsum(eventSorted)))  #look at this to understand.
+  idxEnd = seq_along(ord)[cumsum(eventSorted) == 0]
+  idxStart = c(1, idxEnd[-length(idxEnd)] + 1)
+  cbind(m[idxStart] + eps, m[idxEnd] - eps, deparse.level=0)
+}
+
+# x: a list of data frames, each produced by findPattern
+segmentUnion = function(x, unit = "mb") {
+  if(length(x) ==1) return(x[[1]])
+  
+  chrs = sort(unique.default(unlist(lapply(x, function(a) a[,1]))))
+  
+  cls = switch(unit, cm = c('startCM', 'endCM'), mb = c('startMB', 'endMB'))
+  
+  chrUnions = lapply(chrs, function(i) {
+		chrArgs = lapply(x, function(a) {
+		  a[a[,1] == i, cls, drop = FALSE]
+		})
+		resi = rangeUnion(chrArgs)
+		resi = cbind(i, resi)
+		colnames(resi) = c('chrom', cls)
+		resi
+	})
+  
+	do.call(rbind, chrUnions)
+}
