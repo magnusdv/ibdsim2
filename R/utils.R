@@ -71,12 +71,18 @@ pos2allele = function(haplo, posvec) {
 }
 
 
+# Fast version of t(combn(n,2))
 .comb2 = function(n) {
-  if (n < 2) return(matrix(nrow = 0, ncol = 2))
-  v1 = rep.int(seq_len(n - 1), (n - 1):1)
-  v2 = NULL
-  for (i in 2:n) v2 = c(v2, i:n)
-  cbind(v1, v2, deparse.level = 0)
+  switch(max(min(n,5),1),
+    `dim<-`(integer(0), c(0L, 2L)),
+    `dim<-`(c(1L, 2L), c(1L, 2L)),
+    `dim<-`(c(1L, 1L, 2L, 2L, 3L, 3L), c(3L, 2L)),
+    `dim<-`(c(1L, 1L, 1L, 2L, 2L, 3L, 2L, 3L, 4L, 3L, 4L, 4L), c(6L, 2L)),
+    {
+      v1 = rep.int(seq_len(n - 1), (n - 1):1)
+      v2 = sequence.default((n - 1):1, 2:n)
+      cbind(v1, v2, deparse.level = 0)
+    })
 }
 
 `%||%` = function(x, y) {
