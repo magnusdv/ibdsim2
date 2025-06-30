@@ -119,7 +119,10 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL,
     
     # IBD pattern for this marker
     achr = aChr[[mchr[i]]]
-    rw = if(nrow(achr) > 1) findInterval(mpos[i], achr[, 'startMB'], all.inside = TRUE) else 1L
+    nr = nrow(achr)
+    
+    interv = c(achr[, 'startMB'], achr[nr, 'endMB'])
+    rw = if(nr > 1) findInterval(mpos[i], interv, all.inside = TRUE) else 1L
     ibdpat = achr[rw, patcols]
     ibdmat = achr[rw, matcols]
     
