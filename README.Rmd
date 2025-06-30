@@ -7,6 +7,7 @@ output: github_document
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   fig.align = "center",
+  dpi = 300,
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-"
@@ -111,7 +112,7 @@ s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 ```
 
 The `plotSegmentDistribution()` function, with the option `type = "ibd1"` analyses the IBD segments in each simulation, and makes a nice plot. Note that the names of the `ids` list are used in the legend.
-```{r ibdsim2-example-distplot, fig.height=6, fig.width=7}
+```{r ibdsim2-example-distplot, fig.height=6, fig.width=7, out.width = "75%"}
 plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
 ```
 

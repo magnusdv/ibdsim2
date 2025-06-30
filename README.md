@@ -97,12 +97,12 @@ The output of `ibdsim()` is a matrix (or a list of matrices, if
 ``` r
 head(sim)
 #>      chrom   startMB     endMB   startCM     endCM 1:p 1:m 2:p 2:m 3:p 3:m 4:p 4:m
-#> [1,]     1  1.431813  4.578604  0.000000  8.166722   1   2   3   4   1   3   2   3
-#> [2,]     1  4.578604  9.307115  8.166722 17.248719   1   2   3   4   1   4   2   3
-#> [3,]     1  9.307115 19.734735 17.248719 39.094436   1   2   3   4   2   4   2   3
-#> [4,]     1 19.734735 22.758328 39.094436 43.760248   1   2   3   4   2   4   1   3
-#> [5,]     1 22.758328 41.436476 43.760248 66.998786   1   2   3   4   2   4   1   4
-#> [6,]     1 41.436476 61.366417 66.998786 86.491160   1   2   3   4   2   4   1   3
+#> [1,]     1  0.000000  4.647215  0.000000  8.201478   1   2   3   4   1   3   2   3
+#> [2,]     1  4.647215  9.324570  8.201478 17.302931   1   2   3   4   1   4   2   3
+#> [3,]     1  9.324570 19.734471 17.302931 39.094957   1   2   3   4   2   4   2   3
+#> [4,]     1 19.734471 22.758411 39.094957 43.760232   1   2   3   4   2   4   1   3
+#> [5,]     1 22.758411 41.449745 43.760232 66.991502   1   2   3   4   2   4   1   4
+#> [6,]     1 41.449745 61.342551 66.991502 86.497704   1   2   3   4   2   4   1   3
 ```
 
 Each row of the matrix corresponds to a segment of the genome, and
@@ -161,13 +161,13 @@ s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 #> Simulation parameters:
 #> Simulations  : 500
 #> Chromosomes  : 1-22
-#> Genome length: 2753.93 Mb
+#> Genome length: 2875 Mb
 #>                2602.29 cM (male)
 #>                4180.42 cM (female)
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 3.9 secs
+#> Total time used: 1.71 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option
@@ -179,7 +179,7 @@ legend.
 plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
 ```
 
-<img src="man/figures/README-ibdsim2-example-distplot-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-ibdsim2-example-distplot-1.png" width="75%" style="display: block; margin: auto;" />
 
 We conclude that the three distributions are almost completely disjoint.
 Hence the three relationships can typically be distinguished on the

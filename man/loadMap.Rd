@@ -7,8 +7,8 @@
 loadMap(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage = FALSE)
 }
 \arguments{
-\item{map}{The name of the wanted map, possibly abbreviated. Currently, the
-only valid choice is "decode19" (default).}
+\item{map}{The name of the wanted map, possibly abbreviated. Default:
+"decode19".}
 
 \item{chrom}{A vector containing a subset of the numbers 1,2,...,23,
 indicating which chromosomes to load. As a special case, \code{chrom = "X"} is
@@ -46,7 +46,14 @@ Halldorsson et al. (2019).
 }
 \details{
 For reasons of speed and efficiency, the map published by map Halldorsson et
-al. (2019) has been thinned down to around 60 000 data points.
+al. (2019) has been thinned down to ~14,000 data points.
+
+NOTE: The built-in map was updated in version 2.3.0, adding more accurate
+physical chromosome endpoints. While still based on Halldorsson et al.
+(2019), the new version also uses a better thinning algorithm, allowing to
+reduce the number of data points from ~38,000 to ~14,000 without losing
+accuracy. The old version is available as a separate dataset
+\code{legacy_decode19} for backwards reproducibility.
 
 By setting \code{uniform = TRUE}, a uniform version of the map is returned, in
 which each chromosome has the same genetic lengths as in the original, but
@@ -73,8 +80,7 @@ loadMap(chrom = "X")[[1]]
 }
 \references{
 Halldorsson et al. \emph{Characterizing mutagenic effects of
-recombination through a sequence-level genetic map.} Science 363, no. 6425
-(2019).
+recombination through a sequence-level genetic map.} Science (2019).
 }
 \seealso{
 \code{\link[=uniformMap]{uniformMap()}}, \code{\link[=customMap]{customMap()}}
