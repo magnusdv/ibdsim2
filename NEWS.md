@@ -1,3 +1,10 @@
+# Dev version
+
+* Update the built-in map "decode19". This is still a thinned version of the map from Halldorsson et al. (2019), using GRCh38 coordinates. The new version includes the physical chromosome ends, which was previously lacking. It also uses a better thinning strategy, which allowed a reduction of data points from ~38 000 to ~14 000 without losing accuracy.
+* The `realised...()` functions gain argument `simplify1` for simplifying the output when `N = 1`. This is useful for interactive use.
+* Fixed a bug in `profileSimIBD()`, which sometimes affected markers in the telomeric regions.
+* Added internal helper functions for taking unions and intersections of IBD segments.
+
 # ibdsim2 2.2.0
 
 ## App updates
