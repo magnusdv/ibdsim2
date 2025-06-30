@@ -36,6 +36,8 @@
 #'   for genomic segments. Default is "cm", which normally gives lower variance.
 #' @param merge A logical, by default TRUE, indicating if adjacent IBD segments
 #'   should be merged before calculating summary statistics.
+#' @param simplify1 A logical, by default TRUE, simplifying the output if `sims`
+#'  contains a single simulation. If FALSE, the output is always a list.
 #'
 #' @examples
 #'
@@ -68,7 +70,8 @@ NULL
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedInbreeding = function(sims, id = NULL, unit = "cm", merge = TRUE) {
+realisedInbreeding = function(sims, id = NULL, unit = "cm", merge = TRUE, 
+                              simplify1 = TRUE) {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -122,6 +125,9 @@ realisedInbreeding = function(sims, id = NULL, unit = "cm", merge = TRUE) {
   # Add realised f
   resDf$fReal = fr = resDf$totLen/L
   
+  if(length(sims) == 1 && simplify1)
+    return(resDf)
+  
   list(perSimulation = resDf, meanCoef = mean(fr), stDev = sd(fr))
 }
 
@@ -129,7 +135,8 @@ realisedInbreeding = function(sims, id = NULL, unit = "cm", merge = TRUE) {
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedKinship = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
+realisedKinship = function(sims, ids = NULL, unit = "cm", merge = TRUE, 
+                           simplify1 = TRUE) {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -174,6 +181,9 @@ realisedKinship = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
   
   resVec = unlist(resList)/L
   
+  if(length(sims) == 1 && simplify1)
+    return(resVec)
+  
   list(perSimulation = resVec, meanCoef = mean(resVec), stDev = sd(resVec))
 }
 
@@ -181,7 +191,8 @@ realisedKinship = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedKappa = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
+realisedKappa = function(sims, ids = NULL, unit = "cm", merge = TRUE,
+                         simplify1 = TRUE) {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -230,6 +241,9 @@ realisedKappa = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
                      nSeg1 = as.integer(resMat[,5]), 
                      nSeg2 = as.integer(resMat[,6]))
   
+  if(length(sims) == 1 && simplify1)
+    return(resDf)
+  
   list(perSimulation = resDf, meanCoef = colMeans(resDf[, 1:3]), stDev = apply(resDf[,1:3], 2, sd))
 }
 
@@ -237,7 +251,8 @@ realisedKappa = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
 #' @rdname realised
 #' @importFrom stats sd
 #' @export
-realisedIdentity = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
+realisedIdentity = function(sims, ids = NULL, unit = "cm", merge = TRUE,
+                            simplify1 = TRUE) {
   
   # IDs present in sims
   idsims = extractIds(sims)
@@ -298,6 +313,9 @@ realisedIdentity = function(sims, ids = NULL, unit = "cm", merge = TRUE) {
   
   resDf[1:9] = resDf[1:9]/L
   resDf[10:18] = lapply(resDf[10:18], as.integer)
+  
+  if(length(sims) == 1 && simplify1)
+    return(resDf)
   
   list(perSimulation = resDf, meanCoef = colMeans(resDf[1:9]), stDev = apply(resDf[1:9], 2, sd))
 }

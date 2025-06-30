@@ -8,13 +8,19 @@
 \alias{realisedIdentity}
 \title{Realised relatedness}
 \usage{
-realisedInbreeding(sims, id = NULL, unit = "cm", merge = TRUE)
+realisedInbreeding(
+  sims,
+  id = NULL,
+  unit = "cm",
+  merge = TRUE,
+  simplify1 = TRUE
+)
 
-realisedKinship(sims, ids = NULL, unit = "cm", merge = TRUE)
+realisedKinship(sims, ids = NULL, unit = "cm", merge = TRUE, simplify1 = TRUE)
 
-realisedKappa(sims, ids = NULL, unit = "cm", merge = TRUE)
+realisedKappa(sims, ids = NULL, unit = "cm", merge = TRUE, simplify1 = TRUE)
 
-realisedIdentity(sims, ids = NULL, unit = "cm", merge = TRUE)
+realisedIdentity(sims, ids = NULL, unit = "cm", merge = TRUE, simplify1 = TRUE)
 }
 \arguments{
 \item{sims}{A list of genome simulations, as output by \code{\link[=ibdsim]{ibdsim()}}.}
@@ -26,6 +32,9 @@ for genomic segments. Default is "cm", which normally gives lower variance.}
 
 \item{merge}{A logical, by default TRUE, indicating if adjacent IBD segments
 should be merged before calculating summary statistics.}
+
+\item{simplify1}{A logical, by default TRUE, simplifying the output if \code{sims}
+contains a single simulation. If FALSE, the output is always a list.}
 }
 \description{
 Compute the realised values of various pedigree coefficients, from simulated
