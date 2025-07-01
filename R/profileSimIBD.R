@@ -58,14 +58,16 @@
 #' profileSimIBD(y, simy, seed = 12)
 #'
 #' @export
-profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL, verbose = TRUE) {
+profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL, 
+                         verbose = TRUE) {
   
   # Set seed if given
   if(!is.null(seed))
     set.seed(seed)
   
   if(!is.data.frame(ibdpattern) && is.list(ibdpattern))
-    return(lapply(ibdpattern, function(patt) profileSimIBD(x, patt, ids = ids, markers = markers)))
+    return(lapply(ibdpattern, function(patt) 
+      profileSimIBD(x, patt, ids = ids, markers = markers, verbose = verbose)))
   
   if(!is.null(markers))
     x = selectMarkers(x, markers)
