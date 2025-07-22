@@ -3,6 +3,8 @@
 .well {padding-top: 10px; margin-bottom: 10px}
 
 .selectize-dropdown {width: 250px !important;}
+.selectize-input {white-space: nowrap; overflow: hidden;}
+
 #origin0panel .form-group.shiny-input-container {margin:0; font-size: small;}
 #origin0panel .form-group.shiny-input-container label {
   display: block; margin-bottom: 2px;}

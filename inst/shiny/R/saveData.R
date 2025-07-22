@@ -1,5 +1,5 @@
 saveData = function(segData1, segData2, params1, params2, version, tmpdir) {
-  files = NULL
+  files = character(0)
   
   if(!is.null(segData1)) {
     sumfile = file.path(tmpdir, "ibdsim2-summary-1.txt")
@@ -19,7 +19,7 @@ saveData = function(segData1, segData2, params1, params2, version, tmpdir) {
     files = c(files, sumfile, detfile)
   }
   
-  # Return filenames without path
+  # Return file names without path
   basename(files)
 }
 
