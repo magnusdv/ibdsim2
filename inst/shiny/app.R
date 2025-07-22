@@ -9,6 +9,7 @@ suppressMessages(suppressPackageStartupMessages({
   library(zip)
   library(shiny)
   library(shinyjs)
+  library(shinyWidgets)
 }))
 
 
@@ -98,6 +99,10 @@ fluidRow(
       column(6, align = "center", plotOutput("pedplot2", height = "295px"))
     ),
     plotOutput("ibdplot", width = "100%"),
+    absolutePanel(id = "origin0panel",
+      bottom = 0, left = 0, width = "auto", draggable = FALSE, style = "z-index:1000",
+      prettySwitch("orig0", label = "Origin", value = FALSE, slim = TRUE, status = "default")
+    )
   ),
   
   # Right sidebar

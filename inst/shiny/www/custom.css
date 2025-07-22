@@ -3,6 +3,9 @@
 .well {padding-top: 10px; margin-bottom: 10px}
 
 .selectize-dropdown {width: 250px !important;}
+#origin0panel .form-group.shiny-input-container {margin:0; font-size: small;}
+#origin0panel .form-group.shiny-input-container label {
+  display: block; margin-bottom: 2px;}
 
 .fa-arrow-left { font-size:xx-large; color:#E87722; margin-top:6px}
 
