@@ -246,7 +246,9 @@ server = function(input, output, session) {
     loadMap("decode19", chrom = chr, uniform = unif, sexAverage = !sexspec)
   })
   
-
+  maplen1 = reactive(getMapLength(map1(), input$unit, input$chrom1))
+  maplen2 = reactive(getMapLength(map2(), input$unit, input$chrom2))
+  
 # Simulations -------------------------------------------------------------
 
   sim1 = reactiveVal(NULL)
@@ -372,8 +374,13 @@ server = function(input, output, session) {
     
     req(!isnull)  # return if both empty
     
+    # Map length (for percentages)
+    if(!any(skip)) maplen = if(maplen1() == maplen2()) maplen1() else NULL
+    else maplen = if(skip[1]) maplen2() else maplen1()
+    
     g = generateIbdPlot(segData[!skip], input$analysis, cols = cols[!skip],
-                        unit = input$unit, observed = observed())
+                        unit = input$unit, observed = observed(), 
+                        orig0 = input$orig0, maplen = maplen)
     suppressWarnings(print(g))
   })
   

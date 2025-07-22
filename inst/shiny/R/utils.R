@@ -69,3 +69,9 @@ mySidebarPanel = function(...) {
   div(class = "col-sm-3 col-lg-2", 
       tags$form(class = "well", role = "complementary", ...))
 }
+
+getMapLength = function(map, unit, chrom) {
+    if(unit == "mb") physRange(map) 
+    else if(chrom == "X") mapLen(map, sex = "female")
+    else mean(mapLen(map))
+}

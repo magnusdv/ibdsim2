@@ -22,7 +22,8 @@ getSegmentData = function(sim, analysis, cutoff, unit) {
   segmentStats(segs, unit = unit, returnAll = TRUE)
 }
 
-generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL) {
+generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL, 
+                           maplen = NULL, orig0 = FALSE) {
   # assume no entry or segData empty!
   labs = names(segData)
   
@@ -46,11 +47,13 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL) {
     suppressWarnings(stat_ellipse(size = 1.2)) +
     theme_classic(base_size = base) + 
     theme(legend.position = "inside",
-          legend.position.inside = c(.99, .99),
+          legend.position.inside = c(.999, .999),
           legend.justification = c("right", "top"),
           legend.key.width = unit(1.4, "cm"),
           legend.text = element_text(size = 16), 
           plot.margin = margin(r = 40))
+  if(orig0)
+    g1 = g1 + lims(x = c(0, NA), y = c(0, NA)) 
   
   # Plot 2: Total length distribution
   g2 = ggplot(perSim, aes(.data$Total, color = .data$Relationship)) + 
@@ -64,6 +67,17 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL) {
     theme(axis.text.y = element_blank(),
           axis.ticks.y = element_blank(),
           axis.title.y = element_text(size = 12))
+  if(!is.null(maplen)) {
+    pct = pretty(perSim$Total / maplen * 100)
+    pct = pct[-c(1, length(pct))] 
+    pctDat = data.frame(x = pct/100*maplen, y = 0, label = paste0(pct, "%"))
+    yh = ggplot_build(g2)$layout$panel_params[[1]]$y.range[2]
+    g2 = g2 + 
+      geom_text(data = pctDat, aes(x, y, label = label), color = "green4", 
+                vjust = -1, size = 3.6, inherit.aes = FALSE) +
+      geom_segment(data = pctDat, aes(x = x, xend = x, y = 0, yend = yh*0.05),
+                    color = "green4", inherit.aes = FALSE)
+  }
   
   
   # Plot 3: Count distribution
