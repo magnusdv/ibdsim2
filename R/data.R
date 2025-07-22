@@ -1,10 +1,10 @@
 #' Legacy version of the `decode19` map
 #'
-#' A legacy version of the built-in human recombination map, based on Haldorsson
-#' et al., 2019. The implementation of this map used in ibdsim2 was updated in
-#' v2.3.0, adding the physical endpoint of each chromosome (this was previously
-#' lacking), and using a better thinning algorithm to reduce the raw data given
-#' by Halldorsson et al. (2019). See also [loadMap()].
+#' A legacy version of the built-in human recombination map, based on
+#' Halldorsson et al., 2019. The implementation of this map used in ibdsim2 was
+#' updated in v2.3.0, adding the physical endpoint of each chromosome (this was
+#' previously lacking), and using a better thinning algorithm to reduce the raw
+#' data given by Halldorsson et al. (2019). See also [loadMap()].
 #'
 #' @format A `genomeMap` object: a list of 23 `chromMap` objects. Each
 #'   `chromMap` is a list containing two numeric matrices, named `male` and
