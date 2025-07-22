@@ -267,8 +267,10 @@ plotSegmentDistribution.ibd1 = function(sims, ids, unit, col = NULL, shape = 1, 
     theme(legend.key.width = unit(0.9, "cm"))
   
   if(legendInside)
-    g = g + theme(legend.position = c(.95, .95),
-                  legend.justification = c("right", "top"))
+    g = g + theme(
+      legend.position = "inside",
+      legend.position.inside = c(.95, .95),
+      legend.justification = c("right", "top"))
   
   if(ellipses) 
     g = g + stat_ellipse(size = 1.2, show.legend = FALSE)

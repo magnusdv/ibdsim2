@@ -145,8 +145,9 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
 #' }
 #'
 #' @export
-karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL, separate = TRUE, 
-                        alpha = 1, bgcol = "gray92", title = NULL, legendTitle = NULL, base_size = 16) {
+karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL, 
+                        separate = TRUE, alpha = 1, bgcol = "gray92", 
+                        title = NULL, legendTitle = NULL, base_size = 16) {
   
   # Genome map
   map = loadMap("decode19", chrom = chrom)
@@ -191,7 +192,8 @@ karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL, separa
     theme(plot.margin = margin(4, 4, 4, 4),
           plot.title = element_text(size = base_size, margin = margin(b = 10, unit = "pt")),
           strip.text.y.left = element_text(angle = 0, hjust = 1, vjust = 0.5),
-          legend.position = c(0.99, 0),
+          legend.position = "inside",
+          legend.position.inside = c(0.99, 0),
           legend.justification = c(1, 0),
           legend.key.height = unit(1/25, "snpc"),
           legend.key.width = unit(1/25, "snpc"),
