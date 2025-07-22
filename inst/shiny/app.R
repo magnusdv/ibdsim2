@@ -164,7 +164,7 @@ fluidRow(
           column(6, numericInput("obs-total", "Total length", value = "")),
           column(6, numericInput("obs-nseg", "Count", value = "")),
       )),
-      column(4, textAreaInput("obs-segs", "Segments", value = "", rows = 2)),
+      column(4, textAreaInput("obs-segs", "Segments", value = "", rows = 4)),
     ))),
   ),
 
