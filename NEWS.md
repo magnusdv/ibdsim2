@@ -1,19 +1,21 @@
 # ibdsim2 2.3.0
 
-## Breaking changes
+## Breaking change
 
-* Update the built-in recombination map "decode19". This is still a thinned version of the map from Halldorsson et al. (2019), using GRCh38 coordinates. The new version includes physical chromosome endpoints, which were previously partially missing. It also uses a better thinning strategy, which allowed a reduction of data points from ~38 000 to ~14 000 without losing accuracy.
+* The default  built-in recombination map "decode19" has been updated. As before, this is a thinned version of the map from Halldorsson et al. (2019), using GRCh38 coordinates, but the new version has more accurate physical chromosome endpoints. It also uses a better thinning algorithm, which allowed reducing the number of data points from ~38 000 to ~14 000 without losing accuracy.
 
 ## App changes
 
-* The app now uses the updated built-in map "decode19" (see above). This may lead to slightly different results when the length unit is set to ""
+* The app now uses the updated built-in map as described above. This may lead to (usually very slightly) different results when the length unit is set to "Mb".
+* A new switch button "Origin" has been added in the bottom left corner of the plot region. This can be used to enforce the scatter plot axes to start at the origin (0,0).
+* In the "Total IBD" distribution plot, the x-axis now show percentages of the total (autosomal or X) genome length, in addition to the absolute lengths. When the unit is "cM", the total length is taken as the average length for males and females (unless for X, when the female length is used).
 
-## New features
+## Package changes
 
 * The `realised...()` functions gain argument `simplify1` for simplifying the output when `N = 1`. This is useful for interactive use.
-
 * Fixed a bug in `profileSimIBD()`, which sometimes affected markers in the telomeric regions.
 * Added internal helper functions for taking unions and intersections of IBD segments.
+
 
 # ibdsim2 2.2.0
 
