@@ -1,4 +1,7 @@
 suppressMessages(suppressPackageStartupMessages({
+  library(shiny)
+  library(shinyjs)
+  library(shinyWidgets)
   library(pedtools)
   library(ribd)
   library(ibdsim2)
@@ -7,9 +10,6 @@ suppressMessages(suppressPackageStartupMessages({
   library(patchwork)
   library(glue)
   library(zip)
-  library(shiny)
-  library(shinyjs)
-  library(shinyWidgets)
 }))
 
 
@@ -148,7 +148,7 @@ fluidRow(
     fluidRow(
       column(4, 
         h4("Settings"),
-        numericInput("nsims", "Sims", value = 500, min = 1, max = 10000),
+        numericInput("nsims", "Number of sims", value = 500, min = 5, max = 5000),
       ),
       column(8, 
         radioButtons("unit", "Length unit", selected = "cm", inline = TRUE, 
@@ -264,7 +264,7 @@ server = function(input, output, session) {
   
   # Simulate!
   observeEvent(input$simulate1, {
-    chk = checkSimInput(ped1(), ids1(), input$analysis)
+    chk = checkSimInput(ped1(), ids1(), input$analysis, input$nsims)
     if(chk != "ok")
       return(errModal(chk))
     disable("simulate1")
@@ -274,7 +274,7 @@ server = function(input, output, session) {
   })
   
   observeEvent(input$simulate2, {
-    chk = checkSimInput(ped2(), ids2(), input$analysis)
+    chk = checkSimInput(ped2(), ids2(), input$analysis, input$nsims)
     if(chk != "ok")
       return(errModal(chk))
     disable("simulate2")

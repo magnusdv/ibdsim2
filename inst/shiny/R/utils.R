@@ -46,7 +46,7 @@ loadPed = function(file) {
   as.ped(df[cls])
 }
 
-checkSimInput = function(ped, ids, analysis) {
+checkSimInput = function(ped, ids, analysis, N) {
   if(is.null(ped)) 
     return("No pedigree indicated")
   if(length(ids) == 0) 
@@ -57,6 +57,12 @@ checkSimInput = function(ped, ids, analysis) {
     return(paste("Sharing analysis is indicated, but only one individual:", toString(ids)))
   if(analysis == "Autozygosity" && any((inbr <- inbreeding(ped, ids)) == 0))
     return(paste("Autozygosity analysis indicated, but some individuals are not inbred: ", toString(names(inbr)[inbr == 0])))
+  if(!ibdsim2:::isCount(N))
+    return("Number of simulations must be a positive integer")
+  if(N < 5)
+    return("Number of simulations is too low (min 5)")
+  if(N > 5000)
+    return("Number of simulations is too high (max 5000)")
   
   "ok"
 }
