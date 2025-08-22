@@ -1,8 +1,12 @@
-# dev version
+# ibdsim2 2.3.1
 
 ## App changes
 
 * The number of simulations are restricted to minimum 5, maximum 5000.
+
+## Other
+
+* Make plot code compatible with `ggplot2` v4.0.0.
 
 
 # ibdsim2 2.3.0
