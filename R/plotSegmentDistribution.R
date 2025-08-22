@@ -37,7 +37,7 @@
 #'
 #' # Simulation parameters used in the below examples.
 #' map = uniformMap(M = 10)   # recombination map
-#' N = 5                      # number of sims
+#' N = 10                     # number of sims
 #'
 #' # For more realistic results, replace with e.g.:
 #' # map = loadMap("decode19")
@@ -173,8 +173,10 @@ plotSegmentDistribution = function(..., type = c("autozygosity", "ibd1"),
   
 
 #' @importFrom ribd inbreeding 
-plotSegmentDistribution.autoz = function(sims, ids, unit, col = NULL, shape = 1, alpha = 1, ellipses = TRUE, 
-                                         title = NULL, xlab = NULL, ylab = NULL, legendInside = TRUE) {
+plotSegmentDistribution.autoz = function(sims, ids, unit, col = NULL, shape = 1, 
+                                         alpha = 1, ellipses = TRUE, 
+                                         title = NULL, xlab = NULL, ylab = NULL, 
+                                         legendInside = TRUE) {
   
   N = length(sims)
   if(any(lengths(ids) != 1))
@@ -201,15 +203,18 @@ plotSegmentDistribution.autoz = function(sims, ids, unit, col = NULL, shape = 1,
                      label = expression(Expected~italic(f)))
   
   # Create the plot
-  .plotSegDist(plotDat, col = col, shape = shape, alpha = alpha, ellipses = ellipses, title = title, xlab = xlab, 
-               ylab = ylab, expect.args = expect.args, legendInside = legendInside)
+  .plotSegDist(plotDat, col = col, shape = shape, alpha = alpha, ellipses = ellipses, 
+               title = title, xlab = xlab, ylab = ylab, expect.args = expect.args, 
+               legendInside = legendInside)
   
 }
 
 
 #' @importFrom ribd kinship
-plotSegmentDistribution.ibd1 = function(sims, ids, unit, col = NULL, shape = 1, alpha = 1, ellipses = TRUE, 
-                                        title = NULL, xlab = NULL, ylab = NULL, legendInside = TRUE) {
+plotSegmentDistribution.ibd1 = function(sims, ids, unit, col = NULL, 
+                                        shape = 1, alpha = 1, ellipses = TRUE, 
+                                        title = NULL, xlab = NULL, ylab = NULL, 
+                                        legendInside = TRUE) {
   
   N = length(sims)
   if(any(lengths(ids) != 2)) {
@@ -245,35 +250,39 @@ plotSegmentDistribution.ibd1 = function(sims, ids, unit, col = NULL, shape = 1, 
                      label = expression(Expected~kappa[1]))
   
   # Create the plot
-  .plotSegDist(plotDat, col = col, shape = shape, alpha = alpha, ellipses = ellipses, title = title, xlab = xlab, 
-               ylab = ylab, expect.args = expect.args, legendInside = legendInside)
+  .plotSegDist(plotDat, col = col, shape = shape, alpha = alpha, ellipses = ellipses, 
+               title = title, xlab = xlab, ylab = ylab, expect.args = expect.args, 
+               legendInside = legendInside)
   
 }
 
-#' @import ggplot2
-.plotSegDist = function(plotDat, col, shape, alpha, ellipses, title, xlab, ylab, expect.args, legendInside = TRUE) {
+
+.plotSegDist = function(plotDat, col, shape, alpha, ellipses, title, xlab, ylab, 
+                        expect.args, legendInside = TRUE) {
+  
   nRel = nlevels(plotDat$relation)
   
-  g = ggplot(plotDat, aes_string(x = "nSeg", y = "meanLen", color = "relation", shape = "relation")) + 
-    geom_jitter(width = 0.35, alpha = alpha) +
-    labs(title = title, x = xlab, y = ylab, col = "Relationship", shape = "Relationship") +
-    theme_bw(base_size = 15) + 
-    scale_color_manual(values = col) +
-    scale_shape_manual(values = rep(shape, length.out = nRel)) +
-    guides(color = if(nRel > 1) guide_legend(order = 1, override.aes = list(size = 2, alpha = 1)) 
-                   else "none",
-           shape = if(nRel > 1) guide_legend(order = 1) 
-                   else "none") + 
-    theme(legend.key.width = unit(0.9, "cm"))
+  g = ggplot2::ggplot(plotDat, ggplot2::aes(x = .data$nSeg, y = .data$meanLen, 
+                      color = .data$relation, shape = .data$relation)) + 
+    ggplot2::geom_jitter(width = 0.35, alpha = alpha) +
+    ggplot2::labs(title = title, x = xlab, y = ylab, col = "Relationship", shape = "Relationship") +
+    ggplot2::theme_bw(base_size = 15) + 
+    ggplot2::scale_color_manual(values = col) +
+    ggplot2::scale_shape_manual(values = rep(shape, length.out = nRel)) +
+    ggplot2::guides(
+      color = if(nRel > 1) ggplot2::guide_legend(order = 1, override.aes = list(linewidth = 2, alpha = 1)) else "none",
+      shape = if(nRel > 1) ggplot2::guide_legend(order = 1) else "none"
+    ) + 
+    ggplot2::theme(legend.key.width = ggplot2::unit(0.9, "cm"))
   
   if(legendInside)
-    g = g + theme(
+    g = g + ggplot2::theme(
       legend.position = "inside",
       legend.position.inside = c(.95, .95),
       legend.justification = c("right", "top"))
   
   if(ellipses) 
-    g = g + stat_ellipse(size = 1.2, show.legend = FALSE)
+    g = g + ggplot2::stat_ellipse(linewidth = 1.2, show.legend = FALSE)
   
   #### Expectation curves ###
   vals = expect.args$values
@@ -293,11 +302,10 @@ plotSegmentDistribution.ibd1 = function(sims, ids, unit, col = NULL, shape = 1, 
     }))
     
     g = g + 
-      geom_line(data = curveDat, 
-                aes_string("x", "y", linetype = "coeff"), 
-                lwd = 1, inherit.aes = FALSE) + 
-      scale_linetype_manual(values = 1 + seq_along(vals), 
-                            name = expect.args$label)
+      ggplot2::geom_line(ggplot2::aes(.data$x, .data$y, linetype = .data$coeff), 
+                         data = curveDat, lwd = 1, inherit.aes = FALSE) + 
+      ggplot2::scale_linetype_manual(values = 1 + seq_along(vals), 
+                                     name = expect.args$label)
   }
   
   g

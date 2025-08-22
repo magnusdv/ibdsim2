@@ -122,8 +122,7 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
 #'
 #' @return The plot object is returned invisibly, so that additional `ggplot`
 #'   layers may be added if needed.
-#' @import ggplot2
-#'
+#' 
 #' @examples
 #'
 #' \dontrun{
@@ -177,28 +176,30 @@ karyoHaploid = function(segments, chrom = 1:22, colBy = NULL, col = NULL,
   }
   
   # Build plot object
-  ggplot() + 
-    geom_rect(aes_(xmin = 0, xmax = ~Mb, ymin = 0, ymax = 1), 
-              data = genome, fill = bgcol, col = "black") + 
-    geom_rect(aes_(xmin = ~startMB, xmax = ~endMB, ymin = ~ymin, ymax = ~ymax, 
-                   fill = ~fill), data = segments, color = 1, alpha = alpha) +
-    ggtitle(title) +
-    facet_grid(chrom ~ ., switch = "y") + 
-    scale_x_continuous(expand = c(0.01, 0.01)) +
-    scale_fill_manual(values = col) + 
-    labs(fill = legendTitle) +
-    guides(fill = guide_legend(byrow = TRUE)) +
-    theme_void(base_size = base_size) + 
-    theme(plot.margin = margin(4, 4, 4, 4),
-          plot.title = element_text(size = base_size, margin = margin(b = 10, unit = "pt")),
-          strip.text.y.left = element_text(angle = 0, hjust = 1, vjust = 0.5),
+  ggplot2::ggplot() + 
+    ggplot2::geom_rect(ggplot2::aes(xmin = 0, xmax = .data$Mb, ymin = 0, ymax = 1), 
+                       data = genome, fill = bgcol, col = "black") + 
+    ggplot2::geom_rect(ggplot2::aes(xmin = .data$startMB, xmax = .data$endMB, 
+                                    ymin = .data$ymin, ymax = .data$ymax, fill = .data$fill), 
+                       data = segments, color = 1, alpha = alpha) +
+    ggplot2::ggtitle(title) +
+    ggplot2::facet_grid(chrom ~ ., switch = "y") + 
+    ggplot2::scale_x_continuous(expand = c(0.01, 0.01)) +
+    ggplot2::scale_fill_manual(values = col) + 
+    ggplot2::labs(fill = legendTitle) +
+    ggplot2::guides(fill = guide_legend(byrow = TRUE)) +
+    ggplot2::theme_void(base_size = base_size) + 
+    ggplot2::theme(plot.margin = ggplot2::margin(4, 4, 4, 4),
+          plot.title = ggplot2::element_text(size = base_size, 
+                                             margin = ggplot2::margin(b = 10, unit = "pt")),
+          strip.text.y.left = ggplot2::element_text(angle = 0, hjust = 1, vjust = 0.5),
           legend.position = "inside",
           legend.position.inside = c(0.99, 0),
           legend.justification = c(1, 0),
-          legend.key.height = unit(1/25, "snpc"),
-          legend.key.width = unit(1/25, "snpc"),
-          legend.spacing.y = unit(1/100, "snpc"),
-          panel.spacing.y = unit(0.3, "lines"))
+          legend.key.height = ggplot2::unit(1/25, "snpc"),
+          legend.key.width = ggplot2::unit(1/25, "snpc"),
+          legend.spacing.y = ggplot2::unit(1/100, "snpc"),
+          panel.spacing.y = ggplot2::unit(0.3, "lines"))
 }
 
 
@@ -260,33 +261,30 @@ karyoDiploid = function(paternal, maternal, chrom = 1:22,
   paternal$fill = rep_len(colourlabels[1], Np)
   maternal$fill = rep_len(colourlabels[2], Nm)
   
-  p = ggplot() + 
-    theme_void(base_size = 15) +  
-    ggtitle(title) +
-    geom_rect(aes_string(xmin = 0, xmax = "Mb", ymin = 0, ymax = .43), 
-              data = genome, fill = bgcol, col = "black") + 
-    geom_rect(aes_string(xmin = 0, xmax = "Mb", ymin = 0.57, ymax = 1), 
-              data = genome, fill = bgcol, col = "black") +
-    facet_grid(chrom ~ ., switch = "y") + 
-    theme(
-      plot.margin = unit(c(10, 5, 10, 5), "pt"),
-      strip.text.y.left = element_text(angle = 0, margin = margin(0,0,0,0), hjust = 1),
-      panel.spacing.y = unit(.25, "lines"))
+  p = ggplot2::ggplot() + 
+    ggplot2::theme_void(base_size = 15) +  
+    ggplot2::ggtitle(title) +
+    ggplot2::geom_rect(ggplot2::aes(xmin = 0, xmax = .data$Mb, ymin = 0, ymax = .43), 
+                       data = genome, fill = bgcol, col = "black") + 
+    ggplot2::geom_rect(ggplot2::aes(xmin = 0, xmax = .data$Mb, ymin = 0.57, ymax = 1), 
+                       data = genome, fill = bgcol, col = "black") +
+    ggplot2::facet_grid(chrom ~ ., switch = "y") + 
+    ggplot2::theme(
+      plot.margin = ggplot2::unit(c(10, 5, 10, 5), "pt"),
+      strip.text.y.left = ggplot2::element_text(angle = 0, margin = ggplot2::margin(0,0,0,0), hjust = 1),
+      panel.spacing.y = ggplot2::unit(.25, "lines"))
   
   if(Np > 0)
-    p = p + geom_rect(data = paternal, 
-                      aes_string(xmin = "start", xmax = "end", 
-                                 ymin = 0.57, ymax = 1, fill = "fill"), 
-                      col = "black", alpha = alpha)
+    p = p + ggplot2::geom_rect(ggplot2::aes(xmin = .data$start, xmax = .data$end, 
+                                            ymin = 0.57, ymax = 1, fill = .data$fill),
+                               data = paternal, col = "black", alpha = alpha)
   if(Nm > 0)
-    p = p +  geom_rect(data = maternal, 
-                       aes_string(xmin = "start", xmax = "end", 
-                                  ymin = 0, ymax = .43, fill = "fill"), 
-                       col = "black", alpha = alpha)
-  
+    p = p + ggplot2::geom_rect(ggplot2::aes(xmin = .data$start, xmax = .data$end, 
+                                            ymin = 0, ymax = .43, fill = .data$fill), 
+                               data = maternal, col = "black", alpha = alpha)
   p = p + 
-    scale_fill_manual(values = col, drop = FALSE) +
-    labs(fill = NULL)
+    ggplot2::scale_fill_manual(values = col, drop = FALSE) +
+    ggplot2::labs(fill = NULL)
       
   p
 }

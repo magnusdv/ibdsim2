@@ -123,3 +123,4 @@ toString2 = function(x, ifempty = "-", ifnull = ifempty) {
   paste(rngs, collapse = ", ")
 }
 
+utils::globalVariables(".data")

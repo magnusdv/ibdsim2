@@ -69,7 +69,7 @@ theoretical/pedigree-based values: either inbreeding coefficients (if \code{type
 
 # Simulation parameters used in the below examples.
 map = uniformMap(M = 10)   # recombination map
-N = 5                      # number of sims
+N = 10                     # number of sims
 
 # For more realistic results, replace with e.g.:
 # map = loadMap("decode19")

@@ -44,7 +44,8 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL,
   g1 = ggplot(perSim, aes(.data$Count, .data$Average, color = .data$Relationship)) + 
     geom_jitter(width = 0.35, alpha = 0.5, shape = 1, show.legend = FALSE) +
     labs(x = "Number of segments", y = sprintf("Average segment (%s)", unit), col = NULL) +
-    suppressWarnings(stat_ellipse(size = 1.2)) +
+    #suppressWarnings(stat_ellipse(linewidth = 1.2)) +
+    stat_ellipse(linewidth = 1.2) +
     theme_classic(base_size = base) + 
     theme(legend.position = "inside",
           legend.position.inside = c(.999, .999),
@@ -57,7 +58,7 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL,
   
   # Plot 2: Total length distribution
   g2 = ggplot(perSim, aes(.data$Total, color = .data$Relationship)) + 
-    geom_density(aes(fill = .data$Relationship), alpha = 0.1, size = 1.2, show.legend = FALSE) +
+    geom_density(aes(fill = .data$Relationship), alpha = 0.1, linewidth = 1.2, show.legend = FALSE) +
     labs(x = switch(analysis, 
                     Sharing = sprintf("Total length IBD (%s)", unit), 
                     Autozygosity = sprintf("Total autozygosity (%s)", unit)),
@@ -82,7 +83,7 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL,
   
   # Plot 3: Count distribution
   g3 = ggplot(perSim, aes(.data$Count, color = .data$Relationship)) + 
-    geom_density(aes(fill = .data$Relationship), alpha = 0.1, size = 1.2, show.legend = FALSE) +
+    geom_density(aes(fill = .data$Relationship), alpha = 0.1, linewidth = 1.2, show.legend = FALSE) +
     labs(x = "Number of segments", y = "density") +
     scale_y_continuous(expand = expansion(mult = c(0,0.04))) + 
     theme_classic(base_size = base) +
@@ -92,7 +93,7 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL,
   
   # Plot 4: Segment length distribution
   g4 = ggplot(allSegs, aes(.data$Length, color = .data$Relationship)) + 
-  geom_density(aes(fill = .data$Relationship), alpha = 0.1, size = 1.2, show.legend = FALSE) +
+  geom_density(aes(fill = .data$Relationship), alpha = 0.1, linewidth = 1.2, show.legend = FALSE) +
   labs(x = sprintf("Individual segment length (%s)", unit), y = "density") +
   coord_cartesian(xlim = c(0, quantile(allSegs$Length, 0.999))) + # avoid very long tails!
   
