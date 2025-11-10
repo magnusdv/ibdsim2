@@ -26,6 +26,8 @@
 #' @param labels An optional character vector of labels used in the legend. If
 #'   NULL, the labels are taken from `names(...)`.
 #' @param unit Length unit; either "cm" (centiMorgan) or "mb" (megabases).
+#' @param merge A logical, by default TRUE, indicating if adjacent IBD segments
+#'   should be merged and treated as one.
 #' @param col An optional colour vector of the same length as `...`.
 #' @param shape A vector with point shapes, of the same length as `...`.
 #' @param alpha A transparency parameter for the scatter points.
@@ -103,7 +105,8 @@
 #'
 #' @export
 plotSegmentDistribution = function(..., type = c("autozygosity", "ibd1"), 
-                                   ids = NULL, unit = "cm", labels = NULL, col = NULL, 
+                                   ids = NULL, unit = "cm", merge = TRUE, 
+                                   labels = NULL, col = NULL, 
                                    shape = 1, alpha = 1, ellipses = TRUE, 
                                    title = NULL, xlab = NULL, ylab = NULL,
                                    legendInside = TRUE) {
@@ -167,13 +170,15 @@ plotSegmentDistribution = function(..., type = c("autozygosity", "ibd1"),
                    autozygosity = plotSegmentDistribution.autoz, 
                    ibd1 = plotSegmentDistribution.ibd1)
   
-  PLOTFUN(sims, ids, unit = unit, col = col, shape = shape, alpha = alpha, ellipses = ellipses, 
+  PLOTFUN(sims, ids, unit = unit, merge = merge, col = col, shape = shape, 
+          alpha = alpha, ellipses = ellipses, 
           title = title, xlab = xlab, ylab = ylab, legendInside = legendInside)
 }
   
 
 #' @importFrom ribd inbreeding 
-plotSegmentDistribution.autoz = function(sims, ids, unit, col = NULL, shape = 1, 
+plotSegmentDistribution.autoz = function(sims, ids, unit, merge = TRUE, 
+                                         col = NULL, shape = 1, 
                                          alpha = 1, ellipses = TRUE, 
                                          title = NULL, xlab = NULL, ylab = NULL, 
                                          legendInside = TRUE) {
@@ -188,7 +193,7 @@ plotSegmentDistribution.autoz = function(sims, ids, unit, col = NULL, shape = 1,
   plotDatList = lapply(1:N, function(i) {
     s = sims[[i]]
     id = ids[[i]]
-    real = realisedInbreeding(s, id = id, unit = unit)$perSimulation
+    real = realisedInbreeding(s, id = id, unit = unit, merge = merge)$perSimulation
     cbind(real[c('nSeg', 'meanLen')], relation = labs[i])
   })
   
@@ -211,7 +216,7 @@ plotSegmentDistribution.autoz = function(sims, ids, unit, col = NULL, shape = 1,
 
 
 #' @importFrom ribd kinship
-plotSegmentDistribution.ibd1 = function(sims, ids, unit, col = NULL, 
+plotSegmentDistribution.ibd1 = function(sims, ids, unit, merge = TRUE, col = NULL, 
                                         shape = 1, alpha = 1, ellipses = TRUE, 
                                         title = NULL, xlab = NULL, ylab = NULL, 
                                         legendInside = TRUE) {
@@ -227,7 +232,7 @@ plotSegmentDistribution.ibd1 = function(sims, ids, unit, col = NULL,
   plotDatList = lapply(1:N, function(i) {
     s = sims[[i]]
     ids = ids[[i]]
-    real = realisedKappa(s, ids = ids, unit = unit)$perSimulation
+    real = realisedKappa(s, ids = ids, unit = unit, merge = merge)$perSimulation
     
     if(any(real$nSeg2 > 0)) 
       message("Warning: Simulation list ", i, " includes IBD = 2 segments. Expected 'kappa_1 curve' will be wrong!")
@@ -257,10 +262,15 @@ plotSegmentDistribution.ibd1 = function(sims, ids, unit, col = NULL,
 }
 
 
-.plotSegDist = function(plotDat, col, shape, alpha, ellipses, title, xlab, ylab, 
-                        expect.args, legendInside = TRUE) {
+.plotSegDist = function(plotDat, col = NULL, shape = NULL, 
+                        alpha = 1, ellipses = TRUE, 
+                        title = NULL, xlab = NULL, ylab = NULL, 
+                        expect.args = NULL, legendInside = TRUE) {
   
   nRel = nlevels(plotDat$relation)
+  
+  col = col %||% seq_len(nRel)
+  shape = shape %||% seq_len(nRel)
   
   g = ggplot2::ggplot(plotDat, ggplot2::aes(x = .data$nSeg, y = .data$meanLen, 
                       color = .data$relation, shape = .data$relation)) + 

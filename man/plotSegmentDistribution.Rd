@@ -9,6 +9,7 @@ plotSegmentDistribution(
   type = c("autozygosity", "ibd1"),
   ids = NULL,
   unit = "cm",
+  merge = TRUE,
   labels = NULL,
   col = NULL,
   shape = 1,
@@ -36,6 +37,9 @@ repeated for all pedigrees. Finally, if \code{ids} is the word "leaves" then
 \code{pedtools::leaves()} is used to extract labels in each pedigree.}
 
 \item{unit}{Length unit; either "cm" (centiMorgan) or "mb" (megabases).}
+
+\item{merge}{A logical, by default TRUE, indicating if adjacent IBD segments
+should be merged and treated as one.}
 
 \item{labels}{An optional character vector of labels used in the legend. If
 NULL, the labels are taken from \code{names(...)}.}
