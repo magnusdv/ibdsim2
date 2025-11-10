@@ -91,11 +91,13 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL,
   
   if(is.null(ids))
     ids = idsIBD
-  else {
+  else if(is.function(ids))
+    ids = ids(x)
+  else
     ids = as.character(ids)
-    if(!all(ids %in% idsIBD))
+  
+  if(!all(ids %in% idsIBD))
       stop2("ID not found in `ibd` matrix: ", setdiff(ids, idsIBD))
-  }
   
   if(length(pos) == 1) {
     pos = rep(pos, length(ids))

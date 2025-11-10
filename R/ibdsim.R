@@ -145,7 +145,20 @@ ibdsim = function(x, N = 1, ids = NULL, map = "decode",
   # Model: Either "chi" or "haldane"
   model = match.arg(model)
   
+  # Individuals
+  if(is.null(ids))
+    ids = x$ID
+  else if(is.function(ids))
+    ids = ids(x)
+  else
+    ids = unique.default(ids)
+  
   # Skip recombination
+  if(is.function(skipRecomb))
+    skipRecomb = skipRecomb(x)
+  else if(!is.null(skipRecomb))
+    skipRecomb = unique.default(skipRecomb)
+  
   if(is.null(skipRecomb) && !is.null(ids) && !setequal(ids, labels(x))) {
     FOU = founders(x)
     useids = if(length(ids) == 1) parents(x, ids) else ids
