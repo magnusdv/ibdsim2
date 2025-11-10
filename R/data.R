@@ -10,12 +10,12 @@
 #'   `chromMap` is a list containing two numeric matrices, named `male` and
 #'   `female`, and carries these attributes:
 #'
-#' * `physStart` – first physical position (Mb) on the chromosome
-#' * `physEnd`   – last physical position (Mb) on the chromosome
-#' * `physRange` – physical length, `physEnd - physStart` (Mb)
-#' * `mapLen`    – length-2 numeric: centiMorgan length of male and female strands
-#' * `chrom`     – chromosome label
-#' * `Xchrom`    – logical flag used by simulators for X-inheritance
+#' * `physStart` - first physical position (Mb) on the chromosome
+#' * `physEnd`   - last physical position (Mb) on the chromosome
+#' * `physRange` - physical length, `physEnd - physStart` (Mb)
+#' * `mapLen`    - length-2 numeric: centiMorgan length of male and female strands
+#' * `chrom`     - chromosome label
+#' * `Xchrom`    - logical flag used by simulators for X-inheritance
 #'
 #' @keywords datasets
 #'

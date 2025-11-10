@@ -9,12 +9,12 @@ A \code{genomeMap} object: a list of 23 \code{chromMap} objects. Each
 \code{chromMap} is a list containing two numeric matrices, named \code{male} and
 \code{female}, and carries these attributes:
 \itemize{
-\item \code{physStart} – first physical position (Mb) on the chromosome
-\item \code{physEnd}   – last physical position (Mb) on the chromosome
-\item \code{physRange} – physical length, \code{physEnd - physStart} (Mb)
-\item \code{mapLen}    – length-2 numeric: centiMorgan length of male and female strands
-\item \code{chrom}     – chromosome label
-\item \code{Xchrom}    – logical flag used by simulators for X-inheritance
+\item \code{physStart} - first physical position (Mb) on the chromosome
+\item \code{physEnd}   - last physical position (Mb) on the chromosome
+\item \code{physRange} - physical length, \code{physEnd - physStart} (Mb)
+\item \code{mapLen}    - length-2 numeric: centiMorgan length of male and female strands
+\item \code{chrom}     - chromosome label
+\item \code{Xchrom}    - logical flag used by simulators for X-inheritance
 }
 }
 \usage{

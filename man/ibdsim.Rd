@@ -7,7 +7,7 @@
 ibdsim(
   x,
   N = 1,
-  ids = labels(x),
+  ids = NULL,
   map = "decode",
   model = c("chi", "haldane"),
   skipRecomb = NULL,
@@ -21,8 +21,9 @@ ibdsim(
 
 \item{N}{A positive integer indicating the number of simulations.}
 
-\item{ids}{A subset of pedigree members whose IBD sharing should be analysed.
-If NULL, all members are included.}
+\item{ids}{A vector of names indicating which pedigree members should be
+included in the output. Alternatively, a function taking \code{x} as input and
+returning such a vector, like \code{\link[pedtools:ped_subgroups]{pedtools::leaves()}}. By default (\code{ids = NULL}) everyone is included.}
 
 \item{map}{The genetic map to be used in the simulations: Allowed values are:
 \itemize{
@@ -35,13 +36,13 @@ Currently the only valid option is "decode19" (or abbreviations of this).
 Default: "decode19".}
 
 \item{model}{Either "chi" or "haldane", indicating the statistical model for
-recombination (see details). Default: "chi".}
+recombination (see Details). Default: "chi".}
 
 \item{skipRecomb}{A vector of ID labels indicating individuals whose meioses
 should be simulated without recombination. (Each child will then receive a
-random strand of each chromosome.) The default action is to skip
-recombination in founders who are uninformative for IBD sharing in the
-\code{ids} individuals.}
+random strand of each chromosome.) Alternatively, a function taking \code{x} as
+input, e.g., \code{\link[pedtools:ped_subgroups]{pedtools::founders()}}. By default, recombination is skipped
+in founders who are uninformative for IBD sharing in the \code{ids} individuals.}
 
 \item{simplify1}{A logical, by default TRUE, removing the outer list layer
 when N = 1. See Value.}
@@ -51,31 +52,30 @@ when N = 1. See Value.}
 \item{verbose}{A logical.}
 }
 \value{
-A list of \code{N} objects of class \code{genomeSim}.
+If \code{N > 1}, a list of \code{N} objects of class \code{genomeSim}.
 
-If N = 1 the outer list layer is removed by default, which is typically
-desired in interactive use (especially when piping). To enforce a list
-output, add \code{simplify1 = FALSE}.
+If \code{N = 1}, the outer list layer is removed by default, which is typically
+desired in interactive use and in pipe chains. To enforce a list output in
+this case, add \code{simplify1 = FALSE}.
 
 A \code{genomeSim} object is essentially a numerical matrix describing the
-allele flow through the pedigree in a single simulated. Each row
+allele flow through the pedigree in a single genome simulation. Each row
 corresponds to a chromosomal segment. The first 3 columns (chrom, startMB,
-endMB) describe the physical location of the segment. Next, the genetic
-coordinates (startCM, endCM), which are computed from \code{map} by averaging
-the male and female values. Then follow the allele columns, two for each
-individual in \code{ids}, suffixed by ":p" and ":m" signifying the paternal and
-maternal alleles, respectively.
+endMB) describe the physical megabase location of the segment. Next come
+the centimorgan coordinates (startCM, endCM), which are computed from \code{map}
+by averaging the male and female values. Then follow the allele columns,
+two for each individual in \code{ids}, suffixed by ":p" and ":m" signifying the
+paternal and maternal alleles, respectively.
 
 If \code{ids} has length 1, a column named \code{Aut} is added, whose entries are 1
 for autozygous segments and 0 otherwise.
 
 If \code{ids} has length 2, two columns are added:
 \itemize{
-\item \code{IBD} : The IBD status of each segment (= number of alleles shared
-identical by descent). For a given segment, the IBD status is either 0, 1,
-2 or NA. If either individual is autozygous in a segment, the IBD status is
-reported as NA. With inbred individuals the \code{Sigma} column (see below) is
-more informative than the \code{IBD} column.
+\item \code{IBD} : The IBD status of each segment, i.e., the number of alleles shared
+identical by descent. This is always either 0, 1, 2 or NA, where the latter
+appear if either individual (or both) of individuals is autozygous in the
+segment.
 \item \code{Sigma} : The condensed identity ("Jacquard") state of each segment,
 given as an integer in the range 1-9. The numbers correspond to the
 standard ordering of the condensed states. In particular, for non-inbred
@@ -85,26 +85,26 @@ respectively.
 }
 \description{
 This is the main function of the package, simulating the recombination
-process in each meioses of a pedigree. The output summarises the IBD segments
+process in each meiosis of a pedigree. The output summarises the IBD segments
 between all or a subset of individuals.
 }
 \details{
-Each simulation starts by unique alleles (labelled 1, 2, ...) being
-distributed to the pedigree founders. In each meiosis, homologue chromosomes
-are made to recombine according to the value of \code{model}:
+Each simulation starts by distributing unique alleles (labelled 1, 2, ...) to
+the pedigree founders, followed by a separate recombination process for each
+chromosome, according to the value of \code{model}:
 \itemize{
-\item \code{model = "haldane"}: In this model, crossover events are modelled as a
-Poisson process along each chromosome.
 \item \code{model = "chi"} (default): This uses a renewal process along the
-four-strand bundle, with waiting times following a chi square distribution.
+four-strand bundle, with waiting times following a chi-square distribution.
+\item \code{model = "haldane"}: In this model, crossover events are modelled as a
+Poisson process along each chromosome. (Faster, but less realistic.)
 }
 
 Recombination rates along each chromosome are determined by the \code{map}
 parameter. The default value ("decode19") loads a thinned version of the
 recombination map of the human genome published by Halldorsson et al (2019).
 
-In many applications, the fine-scale default map is not necessary, and should
-be replaced by simpler maps with constant recombination rates. See
+In many applications, the fine-scale default map is not necessary, and may be
+replaced by simpler maps with constant recombination rates. See
 \code{\link[=uniformMap]{uniformMap()}} and \code{\link[=loadMap]{loadMap()}} for ways to produce such maps.
 }
 \examples{
