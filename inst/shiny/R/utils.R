@@ -46,7 +46,7 @@ loadPed = function(file) {
   as.ped(df[cls])
 }
 
-checkSimInput = function(ped, ids, analysis, N) {
+checkSimInput = function(ped, ids, analysis, N, seed) {
   if(is.null(ped)) 
     return("No pedigree indicated")
   if(length(ids) == 0) 
@@ -63,6 +63,8 @@ checkSimInput = function(ped, ids, analysis, N) {
     return("Number of simulations is too low (min 5)")
   if(N > 5000)
     return("Number of simulations is too high (max 5000)")
+  if(!ibdsim2:::isCount(seed))
+    return("The `seed` must be a positive integer")
   
   "ok"
 }

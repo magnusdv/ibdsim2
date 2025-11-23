@@ -264,7 +264,7 @@ server = function(input, output, session) {
   
   # Simulate!
   observeEvent(input$simulate1, {
-    chk = checkSimInput(ped1(), ids1(), input$analysis, input$nsims)
+    chk = checkSimInput(ped1(), ids1(), input$analysis, input$nsims, input$seed1)
     if(chk != "ok")
       return(errModal(chk))
     disable("simulate1")
@@ -274,7 +274,7 @@ server = function(input, output, session) {
   })
   
   observeEvent(input$simulate2, {
-    chk = checkSimInput(ped2(), ids2(), input$analysis, input$nsims)
+    chk = checkSimInput(ped2(), ids2(), input$analysis, input$nsims, input$seed2)
     if(chk != "ok")
       return(errModal(chk))
     disable("simulate2")
