@@ -1,3 +1,12 @@
+
+# ibdsim2 2.3.2
+
+* `plotSegmentDistribution()` gains argument  `merge`.
+* Allow parameters `ids` and `skipRecomb` to be functions.
+* Brush up documentation of `ibdsim()`.
+* App: Warn (instead of crash) when empty `seed` input.
+
+
 # ibdsim2 2.3.1
 
 ## App changes
