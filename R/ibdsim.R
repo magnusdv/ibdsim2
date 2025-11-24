@@ -157,19 +157,36 @@ ibdsim = function(x, N = 1, ids = NULL, map = "decode",
   if(is.function(skipRecomb))
     skipRecomb = skipRecomb(x)
   else if(!is.null(skipRecomb))
-    skipRecomb = unique.default(skipRecomb)
-  
-  if(is.null(skipRecomb) && !is.null(ids) && !setequal(ids, labels(x))) {
+    skipRecomb = x$ID[internalID(x, unique.default(skipRecomb))] # catch errors
+    
+  if(!is.null(ids)) {
     FOU = founders(x)
-    useids = if(length(ids) == 1) parents(x, ids) else ids
-    fous = unlist(lapply(useids, function(id) intersect(FOU, ancestors(x, id, inclusive = TRUE))))
-    fousUniq = unique.default(fous)
+    useids = if(length(ids) == 1) parents(x, ids) else ids # NB: single id -> autozygosity
     
-    # Skip founders who are ancestors of at most one ids
-    counts = sapply(fousUniq, function(f) sum(fous == f))
-    skipRecomb = fousUniq[counts == 1]
+    # Ancestor list, sorted with id first (useful below)
+    ancs = lapply(useids, function(id) c(id, ancestors(x, id, inclusive = FALSE)))
+    
+    # Default: Skip founders that are not shared by at least 2
+    if(is.null(skipRecomb)) {
+      fous = unlist(lapply(ancs, function(a) intersect(FOU, a)))
+      fousUniq = unique.default(fous)
+      
+      counts = sapply(fousUniq, function(f) sum(fous == f))
+      skipRecomb = fousUniq[counts == 1]
+    }
+    
+    # Always skip non-leaves that are not proper ancestor of anyone
+    properAncs = if(length(ids) == 1) ancs else lapply(ancs, function(a) a[-1])
+    desc = x$ID |> setdiff(leaves(x)) |> setdiff(unlist(properAncs))
+    if(length(desc))
+       skipRecomb = c(skipRecomb, desc)
   }
-    
+  
+  # Sort skips
+  if(length(skipRecomb))
+    skipRecomb = x$ID[internalID(x, unique.default(skipRecomb))]
+  
+  
   if (verbose) {
     message(glue::glue("
       Simulation parameters:
