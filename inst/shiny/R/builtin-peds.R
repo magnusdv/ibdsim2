@@ -1,7 +1,16 @@
-library(pedtools, quietly = TRUE)
+# library call causes annoying startup messages
+# library(pedtools, quietly = TRUE)
+
+nuclearPed = pedtools::nuclearPed
+addSon = pedtools::addSon
+addDaughter = pedtools::addDaughter
+cousinPed = pedtools::cousinPed
+halfSibPed = pedtools::halfSibPed
+linearPed = pedtools::linearPed
+halfCousinPed = pedtools::halfCousinPed
 
 BUILTIN_PEDS = list(        
-  "Trio" = pedtools::nuclearPed(1),
+  "Trio" = nuclearPed(1),
   "Siblings" = nuclearPed(2),
   "Sibship of 3" = nuclearPed(3, sex = c(1,2,1)),
   "Half-sibs, maternal" = halfSibPed(1, 1, type = "maternal"),
@@ -22,9 +31,9 @@ BUILTIN_PEDS = list(
   "Half 2nd cousins + child" = halfCousinPed(2, symmetric = TRUE, child = TRUE),
   "3/4-siblings" = nuclearPed(2) |> addSon(c(3,5), verbose = FALSE) |> addSon(4:5),
   "3/4-siblings + child" = nuclearPed(2) |> addSon(c(3,5), verbose = FALSE) |> addDaughter(4:5) |> addSon(6:7),
-  "Dbl 1st cousins" = doubleFirstCousins(),
-  "Dbl 1st cousins + child" = doubleCousins(1, 1, child = TRUE),
-  "Quad half 1st cousins" = quadHalfFirstCousins(),
+  "Dbl 1st cousins" = pedtools::doubleFirstCousins(),
+  "Dbl 1st cousins + child" = pedtools::doubleCousins(1, 1, child = TRUE),
+  "Quad half 1st cousins" = pedtools::quadHalfFirstCousins(),
   "Father-daughter incest" = nuclearPed(1, sex = 2) |> addSon(c(1,3)),
   "Mother-son incest" = nuclearPed(1) |> addSon(2:3),
   "Full-sib incest" = nuclearPed(2, sex = 1:2) |> addSon(3:4),
@@ -34,7 +43,7 @@ BUILTIN_PEDS = list(
 )
 
 # Default individuals to be indicated when a pedigree is loaded
-DEFAULT_IDS = lapply(BUILTIN_PEDS, leaves)
+DEFAULT_IDS = lapply(BUILTIN_PEDS, pedtools::leaves)
 
 # A few special cases
 DEFAULT_IDS[["Grandparent (female line)"]] = c(2,5)

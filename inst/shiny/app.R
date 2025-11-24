@@ -2,7 +2,6 @@ suppressMessages(suppressPackageStartupMessages({
   library(shiny)
   library(shinyjs)
   library(shinyWidgets)
-  library(pedtools)
   library(ribd)
   library(ibdsim2)
   library(lubridate)
