@@ -68,8 +68,9 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL,
     theme(axis.text.y = element_blank(),
           axis.ticks.y = element_blank(),
           axis.title.y = element_text(size = 12))
-  if(!is.null(maplen)) {
-    pct = pretty(perSim$Total / maplen * 100)
+  # x-axis percentages
+  pct = pretty(perSim$Total / maplen * 100)  # maplen = NULL caught below
+  if(length(pct) > 2) {
     pct = pct[-c(1, length(pct))] 
     pctDat = data.frame(x = pct/100*maplen, y = 0, label = paste0(pct, "%"))
     yh = ggplot_build(g2)$layout$panel_params[[1]]$y.range[2]
@@ -79,7 +80,6 @@ generateIbdPlot = function(segData, analysis, cols, unit, observed = NULL,
       geom_segment(data = pctDat, aes(x = x, xend = x, y = 0, yend = yh*0.05),
                     color = "green4", inherit.aes = FALSE)
   }
-  
   
   # Plot 3: Count distribution
   g3 = ggplot(perSim, aes(.data$Count, color = .data$Relationship)) + 
