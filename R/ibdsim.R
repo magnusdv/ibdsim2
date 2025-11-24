@@ -239,16 +239,16 @@ ibdsim = function(x, N = 1, ids = NULL, map = "decode",
 #' @export
 print.genomeSimList = function(x, ...) {
   attrs = attributes(x)
-  len = attrs$mapLen
+  len = attrs$mapLen |> round(2)
   
   print(glue::glue("
   List of {length(x)} genome simulations.
-  Chromosomes: {toString2(attrs$chrom)}
-  Total range: {round(attrs$physRange, 2)} Mb
-  Map length : {len[[1]]} cM (male), {len[[2]]} cM (female)
-  Rec. model : {attrs$model}
-  Target ids : {toString2(attrs$ids)}
-  Skip recomb: {toString2(attrs$skipRecomb, ifempty = '-')}
+  Chromosomes  : {toString2(attrs$chrom)}
+  Total range  : {round(attrs$physRange, 2)} Mb
+  Genome length: {len[[1]]} cM (male), {len[[2]]} cM (female)
+  Recomb model : {attrs$model}
+  Target indivs: {toString2(attrs$ids)}
+  Skip recomb  : {toString2(attrs$skipRecomb, ifempty = '-')}
   "))
 }
 
