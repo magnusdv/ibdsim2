@@ -352,7 +352,7 @@ server = function(input, output, session) {
               straightlegs = isBuiltin),
       error = function(e) {
         plot.new(); box(which = "outer", col = 1); title(lab); 
-        text(x = 0.5, y = 0.6, parsePlotError(e), cex = 1.1, col = 2)
+        text(x = 0.5, y = 0.6, parsePlotError(e), cex = 1.1, col = 4)
       })
   }, execOnResize = TRUE)
   
