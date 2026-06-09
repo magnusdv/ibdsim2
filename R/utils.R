@@ -4,6 +4,19 @@ stop2 = function(...) {
   do.call(stop, a)
 }
 
+.mysetdiff = function (x, y) {
+  unique.default(x[match(x, y, 0L) == 0L])
+}
+
+.mysetequal = function(x, y) {
+  !anyNA(match(x, y)) && !anyNA(match(y, x))
+}
+
+# Fast intersection. NB: assumes no duplicates!
+.myintersect = function (x, y) {
+  y[match(x, y, 0L)]
+}
+
 # Test that input is a positive (or similar) integer.
 isCount = function(x, minimum = 1) {
   isTRUE(length(x) == 1 &&

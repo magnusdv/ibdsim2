@@ -108,7 +108,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL,
   
   if(is.null(names(pos)))
     names(pos) = ids
-  if(anyNA(match(ids %in% names(pos))))
+  if(anyNA(match(ids, names(pos))))
     stop2("ID not found in `pos` vector: ", setdiff(ids, names(pos)))
   
   # Extend `pos` to all individuals
