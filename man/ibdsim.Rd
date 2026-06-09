@@ -23,7 +23,7 @@ ibdsim(
 
 \item{ids}{A vector of names indicating which pedigree members should be
 included in the output. Alternatively, a function taking \code{x} as input and
-returning such a vector, like \code{\link[pedtools:ped_subgroups]{pedtools::leaves()}}. By default (\code{ids = NULL}) everyone is included.}
+returning such a vector, like \code{\link[pedtools:leaves]{pedtools::leaves()}}. By default (\code{ids = NULL}) everyone is included.}
 
 \item{map}{The genetic map to be used in the simulations: Allowed values are:
 \itemize{
@@ -41,7 +41,7 @@ recombination (see Details). Default: "chi".}
 \item{skipRecomb}{A vector of ID labels indicating individuals whose meioses
 should be simulated without recombination. (Each child will then receive a
 random strand of each chromosome.) Alternatively, a function taking \code{x} as
-input, e.g., \code{\link[pedtools:ped_subgroups]{pedtools::founders()}}. By default, recombination is skipped
+input, e.g., \code{\link[pedtools:founders]{pedtools::founders()}}. By default, recombination is skipped
 in founders who are uninformative for IBD sharing in the \code{ids} individuals.}
 
 \item{simplify1}{A logical, by default TRUE, removing the outer list layer
