@@ -2,8 +2,8 @@
 
 #' @export
 `[.genomeMap` = function(x, i) {
-  if(!all(i %in% seq_along(x)))
-    stop2("Index out of range: ", setdiff(i, seq_along(x)))
+  if(anyNA(match(i, seq_along(x))))
+    stop2("Index out of range: ", .mysetdiff(i, seq_along(x)))
   
   s = unclass(x)[i]
   structure(s, class = "genomeMap")
@@ -170,7 +170,7 @@ convertPos = function(chrom = NULL, Mb = NULL, cM = NULL, map = "decode19", sex 
     res = numeric(length = n)
     
     for(chr in unique.default(chrom)) {
-      if(!chr %in% mapchr)
+      if(chr %notin% mapchr)
         stop2("Chromosome not included in given map: ", chr)
       idx = chrom == chr
       

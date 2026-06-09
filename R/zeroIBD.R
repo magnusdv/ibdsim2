@@ -52,8 +52,8 @@ zeroIBD = function(sims, ids = NULL, threshold = 0, unit = "cm") {
   if(length(ids) != 2)
     stop2("Argument `ids` must contain exactly two ID labels: ", ids)
   
-  if(!all(ids %in% idsims))
-    stop2("Target ID not found in segment input:", setdiff(ids, idsims))
+  if(anyNA(match(ids, idsims)))
+    stop2("Target ID not found in segment input:", .mysetdiff(ids, idsims))
   
   if(!is.list(sims))
     sims = list(sims)
@@ -65,7 +65,7 @@ zeroIBD = function(sims, ids = NULL, threshold = 0, unit = "cm") {
   # Summarise each simulation
   ibdCount = lapply(sims, function(s) {
     
-    if(length(idsims) > 2 || !"IBD" %in% colnames(s)) {
+    if(length(idsims) > 2 || "IBD" %notin% colnames(s)) {
       s0 = alleleFlow(s, ids = ids, addState = TRUE)
       s = mergeSegments(s0, by = "IBD")
     }

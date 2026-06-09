@@ -36,10 +36,10 @@ karyogram2 = function(sim, ids = NULL, verbose = TRUE, ...) {
   if(length(ids) != 2)
     stop2("The input must specify exactly two ID labels: ", ids)
   
-  if(!all(ids %in% simids))
-    stop2("Target ID not found in input data:", setdiff(ids, simids))
+  if(anyNA(match(ids, simids)))
+    stop2("Target ID not found in input data:", .mysetdiff(ids, simids))
   
-  if(length(simids) > 2 || !"IBD" %in% colnames(sim)) {
+  if(length(simids) > 2 || "IBD" %notin% colnames(sim)) {
     sim0 = alleleFlow(sim, ids = ids, addState = TRUE)
     sim = mergeSegments(sim0, by = "IBD")
   }
@@ -85,10 +85,10 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
   if(length(id) != 1)
     stop2("The input must specify exactly one ID label: ", id)
   
-  if(!id %in% simids)
+  if(id %notin% simids)
     stop2("Target ID not found in input data:", id)
   
-  if(length(simids) > 2 || !"Aut" %in% colnames(sim)) {
+  if(length(simids) > 2 || "Aut" %notin% colnames(sim)) {
     sim0 = alleleFlow(sim, ids = id, addState = TRUE)
     sim = mergeSegments(sim0, by = "Aut")
   }
@@ -296,8 +296,8 @@ prepare_segments = function(segments, chrom = 1:22, colBy = NULL) {
   
   if(ncol(segments) < 3)
     stop2("Data frame `segments` must have at least 3 columns (chrom, start, end)")
-  if(!is.null(colBy) && !all(colBy %in% names(segments)))
-    stop2("Unknown column name: ", setdiff(colBy, names(segments)))
+  if(!is.null(colBy) && anyNA(match(colBy, names(segments))))
+    stop2("Unknown column name: ", .mysetdiff(colBy, names(segments)))
   
   # Numeric chrs
   chrNo = segments[,1] = sub("chr", "", sub("chrom", "", sub("chromosome", "", segments[,1])))

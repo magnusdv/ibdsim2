@@ -152,7 +152,7 @@ plotSegmentDistribution = function(..., type = c("autozygosity", "ibd1"),
   # Check `ids` compatibility
   for(i in 1:N) {
     ped = attr(sims[[i]], 'pedigree')
-    if(!all(ids[[i]] %in% labels(ped)))
+    if(anyNA(match(ids[[i]], labels(ped))))
       stop2("Unknown ID label in pedigree ", i, ": ", setdiff(ids[[i]], labels(ped)))
   }
   

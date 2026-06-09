@@ -40,7 +40,7 @@ loadPed = function(file) {
   names(df) = nms = tolower(names(df))
 
   cls = c("id", "fid", "mid", "sex")
-  if(!all(cls %in% nms))
+  if(anyNA(match(cls, nms)))
     stop("Column not found: ", toString(setdiff(cls, nms)))
   
   as.ped(df[cls])
@@ -51,8 +51,8 @@ checkSimInput = function(ped, ids, analysis, N, seed) {
     return("No pedigree indicated")
   if(length(ids) == 0) 
     return("No pedigree members indicated")
-  if(!all(ids %in% labels(ped)))
-    return(paste("Unknown ID label:", toString(setdiff(ids, labels(ped)))))
+  if(anyNA(match(ids, labels(ped))))
+    return(paste("Unknown ID label:", toString(.mysetdiff(ids, labels(ped)))))
   if(analysis == "Sharing" && length(ids) == 1)
     return(paste("Sharing analysis is indicated, but only one individual:", toString(ids)))
   if(analysis == "Autozygosity" && any((inbr <- inbreeding(ped, ids)) == 0))

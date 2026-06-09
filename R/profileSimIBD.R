@@ -80,8 +80,8 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL,
   else
     a = alleleFlow(a, ids, addState = FALSE)
 
-  if(!all(ids %in% labels(x)))
-    stop2("ID label in `ibdpattern` not found in `x`: ", setdiff(ids, labels(x)))
+  if(anyNA(match(ids, labels(x))))
+    stop2("ID label in `ibdpattern` not found in `x`: ", .mysetdiff(ids, labels(x)))
   
   nMark = nMarkers(x)
   if(nMark == 0)
@@ -103,8 +103,8 @@ profileSimIBD = function(x, ibdpattern, ids = NULL, markers = NULL, seed = NULL,
   # Split a on chrom (NB: split(a, a[,'chrom']) doesn't work directly)
   aChr = lapply(split(1:nrow(a), a[, "chrom"]), function(rws) a[rws, , drop = FALSE])
   
-  if(!all(mchr %in% names(aChr)))
-    stop2("Chromosome missing from `ibdpattern`: ", setdiff(mchr, achr))
+  if(anyNA(match(mchr, names(aChr))))
+    stop2("Chromosome missing from `ibdpattern`: ", .mysetdiff(mchr, achr))
   
   # Allele columns
   matcols = 5 + seq_along(ids)*2L 

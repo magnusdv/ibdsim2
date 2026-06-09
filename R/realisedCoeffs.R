@@ -81,7 +81,7 @@ realisedInbreeding = function(sims, id = NULL, unit = "cm", merge = TRUE,
     id = idsims
   if(length(id) != 1)
     stop2("Argument `id` must contain a single ID label: ", id)
-  if(!id %in% idsims)
+  if(id %notin% idsims)
     stop2("Target ID not found in the IBD segment input")
   
   # Ensure sims is a list
@@ -95,7 +95,7 @@ realisedInbreeding = function(sims, id = NULL, unit = "cm", merge = TRUE,
   # Summarise each simulation
   resList = lapply(sims, function(s) {
     
-    if(length(idsims) > 1 || !"Aut" %in% colnames(s))
+    if(length(idsims) > 1 || "Aut" %notin% colnames(s))
       s = alleleFlow(s, ids = id, addState = TRUE)
     
     if(merge)
@@ -147,8 +147,8 @@ realisedKinship = function(sims, ids = NULL, unit = "cm", merge = TRUE,
   if(length(ids) != 2)
     stop2("Argument `ids` must contain exactly two ID labels: ", ids)
   
-  if(!all(ids %in% idsims))
-    stop2("Target ID not found in segment input:", setdiff(ids, idsims))
+  if(anyNA(match(ids, idsims)))
+    stop2("Target ID not found in segment input:", .mysetdiff(ids, idsims))
   
   if(!is.list(sims))
     sims = list(sims)
@@ -160,7 +160,7 @@ realisedKinship = function(sims, ids = NULL, unit = "cm", merge = TRUE,
   # Summarise each simulation
   resList = vapply(sims, function(s) {
     
-    if(!"Sigma" %in% colnames(s))
+    if("Sigma" %notin% colnames(s))
       s = alleleFlow(s, ids = ids, addState = TRUE)
     
     if(merge)
@@ -203,8 +203,8 @@ realisedKappa = function(sims, ids = NULL, unit = "cm", merge = TRUE,
   if(length(ids) != 2)
     stop2("Argument `ids` must contain exactly two ID labels: ", ids)
   
-  if(!all(ids %in% idsims))
-    stop2("Target ID not found in segment input:", setdiff(ids, idsims))
+  if(anyNA(match(ids, idsims)))
+    stop2("Target ID not found in segment input:", .mysetdiff(ids, idsims))
   
   if(!is.list(sims))
     sims = list(sims)
@@ -215,7 +215,7 @@ realisedKappa = function(sims, ids = NULL, unit = "cm", merge = TRUE,
   
   resList = lapply(sims, function(s) {
     
-    if(!"IBD" %in% colnames(s))
+    if("IBD" %notin% colnames(s))
       s = alleleFlow(s, ids = ids, addState = TRUE)
     
     if(merge)
@@ -263,8 +263,8 @@ realisedIdentity = function(sims, ids = NULL, unit = "cm", merge = TRUE,
   if(length(ids) != 2)
     stop2("Argument `ids` must contain exactly two ID labels: ", ids)
   
-  if(!all(ids %in% idsims))
-    stop2("Target ID not found in segment input:", setdiff(ids, idsims))
+  if(anyNA(match(ids, idsims)))
+    stop2("Target ID not found in segment input:", .mysetdiff(ids, idsims))
   
   if(!is.list(sims))
     sims = list(sims)
@@ -275,7 +275,7 @@ realisedIdentity = function(sims, ids = NULL, unit = "cm", merge = TRUE,
   
   resList = lapply(sims, function(s) {
     
-    if(!"Sigma" %in% colnames(s))
+    if("Sigma" %notin% colnames(s))
       s = alleleFlow(s, ids = ids, addState = TRUE)
     
     if(merge)

@@ -96,8 +96,8 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL,
   else
     ids = as.character(ids)
   
-  if(!all(ids %in% idsIBD))
-      stop2("ID not found in `ibd` matrix: ", setdiff(ids, idsIBD))
+  if(anyNA(match(ids, idsIBD)))
+    stop2("ID not found in `ibd` matrix: ", setdiff(ids, idsIBD))
   
   if(length(pos) == 1) {
     pos = rep(pos, length(ids))
@@ -108,7 +108,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL,
   
   if(is.null(names(pos)))
     names(pos) = ids
-  if(!all(ids %in% names(pos)))
+  if(anyNA(match(ids %in% names(pos))))
     stop2("ID not found in `pos` vector: ", setdiff(ids, names(pos)))
   
   # Extend `pos` to all individuals
@@ -137,7 +137,7 @@ haploDraw = function(x, ibd, chrom = NULL, ids = NULL, unit = "mb", L = NULL,
         stop2("`chrom = 'X'` is indicated, but the given simulation is not X-chromosomal")
       chrom = 23
     }
-    if(!chrom %in% chrvec)
+    if(chrom %notin% chrvec)
       stop2("Chromosome not present in the simulation: ", chrom)
     ibd = ibd[chrvec == chrom, , drop = FALSE]
   }

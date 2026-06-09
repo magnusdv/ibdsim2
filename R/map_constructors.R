@@ -158,8 +158,8 @@ loadMap = function(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage =
   if(!is.character(map) || length(map) != 1)
     stop2("Argument `map` must be a character of length 1")
   
-  if(!all(chrom %in% c(1:23, "X")))
-    stop2("Unknown chromosome name: ", setdiff(chrom, c(1:23, "X")))
+  if(anyNA(match(chrom, c(1:23, "X"))))
+    stop2("Unknown chromosome name: ", .mysetdiff(chrom, c(1:23, "X")))
   
   if(is.character(chrom)) {
      chrom[chrom == "X"] = 23
@@ -274,8 +274,8 @@ customMap = function(x) {
   
   nms = names(x)
   nmsSmall = tolower(nms)
-  if(!"chrom" %in% nmsSmall) stop2('`x` must have a column named "chrom". See `?customMap`')
-  if(!"mb" %in% nmsSmall) stop2('`x` must have a column named "mb". See `?customMap`')
+  if("chrom" %notin% nmsSmall) stop2('`x` must have a column named "chrom". See `?customMap`')
+  if("mb" %notin% nmsSmall) stop2('`x` must have a column named "mb". See `?customMap`')
   sexEq = "cm" %in% nmsSmall
   sexSpec = "male" %in% nmsSmall && "female" %in% nmsSmall
   if(!(sexEq || sexSpec))

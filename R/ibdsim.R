@@ -115,7 +115,7 @@ ibdsim = function(x, N = 1, ids = NULL, map = "decode",
     stop2("The first argument must be a `ped` object")
   if(!isCount(N))
     stop2("`N` must be a positive integer")
-  if(!all(founderInbreeding(x) %in% c(0,1)))
+  if(anyNA(match(founderInbreeding(x), c(0,1))))
     stop2("Founder inbreeding coefficients other than 0 and 1 are not allowed")
   
   # Ensure that parents precede their children

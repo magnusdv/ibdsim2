@@ -4,14 +4,14 @@ alleleFlow = function(x, ids, addState = TRUE) {
     stop2("Argument `x` must be a `genomeSim` object. Received: ", class(x))
   
   xids = extractIds(x)
-  if(!all(ids %in% xids))
-    stop2("Unknown ID label: ", setdiff(ids, xids))
+  if(anyNA(match(ids, xids)))
+    stop2("Unknown ID label: ", .mysetdiff(ids, xids))
   
   n = length(ids)
   clnms = colnames(x)
   
   # If nothing to do, return early
-  if(setequal(ids, xids)) {
+  if(.mysetequal(ids, xids)) {
     if(n > 2 || !addState) 
       return(x)
     if(n == 1 && "Aut" %in% clnms)
