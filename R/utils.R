@@ -4,6 +4,9 @@ stop2 = function(...) {
   do.call(stop, a)
 }
 
+`%notin%` = function(x, table) 
+  match(x, table, nomatch = 0L) == 0L
+
 .mysetdiff = function (x, y) {
   unique.default(x[match(x, y, 0L) == 0L])
 }
