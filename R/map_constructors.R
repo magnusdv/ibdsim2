@@ -94,11 +94,9 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1,
 #' Load a built-in genetic map
 #'
 #' This function loads one of the built-in genetic maps. Currently, the only
-#' option is a detailed human recombination map, based on the publication by
-#' Halldorsson et al. (2019).
-#'
-#' For reasons of speed and efficiency, the map published by map Halldorsson et
-#' al. (2019) has been thinned down to ~14,000 data points.
+#' option is the fine-scale human recombination map published by Halldorsson 
+#' et al. (2019). For reasons of speed and efficiency, the map has been 
+#' thinned down to ~14,000 data points.
 #'
 #' NOTE: The built-in map was updated in version 2.3.0, adding more accurate
 #' physical chromosome endpoints. While still based on Halldorsson et al.

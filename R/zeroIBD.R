@@ -75,10 +75,8 @@ zeroIBD = function(sims, ids = NULL, threshold = 0, unit = "cm") {
     sum(s[, "IBD"] > 0 & len >= threshold)
   }, numeric(1))
 
+  # Fraction and standard error of sims with 0 segments
   zeroprob = mean(ibdCount == 0)
-  
-  # Fraction (and standard error) of sims with 0 segments
-  zeroprob = mean(unlist(ibdCount) == 0)
   stErr = sqrt(zeroprob*(1 - zeroprob)/length(ibdCount))
   
   list(zeroprob = zeroprob, stErr = stErr)

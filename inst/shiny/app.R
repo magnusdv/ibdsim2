@@ -20,7 +20,6 @@ suppressMessages(suppressPackageStartupMessages({
 ui = fluidPage(
   includeCSS("www/custom.css"),
   tags$head(includeHTML(system.file("shiny/www/GA.html", package = "ibdsim2"))),
-  tags$head(tags$script(src = "scripts.js")),
   
   useShinyjs(),
   useBusyIndicators(),
@@ -29,8 +28,7 @@ ui = fluidPage(
   h2(id = "title-h2", "IBD sharing by family members"),
   
   p(style = "margin-bottom: 4px", bold("Purpose: "),
-"Estimate and visualise distributions of genomic segments shared identical-by-descent (IBD) between related individuals, 
-or within inbred individuals (autozygosity). Recombination is simulated down through the pedigree, using detailed, sex-specific crossover rates for the human genome (",
+"Estimate and visualise distributions of genomic segments shared identical-by-descent (IBD) between related individuals, or within inbred individuals (autozygosity). Recombination is simulated down through the pedigree, using fine-scale human crossover rates (",
 mylink("Halldorsson et al., 2019", "https://doi.org/10.1126/science.aau1043"), ")."),
 
   p(style = "margin-bottom: 4px", bold("More information: "),
@@ -165,7 +163,12 @@ fluidRow(
 # Server logic
 server = function(input, output, session) {
 
-  observeEvent(input$browserClosed, stopApp())
+  # Stop the app when the local session closes
+  session$onSessionEnded(function() {
+    host = isolate(session$clientData$url_hostname)
+    if(isTRUE(host %in% c("localhost", "127.0.0.1", "::1")))
+      stopApp()
+  })
   
   ped1 = reactiveVal(NULL)
   ped2 = reactiveVal(NULL)
@@ -429,7 +432,11 @@ server = function(input, output, session) {
   output$download = downloadHandler(
     filename = "ibdsim2-output.zip",
     content = function(con) {
-      tmpdir = tempdir()
+      
+      tmpdir = tempfile("ibdsim2-")
+      dir.create(tmpdir)
+      on.exit(unlink(tmpdir, recursive = TRUE), add = TRUE)
+      
       files = saveData(segmentData1(), segmentData2(), params1 = allParams1(), 
                        params2 = allParams2(), version = .VERSION, tmpdir = tmpdir)
     

@@ -130,6 +130,10 @@ NumericVector convert_pos_C(NumericVector pos,
   for(int i=0; i < res.length(); ++i) {
     
     src = pos[i];
+    if(NumericVector::is_na(src)) {
+      res[i] = NA_REAL;
+      continue;
+    }
     
     // Values outside of map
     if(src < mapFrom[0]) {
@@ -164,27 +168,22 @@ NumericVector convert_pos_C(NumericVector pos,
 NumericMatrix build_allelemat_C(NumericVector pos, List haplolist) { 
   // Each entry of haplolist: matrix with 2 columns (breaks - allele)
   
-  int idx = 0;
-  
-  NumericMatrix am(pos.length(), haplolist.length());
-  //if(is.null(haplo)) return(rep(0, length(posvec)))
+  int npos = pos.length();
+  NumericMatrix am(npos, haplolist.length());
   
   for(int j=0; j < haplolist.length(); ++j) {
     
     if(haplolist[j] == R_NilValue) {
       continue;
     }
-    NumericMatrix h = haplolist[j]; 
-    NumericVector breaks = h(_, 0);
-    NumericVector als = h(_, 1);
-    for(int i=0; i < pos.length(); ++i) {
-      if(breaks.length() == 1) {
-        idx = 0;
-      }
-      else {
-        idx = std::distance(breaks.begin(), std::upper_bound(breaks.begin(), breaks.end(), pos[i])) - 1;
-      }
-      am(i, j) = als[idx];
+    NumericMatrix h = haplolist[j];
+    int idx = 0;
+    int nbreaks = h.nrow();
+
+    for(int i = 0; i < npos; ++i) {
+      while(idx + 1 < nbreaks && h(idx + 1, 0) <= pos[i])
+        ++idx;
+      am(i, j) = h(idx, 1);
     }
   }
   return am;

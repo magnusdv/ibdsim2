@@ -17,15 +17,15 @@ status](https://www.r-pkg.org/badges/version/ibdsim2)](https://CRAN.R-project.or
 here: [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/)
 </span>
 
-As of version 2.1.0, the Shiny app is integrated into `ibdsim2`. The app
-depends on some packages that are not installed by default. To install
-everything needed by the app, use:
+As of version 2.1.0, a local version of the Shiny app is also available
+within the `ibdsim2` R package. To ensure the app has all required
+dependencies, use the following installation command:
 
 ``` r
 install.packages("ibdsim2", dependencies = TRUE)
 ```
 
-The app can then be run from R with the command:
+The app can then be run from R with:
 
 ``` r
 ibdsim2::launchApp()
@@ -174,7 +174,7 @@ s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 6.65 secs
+#> Total time used: 7.44 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option

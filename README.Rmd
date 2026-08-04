@@ -26,13 +26,12 @@ knitr::opts_chunk$set(
   
 <span style="color:red; font-size:150%"> Online app for IBD simulations here: [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/) </span>
 
-As of version 2.1.0, the Shiny app is integrated into `ibdsim2`. The app depends on some packages that are not installed by default. To install everything needed by the app, use:
-
+As of version 2.1.0, a local version of the Shiny app is also available within the `ibdsim2` R package. To ensure the app has all required dependencies, use the following installation command: 
 ```{r, eval=FALSE}
 install.packages("ibdsim2", dependencies = TRUE)
 ```
 
-The app can then be run from R with the command:
+The app can then be run from R with:
 ```{r, eval=FALSE}
 ibdsim2::launchApp()
 ```

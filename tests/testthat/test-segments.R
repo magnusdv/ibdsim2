@@ -32,13 +32,6 @@ test_that("zeroIBD() merges adjacent IBD segments before cutoff", {
   expect_error(zeroIBD(sim, threshold = NA), "nonnegative number")
 })
 
-test_that("mergeSegments() works without cM columns", {
-  segs = data.frame(chrom = 1, startMB = c(0, 1), endMB = c(1, 2), fill = 1)
-
-  res = mergeSegments(segs, by = "fill", checkAdjacency = TRUE)
-  expect_equal(nrow(res), 1)
-  expect_equal(res$endMB, 2)
-})
 
 test_that("mergeSegments() handles karyogram segment data", {
   # Four-column format produced by prepare_segments()

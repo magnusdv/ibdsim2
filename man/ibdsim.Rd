@@ -109,7 +109,7 @@ In many applications, the fine-scale default map is not necessary, and may be
 replaced by simpler maps with constant recombination rates. See
 \code{\link[=uniformMap]{uniformMap()}} and \code{\link[=loadMap]{loadMap()}} for ways to produce such maps.
 
-The simulations supports completely inbred founders; see
+The simulations support completely inbred founders; see
 \code{\link[pedtools:setFounderInbreeding]{pedtools::setFounderInbreeding()}}.
 }
 \examples{

@@ -98,7 +98,7 @@ distributeFounderAlleles = function(x, Xchrom = FALSE) {
   FOU_INB = founderInbreeding(x, chromType = if(Xchrom) "x" else "autosomal")
   inb1 = FOU_INB > 0
   if(any(FOU_INB[inb1] < 1))
-      stop2("Founder inbreeding less than 100% is not supported: ", setdiff(FOU_INB, c(0,1)))
+      stop2("Founder inbreeding other than 0% or 100% is not supported: ", setdiff(FOU_INB, c(0,1)))
   
   # Create output list
   h = vector("list", pedsize(x))

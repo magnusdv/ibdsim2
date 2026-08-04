@@ -71,7 +71,7 @@ checkSimInput = function(ped, ids, analysis, N, seed, cutoff) {
     return("The `seed` must be a positive integer")
   if(!is.numeric(cutoff) || length(cutoff) != 1L ||
      is.na(cutoff) || cutoff < 0)
-    return("Length cutoff must be a nonnegative number")
+    return("Cutoff must be a nonnegative number")
   
   "ok"
 }

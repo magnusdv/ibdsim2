@@ -24,7 +24,7 @@
 #' replaced by simpler maps with constant recombination rates. See 
 #' [uniformMap()] and [loadMap()] for ways to produce such maps.
 #' 
-#' The simulations supports completely inbred founders; see 
+#' The simulations support completely inbred founders; see 
 #' [pedtools::setFounderInbreeding()].
 #' 
 #' @param x A [pedtools::ped()] object.

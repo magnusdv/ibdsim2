@@ -224,8 +224,8 @@ convertPos = function(chrom = NULL, Mb = NULL, cM = NULL, map = "decode19", sex 
   if(length(Mb) + length(cM) == 0)
     return(numeric(0))
 
-  if(!is.data.frame(map))
-    stop2("Expected `map` to be a data frame, not a ", class(map))
+  if(!is.data.frame(map) || !nrow(map) || any(c("Mb", "cM") %notin% names(map)))
+    stop2("Expected `map` to be a nonempty data frame with columns `Mb` and `cM`")
   
   if(is.null(Mb))
     convert_pos_C(pos = cM, mapFrom = map$cM, mapTo = map$Mb, extValue = NA)

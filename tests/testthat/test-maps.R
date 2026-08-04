@@ -102,4 +102,8 @@ test_that("convertPos() handles vectors and X maps", {
   expect_equal(convertPos(chrom = 23, Mb = 50, map = gx), 50)
   expect_error(convertPos(Mb = 50, map = mx, sex = "male"),
                "no male component")
+  
+  expect_equal(convertPos(Mb = c(NA, 50), map = m), c(NA, 50))
+  emptyMap = data.frame(Mb = numeric(), cM = numeric())
+  expect_error(convertPos(Mb = 1, map = emptyMap), "nonempty data frame")
 })
