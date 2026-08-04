@@ -12,9 +12,9 @@
 #' @param unit Either "mb" (default) or "cm".
 #' @param L A positive number: the chromosome length. By default derived from
 #'   `ibd`.
-#' @param pos A vector recycled to `pedsize(x)`, indicating where haplotypes
-#'   should be drawn relative to the pedigree symbols: 0 = no haplotypes; 1 =
-#'   below; 2 = left; 3 = above; 4 = right. By default, all are placed below.
+#' @param pos A vector recycled to the number of individuals, indicating where 
+#'   haplotypes should be drawn relative to the pedigree symbols: 0 = no haplotypes; 
+#'   1 = below; 2 = left; 3 = above; 4 = right. By default, all are placed below.
 #' @param cols A colour vector corresponding to the alleles in `ibd`.
 #' @param height The height of the haplotype rectangles in units of the pedigree
 #'   symbol height. Default: 4.
@@ -28,7 +28,7 @@
 #' @param ... Further arguments passed on to `plot.ped()`, e.g. `margins` and
 #'   `cex`. See `?plotmethods` for a complete list.
 #'
-#' @return None.
+#' @return The pedigree plot object, invisibly.
 #'
 #' @examples
 #'

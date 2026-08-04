@@ -5,8 +5,8 @@
 #' @param sims A list of genome simulations, as output by [ibdsim()].
 #' @param ids A vector with two ID labels. If NULL (default), these are deduced
 #'   from the `sims` object.
-#' @param threshold A nonnegative number (default:0). Only IBD segments longer
-#'   than this are included in the computation.
+#' @param threshold A nonnegative number (default:0). Only IBD segments at
+#'   least this long are included in the computation.
 #' @param unit The unit of measurement for `threshold`: Either "mb" or "cm"
 #'   (default).
 #'
@@ -40,8 +40,10 @@
 #'
 #' @export
 zeroIBD = function(sims, ids = NULL, threshold = 0, unit = "cm") {
-  if(!is.numeric(threshold) || length(threshold) != 1 || threshold < 0)
+  if(!is.numeric(threshold) || length(threshold) != 1 || is.na(threshold) || threshold < 0)
     stop2("`threshold` must be a nonnegative number")
+
+  unit = match.arg(unit, c("cm", "mb"))
   
   # IDs present in sims
   idsims = extractIds(sims)

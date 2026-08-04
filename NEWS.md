@@ -1,7 +1,7 @@
 
 # ibdsim2 2.3.2
 
-* `plotSegmentDistribution()` gains argument  `merge`.
+* `plotSegmentDistribution()` gains argument `merge`.
 * Allow parameters `ids` and `skipRecomb` to be functions.
 * Brush up documentation of `ibdsim()`.
 * App: Warn (instead of crash) when empty `seed` input.
@@ -28,7 +28,7 @@
 
 * The app now uses the updated built-in map as described above. This may lead to (usually very slightly) different results when the length unit is set to "Mb".
 * A new switch button "Origin" has been added in the bottom left corner of the plot region. This can be used to enforce the scatter plot axes to start at the origin (0,0).
-* In the "Total IBD" distribution plot, the x-axis now show percentages of the total (autosomal or X) genome length, in addition to the absolute lengths. When the unit is "cM", the total length is taken as the average length for males and females (unless for X, when the female length is used).
+* In the "Total IBD" distribution plot, the x-axis now shows percentages of the total (autosomal or X) genome length, in addition to the absolute lengths. When the unit is "cM", the total length is taken as the average length for males and females (unless for X, when the female length is used).
 
 ## Package changes
 
@@ -76,7 +76,7 @@ This version includes a major update of the shiny app frontend to **ibdsim2**. P
 
 * X-chromosomal IBD simulations are now supported.
 
-* The user can now choose the length unit for IBD segments; either centiMorgan ("cM", default) or megabytes ("Mb").
+* The user can now choose the length unit for IBD segments; either centiMorgan ("cM", default) or megabases ("Mb").
 
 * Fixed buggish unit conversion in the previous version: In some cases the segments were measured in Mb while the plot labels said "cM".
 
@@ -98,7 +98,7 @@ This version includes a major update of the shiny app frontend to **ibdsim2**. P
 
 * As of version 2.0.0, the main data structure for IBD segments includes both megabase (MB) and centiMorgan (CM) coordinates. This allows the user to choose length unit in all downstream analyses. However, the new format is not compatible with previous versions of the package.
 
-* `ibdsim()` has a new argument `simplify1`, by default TRUE. This means that `ibdsim(..., N = 1)` now simply returns a matrix, without the outer list layer. This typically the desired behaviour in interactive use, especially when piping. To enforce a list output, add `simplify1 = FALSE`.
+* `ibdsim()` has a new argument `simplify1`, by default TRUE. This means that `ibdsim(..., N = 1)` now simply returns a matrix, without the outer list layer. This is typically the desired behaviour in interactive use, especially when piping. To enforce a list output, add `simplify1 = FALSE`.
 
 
 ## New features

@@ -8,7 +8,7 @@ ibdsim(
   x,
   N = 1,
   ids = NULL,
-  map = "decode",
+  map = "decode19",
   model = c("chi", "haldane"),
   skipRecomb = NULL,
   simplify1 = TRUE,
@@ -47,7 +47,7 @@ in founders who are uninformative for IBD sharing in the \code{ids} individuals.
 \item{simplify1}{A logical, by default TRUE, removing the outer list layer
 when N = 1. See Value.}
 
-\item{seed}{An integer to be passed on to \code{\link[=set.seed]{set.seed()}}).}
+\item{seed}{An integer to be passed on to \code{\link[=set.seed]{set.seed()}}.}
 
 \item{verbose}{A logical.}
 }
@@ -101,11 +101,16 @@ Poisson process along each chromosome. (Faster, but less realistic.)
 
 Recombination rates along each chromosome are determined by the \code{map}
 parameter. The default value ("decode19") loads a thinned version of the
-recombination map of the human genome published by Halldorsson et al (2019).
+recombination map of the human genome published by Halldorsson et al. (2019).
+Note that autosomal and X-chromosomal maps cannot be combined in the same
+simulation.
 
 In many applications, the fine-scale default map is not necessary, and may be
 replaced by simpler maps with constant recombination rates. See
 \code{\link[=uniformMap]{uniformMap()}} and \code{\link[=loadMap]{loadMap()}} for ways to produce such maps.
+
+The simulations supports completely inbred founders; see
+\code{\link[pedtools:setFounderInbreeding]{pedtools::setFounderInbreeding()}}.
 }
 \examples{
 
@@ -118,7 +123,7 @@ sim
 # Plot haplotypes
 haploDraw(hs, sim)
 
-#' ### Example 2: Full sib mating ###
+### Example 2: Full sib mating ###
 
 x = fullSibMating(1)
 sim = ibdsim(x, ids = 5:6, map = uniformMap(M = 10), seed = 1)

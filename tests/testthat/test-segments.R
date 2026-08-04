@@ -3,8 +3,7 @@ x = nuclearPed(1)
 s = ibdsim(x, N = 1, map = uniformMap(M=1), seed = 123, verbose = F)
 
 test_that("alleleFlow() catches errors", {
-  expect_error(alleleFlow(s, ids = 4), 
-               "Unknown ID label")
+  expect_error(alleleFlow(s, ids = 4), "Unknown ID label")
   expect_error(alleleFlow(list(s), ids = 4), 
                "Argument `x` must be a `genomeSim` object. Received: list")
 })

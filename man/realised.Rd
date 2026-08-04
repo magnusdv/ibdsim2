@@ -36,6 +36,11 @@ should be merged before calculating summary statistics.}
 \item{simplify1}{A logical, by default TRUE, simplifying the output if \code{sims}
 contains a single simulation. If FALSE, the output is always a list.}
 }
+\value{
+With one simulation and \code{simplify1 = TRUE}, the realised
+coefficient(s). Otherwise, a list containing the per-simulation estimates,
+their mean and their standard deviation.
+}
 \description{
 Compute the realised values of various pedigree coefficients, from simulated
 data. The current implementation covers inbreeding coefficients for single
@@ -61,7 +66,7 @@ of the autosome where the individuals share exactly \eqn{i} alleles IBD,
 where \eqn{i = 0,1,2}.
 
 Finally, we can do the same thing for each of the nine condensed identity
-coefficients of Jacquard. For each \eqn{i = 1,...,9} we define \eqn{D_i} the
+coefficients of Jacquard. For each \eqn{i = 1,...,9} we define \eqn{D_i} to
 be the fraction of the autosome where a given pair of individuals are in
 identity state \eqn{i}. This uses the conventional ordering of the nine
 condensed identity states; see for instance the \href{https://github.com/magnusdv/ribd}{\code{ribd} GitHub page}.

@@ -38,7 +38,7 @@ df1 = data.frame(chrom = c(1, 1, 2, 2),
 map1 = customMap(df1)
 map1
 
-# Use columns "male" and "female" to make sex specific maps
+# Use columns "male" and "female" to make sex-specific maps
 df2 = data.frame(chrom = c(1, 1, 2, 2),
                  mb = c(0, 2, 0, 5),
                  male = c(0, 3, 0, 6),

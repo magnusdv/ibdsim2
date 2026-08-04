@@ -46,11 +46,10 @@ drawn in separate bands on the chromosomes.}
 
 \item{legendTitle}{Legend title.}
 
-\item{base_size}{Font size, passed onto \code{ggplot2::theme()}.}
+\item{base_size}{Font size, passed to \code{ggplot2::theme()}.}
 }
 \value{
-The plot object is returned invisibly, so that additional \code{ggplot}
-layers may be added if needed.
+A \code{ggplot} object. Additional \code{ggplot} layers may be added if needed.
 }
 \description{
 Show chromosomal segments in a haploid karyogram

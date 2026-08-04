@@ -35,6 +35,8 @@
 #' @param legendInside A logical controlling the legend placement.
 #' @param title,xlab,ylab Title and axis labels.
 #'
+#' @return A `ggplot` object.
+#' 
 #' @examples
 #'
 #' # Simulation parameters used in the below examples.
@@ -86,8 +88,8 @@
 #' # with the same expected inbreeding coefficient (f = 1/8)
 #' #################################################################
 #'
-#' G = linearPed(2) |> swapSex(5) |> addSon(c(1,5))   # grandfath/granddaughter
-#' HSpat = halfSibPed(sex2 = 2) |> addSon(4:5)        # paternal half sibs
+#' G = linearPed(2, sex = 1:2) |> addSon(c(1,5))   # grandfather/granddaughter
+#' HSpat = halfSibPed(sex2 = 2) |> addSon(4:5)     # paternal half sibs
 #' HSmat = swapSex(HSpat, 2)              # maternal half sibs
 #' QHFC = quadHalfFirstCousins()          # quad half first cousins
 #' QHFC = addSon(QHFC, 9:10)

@@ -29,8 +29,9 @@ A vector of the same length as the input.
 }
 \description{
 Convert between physical position (in megabases) and genetic position
-(centiMorgan) given a chromosome map. Linear extrapolation is used to convert
-positions between map points.
+(centiMorgan) given a chromosome map. Linear interpolation is used between
+map points. Values outside the map are returned as 0, the terminal genetic
+position, or NA, depending on the conversion direction.
 }
 \examples{
 # Chromosome 1 of the built-in recombination map
@@ -42,7 +43,7 @@ phys = 1:5
 gen = convertPos(Mb = phys, map = map, sex = "male")
 gen
 
-# Convert back (note the first position, which was outside of map)
+# Convert back (note that the first position cannot be recovered in this example)
 convertPos(cM = gen, map = map, sex = "male")
 
 }

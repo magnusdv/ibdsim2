@@ -256,7 +256,7 @@ loadMap = function(map = "decode19", chrom = 1:22, uniform = FALSE, sexAverage =
 #' map1 = customMap(df1)
 #' map1
 #'
-#' # Use columns "male" and "female" to make sex specific maps
+#' # Use columns "male" and "female" to make sex-specific maps
 #' df2 = data.frame(chrom = c(1, 1, 2, 2),
 #'                  mb = c(0, 2, 0, 5),
 #'                  male = c(0, 3, 0, 6),
@@ -279,7 +279,7 @@ customMap = function(x) {
   sexEq = "cm" %in% nmsSmall
   sexSpec = "male" %in% nmsSmall && "female" %in% nmsSmall
   if(!(sexEq || sexSpec))
-    stop2('`x` must either have a colum named "cm", or two columns named "male" and "female". See `?customMap`')
+    stop2('`x` must either have a column named "cm", or two columns named "male" and "female". See `?customMap`')
   
   names(x) = nmsSmall
   
@@ -321,9 +321,6 @@ chromMap = function(male, female = male, chrom = 1) {
     names(female) = c("Mb", "cM")
     
     physF = female$Mb
-    if(physF[dmf[1]] > 1e9) {
-      female$Mb = female$Mb / 1e6
-    }
   }
   else {
     dmm = dim(male)
@@ -348,11 +345,6 @@ chromMap = function(male, female = male, chrom = 1) {
     
     if(physM[dmm[1]] != physF[dmf[1]])
       stop2("End position must be the same in male and female maps: ", c(physM[dmm[1]], physF[dmf[1]]))
-  
-    if(physF[dmf[1]] > 1e9) {
-      male$Mb = male$Mb / 1e6
-      female$Mb = female$Mb / 1e6
-    }
   }
   
   

@@ -67,7 +67,7 @@ test_that("customMap() catches errors", {
   expect_error(customMap(data.frame(chrom = 30, foo = 0, bar = 0)), 
                '`x` must have a column named "mb"')
   expect_error(customMap(data.frame(chrom = 30, mb = 0, male = 0)), 
-               '`x` must either have a colum named "cm", or two columns named "male" and "female".')
+               '`x` must either have a column named "cm", or two columns named "male" and "female".')
 })
 
 test_that("customMap() assigns male/female columns correctly", {

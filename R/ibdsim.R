@@ -16,12 +16,17 @@
 #'
 #' Recombination rates along each chromosome are determined by the `map`
 #' parameter. The default value ("decode19") loads a thinned version of the
-#' recombination map of the human genome published by Halldorsson et al (2019).
+#' recombination map of the human genome published by Halldorsson et al. (2019).
+#' Note that autosomal and X-chromosomal maps cannot be combined in the same 
+#' simulation.
 #'
 #' In many applications, the fine-scale default map is not necessary, and may be
-#' replaced by simpler maps with constant recombination rates. See
+#' replaced by simpler maps with constant recombination rates. See 
 #' [uniformMap()] and [loadMap()] for ways to produce such maps.
-#'
+#' 
+#' The simulations supports completely inbred founders; see 
+#' [pedtools::setFounderInbreeding()].
+#' 
 #' @param x A [pedtools::ped()] object.
 #' @param N A positive integer indicating the number of simulations.
 #' @param ids A vector of names indicating which pedigree members should be
@@ -48,7 +53,7 @@
 #'   in founders who are uninformative for IBD sharing in the `ids` individuals.
 #' @param simplify1 A logical, by default TRUE, removing the outer list layer
 #'   when N = 1. See Value.
-#' @param seed An integer to be passed on to [set.seed()]).
+#' @param seed An integer to be passed on to [set.seed()].
 #' @param verbose A logical.
 #'
 #' @return If `N > 1`, a list of `N` objects of class `genomeSim`.
@@ -97,7 +102,7 @@
 #' # Plot haplotypes
 #' haploDraw(hs, sim)
 #'
-#' #' ### Example 2: Full sib mating ###
+#' ### Example 2: Full sib mating ###
 #'
 #' x = fullSibMating(1)
 #' sim = ibdsim(x, ids = 5:6, map = uniformMap(M = 10), seed = 1)
@@ -107,7 +112,7 @@
 #' stopifnot(setequal(sim[, 'Sigma'], 1:9))
 #'
 #' @export
-ibdsim = function(x, N = 1, ids = NULL, map = "decode",
+ibdsim = function(x, N = 1, ids = NULL, map = "decode19",
                   model = c("chi", "haldane"), skipRecomb = NULL, 
                   simplify1 = TRUE, seed = NULL, verbose = TRUE) {
   # Check input

@@ -118,10 +118,9 @@ karyogram1 = function(sim, id = NULL, type = c("all", "autozygous"), verbose = T
 #' @param bgcol The background colour of the chromosomes.
 #' @param title Plot title.
 #' @param legendTitle Legend title.
-#' @param base_size Font size, passed onto `ggplot2::theme()`.
+#' @param base_size Font size, passed to `ggplot2::theme()`.
 #'
-#' @return The plot object is returned invisibly, so that additional `ggplot`
-#'   layers may be added if needed.
+#' @return A `ggplot` object. Additional `ggplot` layers may be added if needed.
 #' 
 #' @examples
 #'
@@ -327,11 +326,11 @@ prepare_segments = function(segments, chrom = 1:22, colBy = NULL) {
   if(max(df$endMB) > 250e3) {
     df$startMB = df$startMB/1e6
     df$endMB = df$endMB/1e6
-    message("Converting positions to Mb by diving by 1e6")
+    message("Converting positions to Mb by dividing by 1e6")
   } else if(max(df$endMB) > 250) {
     df$startMB = df$startMB/1e3
     df$endMB = df$endMB/1e3
-    message("Converting positions to Mb by diving by 1000")
+    message("Converting positions to Mb by dividing by 1000")
   }
   
   # Merge overlapping segments with the same colour

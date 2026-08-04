@@ -48,7 +48,7 @@ pattern = list(carriers = 3:4, noncarriers = 5)
 findPattern(s, pattern)
 
 # Exclude segments less than 7 cM
-findPattern(s, pattern, cutoff = 7)
+findPattern(s, pattern, cutoff = 7, unit = "cm")
 
 # Visual confirmation:
 haploDraw(x, s)

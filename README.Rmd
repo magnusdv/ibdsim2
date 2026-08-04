@@ -33,7 +33,7 @@ ibdsim2::launchApp()
 
 
 ## Introduction
-The purpose of **ibdsim2** is to simulate and analyse the gene flow in pedigrees. In particular, such simulations can be used to study distributions of chromosomal segments shared _identical-by-descent_ (IBD) by pedigree members. In each meiosis, the recombination process is simulated using sex specific recombination rates in the human genome ([Halldorsson et al., 2019](https://doi.org/10.1126/science.aau1043)), or with recombination maps provided by the user. Additional features include calculation of realised relatedness coefficients, distribution plots of IBD segments, and estimation of two-locus relatedness coefficients.
+The purpose of **ibdsim2** is to simulate and analyse the gene flow in pedigrees. In particular, such simulations can be used to study distributions of chromosomal segments shared _identical-by-descent_ (IBD) by pedigree members. In each meiosis, the recombination process is simulated using sex-specific recombination rates in the human genome ([Halldorsson et al., 2019](https://doi.org/10.1126/science.aau1043)), or with recombination maps provided by the user. Additional features include calculation of realised relatedness coefficients, distribution plots of IBD segments, and estimation of two-locus relatedness coefficients.
 
 **ibdsim2** is part of the [pedsuite](https://magnusdv.github.io/pedsuite/) collection of packages for pedigree analysis in R. A detailed presentation of these packages, including a separate chapter on **ibdsim2**, is available in the book [Pedigree analysis in R](https://www.google.com/books/edition/Pedigree_Analysis_in_R/uhkIEAAAQBAJ) (Vigeland, 2021).
 
@@ -50,7 +50,7 @@ remotes::install_github("magnusdv/ibdsim2")
 ```
 
 ## Example 1: A simple simulation
-The most important function in **ibdsim2** is `ibdsim()`, which simulates the recombination process in a given pedigree. In this example we demonstrate this for in a family quartet, and show how to visualise the result.
+The most important function in **ibdsim2** is `ibdsim()`, which simulates the recombination process in a given pedigree. In this example we demonstrate this in a family quartet, and show how to visualise the result.
 
 We start by loading **ibdsim2**.
 ```{r, message = F}
@@ -93,7 +93,7 @@ In this example we will compare the distributions of counts/lengths of IBD segme
 
 Note that GR and HS have the same relatedness coefficients `kappa = (1/2, 1/2, 0)`, meaning that they are genetically indistinguishable in the context of unlinked loci. In contrast, HU has `kappa = (3/4, 1/4, 0)`.
 
-For simplicity we create a pedigree containing all the three relationships we are interested in.
+For simplicity we create a pedigree containing all three relationships we are interested in.
 ```{r ibdsim2-example-ped, fig.height=3, fig.width=4, out.width = "40%", message=F}
 x = halfSibPed() |> addSon(5)
 plot(x)

@@ -56,6 +56,9 @@ NULL, the labels are taken from \code{names(...)}.}
 
 \item{legendInside}{A logical controlling the legend placement.}
 }
+\value{
+A \code{ggplot} object.
+}
 \description{
 Visualise and compare count/length distributions of IBD segments. Two types
 are currently implemented: Segments of autozygosity (for a single person) and
@@ -120,8 +123,8 @@ plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
 # with the same expected inbreeding coefficient (f = 1/8)
 #################################################################
 
-G = linearPed(2) |> swapSex(5) |> addSon(c(1,5))   # grandfath/granddaughter
-HSpat = halfSibPed(sex2 = 2) |> addSon(4:5)        # paternal half sibs
+G = linearPed(2, sex = 1:2) |> addSon(c(1,5))   # grandfather/granddaughter
+HSpat = halfSibPed(sex2 = 2) |> addSon(4:5)     # paternal half sibs
 HSmat = swapSex(HSpat, 2)              # maternal half sibs
 QHFC = quadHalfFirstCousins()          # quad half first cousins
 QHFC = addSon(QHFC, 9:10)

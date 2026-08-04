@@ -89,19 +89,21 @@ non-NULL.}
 \value{
 \code{estimateInbreeding()}: a single probability.
 
+\code{estimateKinship()}: a single probability.
+
 \code{estimateTwoLocusInbreeding()}: a single probability.
 
 \code{estimateKappa()}: a numeric vector of length 3, with the estimated
 \eqn{\kappa} coefficients.
 
-\code{estimateTwoLocusKappa()}: a symmetric, numerical 3*3 matrix, with the
-estimated values of \eqn{\kappa_{ij}}, for \eqn{i,j = 0,1,2}.
+\code{estimateTwoLocusKappa()}: a numeric 3*3 matrix, with the estimated
+values of \eqn{\kappa_{ij}}, for \eqn{i,j = 0,1,2}.
 
 \code{estimateIdentity()}: a numeric vector of length 9, with the estimated
 identity coefficients.
 
-\code{estimateTwoLocusIdentity()}: a symmetric, numerical 9*9 matrix, with the
-estimated values of \eqn{\Delta_{ij}}, for \eqn{i,j = 1,...,9}.
+\code{estimateTwoLocusIdentity()}: a numeric 9*9 matrix, with the estimated
+values of \eqn{\Delta_{ij}}, for \eqn{i,j = 1,...,9}.
 }
 \description{
 Estimate by simulation various relatedness coefficients, and two-locus

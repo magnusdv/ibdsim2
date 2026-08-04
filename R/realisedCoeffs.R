@@ -23,12 +23,11 @@
 #' where \eqn{i = 0,1,2}.
 #'
 #' Finally, we can do the same thing for each of the nine condensed identity
-#' coefficients of Jacquard. For each \eqn{i = 1,...,9} we define \eqn{D_i} the
+#' coefficients of Jacquard. For each \eqn{i = 1,...,9} we define \eqn{D_i} to
 #' be the fraction of the autosome where a given pair of individuals are in
 #' identity state \eqn{i}. This uses the conventional ordering of the nine
 #' condensed identity states; see for instance the [`ribd` GitHub
 #' page](https://github.com/magnusdv/ribd).
-
 #'
 #' @param sims A list of genome simulations, as output by [ibdsim()].
 #' @param id,ids A vector with one or two ID labels.
@@ -38,6 +37,10 @@
 #'   should be merged before calculating summary statistics.
 #' @param simplify1 A logical, by default TRUE, simplifying the output if `sims`
 #'  contains a single simulation. If FALSE, the output is always a list.
+#'
+#' @return With one simulation and `simplify1 = TRUE`, the realised
+#'   coefficient(s). Otherwise, a list containing the per-simulation estimates,
+#'   their mean and their standard deviation.
 #'
 #' @examples
 #'

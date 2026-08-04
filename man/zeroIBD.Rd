@@ -12,8 +12,8 @@ zeroIBD(sims, ids = NULL, threshold = 0, unit = "cm")
 \item{ids}{A vector with two ID labels. If NULL (default), these are deduced
 from the \code{sims} object.}
 
-\item{threshold}{A nonnegative number (default:0). Only IBD segments longer
-than this are included in the computation.}
+\item{threshold}{A nonnegative number (default:0). Only IBD segments at
+least this long are included in the computation.}
 
 \item{unit}{The unit of measurement for \code{threshold}: Either "mb" or "cm"
 (default).}

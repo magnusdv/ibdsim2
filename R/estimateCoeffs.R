@@ -44,20 +44,22 @@
 #' @param ... Further arguments passed on to [ibdsim()], e.g. `seed`.
 #'
 #' @return `estimateInbreeding()`: a single probability.
+#' 
+#'   `estimateKinship()`: a single probability.
 #'
 #'   `estimateTwoLocusInbreeding()`: a single probability.
 #'
 #'   `estimateKappa()`: a numeric vector of length 3, with the estimated
 #'   \eqn{\kappa} coefficients.
 #'
-#'   `estimateTwoLocusKappa()`: a symmetric, numerical 3*3 matrix, with the
-#'   estimated values of \eqn{\kappa_{ij}}, for \eqn{i,j = 0,1,2}.
+#'   `estimateTwoLocusKappa()`: a numeric 3*3 matrix, with the estimated 
+#'   values of \eqn{\kappa_{ij}}, for \eqn{i,j = 0,1,2}.
 #'
 #'   `estimateIdentity()`: a numeric vector of length 9, with the estimated
 #'   identity coefficients.
 #'
-#'   `estimateTwoLocusIdentity()`: a symmetric, numerical 9*9 matrix, with the
-#'   estimated values of \eqn{\Delta_{ij}}, for \eqn{i,j = 1,...,9}.
+#'   `estimateTwoLocusIdentity()`: a numeric 9*9 matrix, with the estimated
+#'    values of \eqn{\Delta_{ij}}, for \eqn{i,j = 1,...,9}.
 #'
 #'
 #' @examples
@@ -202,7 +204,7 @@ estimateKinship = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   if(length(ids) != 2)
-    stop2("Argument `ids` must have length 1: ", ids)
+    stop2("Argument `ids` must have length 2: ", ids)
   
   # Define map of length 0
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
@@ -267,7 +269,7 @@ estimateKappa = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
   if(length(ids) != 2)
-    stop2("Argument `ids` must have length 1: ", ids)
+    stop2("Argument `ids` must have length 2: ", ids)
   
   # Define map of length 0
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
@@ -301,6 +303,9 @@ estimateTwoLocusKappa = function(x, ids, rho = NULL, cM = NULL, Nsim,
                                  Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
 
+  if(length(ids) != 2)
+    stop2("Argument `ids` must have length 2: ", ids)
+  
   if (is.null(cM) + is.null(rho) != 1) 
     stop2("Exactly one of the parameters `cM` and `rho` must be non-NULL")
   
@@ -314,7 +319,8 @@ estimateTwoLocusKappa = function(x, ids, rho = NULL, cM = NULL, Nsim,
   if (cM == Inf) {
     if (verbose) cat("Analysing unlinked loci.\n")
     m1 = estimateKappa(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = verbose, ...)
-    m2 = estimateKappa(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE, ...) # don't repeat verbose output
+    # Second locus: Don't repeat verbose, and don't pass on further arguments (seed!) 
+    m2 = estimateKappa(x, ids, Nsim = Nsim, Xchrom = Xchrom, verbose = FALSE)
     res = outer(m1, m2)
     return(res)
   }
@@ -357,6 +363,9 @@ estimateTwoLocusKappa = function(x, ids, rho = NULL, cM = NULL, Nsim,
 estimateIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
   
+  if(length(ids) != 2)
+    stop2("Argument `ids` must have length 2: ", ids)
+  
   # Define map of length 0
   map = uniformMap(cM = 0, chrom = if (Xchrom) "X" else 1)
   
@@ -395,6 +404,9 @@ estimateIdentity = function(x, ids, Nsim, Xchrom = FALSE, verbose = FALSE, ...) 
 estimateTwoLocusIdentity = function(x, ids, rho = NULL, cM = NULL, Nsim, 
                                     Xchrom = FALSE, verbose = FALSE, ...) {
   st = proc.time()
+  
+  if(length(ids) != 2)
+    stop2("Argument `ids` must have length 2: ", ids)
   
   if (is.null(cM) + is.null(rho) != 1) 
     stop2("Exactly one of the parameters `cM` and `rho` must be non-NULL")

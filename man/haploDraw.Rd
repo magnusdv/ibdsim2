@@ -37,9 +37,9 @@ be drawn. If NULL (default), all individuals in \code{ibd} are included.}
 \item{L}{A positive number: the chromosome length. By default derived from
 \code{ibd}.}
 
-\item{pos}{A vector recycled to \code{pedsize(x)}, indicating where haplotypes
-should be drawn relative to the pedigree symbols: 0 = no haplotypes; 1 =
-below; 2 = left; 3 = above; 4 = right. By default, all are placed below.}
+\item{pos}{A vector recycled to the number of individuals, indicating where
+haplotypes should be drawn relative to the pedigree symbols: 0 = no haplotypes;
+1 = below; 2 = left; 3 = above; 4 = right. By default, all are placed below.}
 
 \item{cols}{A colour vector corresponding to the alleles in \code{ibd}.}
 
@@ -61,7 +61,7 @@ measured in pedigree symbol widths.}
 \code{cex}. See \code{?plotmethods} for a complete list.}
 }
 \value{
-None.
+The pedigree plot object, invisibly.
 }
 \description{
 Visualise the IBD pattern of a single chromosome, by drawing haplotypes onto
