@@ -65,18 +65,17 @@ zeroIBD = function(sims, ids = NULL, threshold = 0, unit = "cm") {
   endCol = switch(unit, mb = "endMB", cm = "endCM")
   
   # Summarise each simulation
-  ibdCount = lapply(sims, function(s) {
-    
-    if(length(idsims) > 2 || "IBD" %notin% colnames(s)) {
-      s0 = alleleFlow(s, ids = ids, addState = TRUE)
-      s = mergeSegments(s0, by = "IBD")
-    }
-    
+  ibdCount = vapply(sims, function(s) {
+    if(length(idsims) > 2 || "IBD" %notin% colnames(s))
+      s = alleleFlow(s, ids = ids, addState = TRUE)
+
+    s = mergeSegments(s, by = "IBD")
+
     len = s[, endCol] - s[, startCol]
-    ibdstate = s[, 'IBD']
-    
-    sum(ibdstate > 0 & len >= threshold)
-  })
+    sum(s[, "IBD"] > 0 & len >= threshold)
+  }, numeric(1))
+
+  zeroprob = mean(ibdCount == 0)
   
   # Fraction (and standard error) of sims with 0 segments
   zeroprob = mean(unlist(ibdCount) == 0)
