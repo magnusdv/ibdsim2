@@ -35,20 +35,33 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1,
   if(!is.null(cM) && !is.null(M)) 
     stop2("Either `cM` or `M` must be NULL")
   
-  if(!is.null(Mb) && !(is.numeric(Mb) && length(Mb) == 1))
-    stop2("When non-NULL, `Mb` must be a numeric of length 1: ", Mb)
+  if(length(chrom) != 1L || is.na(chrom))
+    stop2("`chrom` must be a single chromosome label")
+
+  if(!is.numeric(cmPerMb) || length(cmPerMb) != 1L ||
+     !is.finite(cmPerMb) || cmPerMb < 0)
+    stop2("`cmPerMb` must be a nonnegative number")
+
+  if(!is.null(Mb) && (!is.numeric(Mb) || length(Mb) != 1L ||
+                      !is.finite(Mb) || Mb < 0))
+    stop2("When non-NULL, `Mb` must be a nonnegative number")
+
+  if(!is.null(cM) && (!is.numeric(cM) || length(cM) %notin% 1:2 ||
+                      any(!is.finite(cM)) || any(cM < 0)))
+    stop2("When non-NULL, `cM` must contain one or two nonnegative numbers")
+
+  if(!is.null(M) && (!is.numeric(M) || length(M) %notin% 1:2 ||
+                     any(!is.finite(M)) || any(M < 0)))
+    stop2("When non-NULL, `M` must contain one or two nonnegative numbers")
   
-  if(!is.null(cM) && !(is.numeric(cM) && length(cM) < 3))
-    stop2("When non-NULL, `cM` must be a numeric of length 1 or 2: ", cM)
+  if(is.null(cM))
+    cM = if(!is.null(M)) M * 100 else cmPerMb * Mb
   
-  if(!is.null(M) && !(is.numeric(M) && length(M) < 3))
-    stop2("When non-NULL, `M` must be a numeric of length 1 or 2: ", M)
-  
-  if (is.null(cM))
-    cM = if (!is.null(M)) M * 100 else cmPerMb * Mb
-  
-  if (is.null(Mb)) 
-    Mb = cM / cmPerMb
+  if(is.null(Mb)) {
+    if(length(cM) == 2L && cM[1] != cM[2])
+      stop2("`Mb` must be supplied when male and female map lengths differ")
+    Mb = cM[1]/cmPerMb
+  }
   
   if(toupper(chrom) %in% c("23", "X"))
     chrom = "X"
@@ -60,6 +73,8 @@ uniformMap = function(Mb = NULL, cM = NULL, M = NULL, cmPerMb = 1,
   
   # If length 0, return early
   if(Mb == 0) {
+    if(any(cM != 0))
+      stop2("Genetic map length must be 0 when `Mb = 0`")
     female = cbind(Mb = 0, cM = 0)
     male = if(chrom == "X") NULL else female
     return(chromMap(male, female, chrom = chrom))

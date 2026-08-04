@@ -162,30 +162,56 @@ convertPos = function(chrom = NULL, Mb = NULL, cM = NULL, map = "decode19", sex 
   if(is.character(map) && length(map) == 1)
     map = loadMap(map)
   
+  pos = Mb %||% cM
+  if(!length(pos))
+    return(numeric(0))
+
   if(isGenomeMap(map)) {
-    n = length(chrom)
-    if(n == 0)
+    n = length(pos)
+    if(!length(chrom))
       stop2("When `map` is a genome map, `chrom` cannot be NULL")
-    
-    mapchr = sapply(map, attr, "chrom")
-    res = numeric(length = n)
-    
+
+    if(length(chrom) == 1L)
+      chrom = rep(chrom, n)
+    else if(length(chrom) != n)
+      stop2("`chrom` must have length 1 or the same length as the positions")
+
+    chrom = as.character(chrom)
+    chrom[chrom == "23"] = "X"
+
+    mapchr = as.character(sapply(map, attr, "chrom"))
+    mapchr[mapchr == "23"] = "X"
+    res = numeric(n)
+
     for(chr in unique.default(chrom)) {
       if(chr %notin% mapchr)
         stop2("Chromosome not included in given map: ", chr)
+
       idx = chrom == chr
-      
-      res[idx] = convertPos(Mb = Mb[idx], cM = cM[idx], map = map[[match(chr, mapchr)]], sex = sex)
+      res[idx] = convertPos(Mb = Mb[idx], cM = cM[idx],
+                            map = map[[match(chr, mapchr)]], sex = sex)
     }
-    
+
     return(res)
   }
-  
-  if(isChromMap(map))
-    map = switch(match.arg(sex), 
-                 average = {tmp = map$female; tmp$cM = (map$male$cM + map$female$cM)/2; tmp},
-                 male = map$male, 
-                 female = map$female)
+
+  if(isChromMap(map)) {
+    sex = match.arg(sex)
+
+    if(isXmap(map) && sex == "male")
+      stop2("The X-chromosomal map has no male component")
+    if(isXmap(map))
+      sex = "female"
+
+    map = switch(sex,
+      average = {
+        tmp = map$female
+        tmp$cM = (map$male$cM + map$female$cM)/2
+        tmp
+      },
+      male = map$male,
+      female = map$female)
+  }
   
   .convertPos1(Mb = Mb, cM = cM, map = map)
 }
