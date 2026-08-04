@@ -78,3 +78,28 @@ test_that("customMap() assigns male/female columns correctly", {
   expect_equal(mapLen(m2), c(male = 2, female = 3))
 })
 
+test_that("uniformMap() catches ambiguous and invalid lengths", {
+  expect_error(uniformMap(cM = 2:3), "`Mb` must be supplied")
+  expect_error(uniformMap(Mb = 0, cM = 1), "Genetic map length")
+
+  m = uniformMap(Mb = 1, cM = c(2, 2))
+  expect_equal(mapLen(m), c(male = 2, female = 2))
+})
+
+
+test_that("convertPos() handles vectors and X maps", {
+  m = uniformMap(Mb = 100, cM = 100)
+  g = genomeMap(m)
+
+  expect_equal(convertPos(chrom = 1, Mb = c(0, 50, 100), map = g),
+               c(0, 50, 100))
+
+  mx = uniformMap(Mb = 100, cM = 100, chrom = "X")
+  gx = genomeMap(mx)
+
+  expect_equal(convertPos(Mb = c(0, 50, 100), map = mx),
+               c(0, 50, 100))
+  expect_equal(convertPos(chrom = 23, Mb = 50, map = gx), 50)
+  expect_error(convertPos(Mb = 50, map = mx, sex = "male"),
+               "no male component")
+})

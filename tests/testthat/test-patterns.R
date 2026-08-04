@@ -28,3 +28,13 @@ test_that("findPattern() merges segments correctly", {
   expect_equal(nrow(findPattern(s, list(het = 3), merge = TRUE)), 1)
   
 })
+
+test_that("findPattern() accepts either candidate allele", {
+  sim = cbind(chrom = 1, startMB = 0, endMB = 10, startCM = 0, endCM = 10,
+              `1:p` = 1, `1:m` = 2,
+              `2:p` = 1, `2:m` = 3)
+  class(sim) = "genomeSim"
+
+  res = findPattern(sim, list(carriers = 1, noncarriers = 2))
+  expect_equal(nrow(res), 1)
+})
