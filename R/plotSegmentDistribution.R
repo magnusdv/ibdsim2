@@ -32,6 +32,7 @@
 #' @param shape A vector with point shapes, of the same length as `...`.
 #' @param alpha A transparency parameter for the scatter points.
 #' @param ellipses A logical: Should confidence ellipses be added to the plot?
+#'   (This requires the `MASS` package to be installed.)
 #' @param legendInside A logical controlling the legend placement.
 #' @param title,xlab,ylab Title and axis labels.
 #'
@@ -113,6 +114,9 @@ plotSegmentDistribution = function(..., type = c("autozygosity", "ibd1"),
                                    title = NULL, xlab = NULL, ylab = NULL,
                                    legendInside = TRUE) {
 
+  if(ellipses && !requireNamespace("MASS", quietly = TRUE))
+    stop2("Package 'MASS' is required when `ellipses = TRUE`")
+  
   sims = list(...)
   N = length(sims)
   if(N == 0 || !(inherits(sims[[1]], "genomeSimList") || inherits(sims[[1]][[1]], "genomeSimList")))

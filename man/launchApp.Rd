@@ -12,6 +12,11 @@ No return value, called for side effects.
 \description{
 This launches the Shiny app for simulating IBD segment distributions.
 }
+\details{
+The app uses several suggested packages which are not installed by default.
+To install them together with \code{ibdsim2}, use
+\code{install.packages("ibdsim2", dependencies = TRUE)}.
+}
 \examples{
 
 \dontrun{

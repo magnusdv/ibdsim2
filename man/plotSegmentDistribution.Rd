@@ -50,7 +50,8 @@ NULL, the labels are taken from \code{names(...)}.}
 
 \item{alpha}{A transparency parameter for the scatter points.}
 
-\item{ellipses}{A logical: Should confidence ellipses be added to the plot?}
+\item{ellipses}{A logical: Should confidence ellipses be added to the plot?
+(This requires the \code{MASS} package to be installed.)}
 
 \item{title, xlab, ylab}{Title and axis labels.}
 

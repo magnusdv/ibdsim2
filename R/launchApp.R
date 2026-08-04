@@ -1,6 +1,10 @@
 #' Launch the ibdsim2 app
 #'
 #' This launches the Shiny app for simulating IBD segment distributions.
+#' 
+#' The app uses several suggested packages which are not installed by default.
+#' To install them together with `ibdsim2`, use
+#'  `install.packages("ibdsim2", dependencies = TRUE)`.
 #'
 #' @return No return value, called for side effects.
 #'
@@ -12,7 +16,7 @@
 #'
 #' @export
 launchApp = function() {
-  packages = c("shiny", "shinyjs", "lubridate", "patchwork", "zip")
+  packages = c("shiny", "shinyjs", "shinyWidgets", "MASS", "patchwork", "zip")
   for(pkg in packages) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
       msg = sprintf("Package '%s' is required but not installed.\nPlease run `install.packages('%s')` and try again", pkg, pkg)

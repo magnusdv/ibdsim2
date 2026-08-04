@@ -22,26 +22,25 @@ URL: https://github.com/magnusdv/ibdsim2,
     https://magnusdv.github.io/pedsuite/,
     https://magnusdv.shinyapps.io/ibdsim2-shiny/
 Depends: 
-    pedtools (>= 2.8.0),
-    R (>= 4.2.0)
+    R (>= 4.2.0),
+    pedtools (>= 2.8.0)
 Imports:
+    Rcpp,
     ggplot2,
     glue,
-    Rcpp,
     ribd (>= 1.7.1)
 Suggests: 
-    lubridate,
     MASS,
     patchwork,
-    shiny,
-    shinyjs,
+    shiny (>= 1.9.0),
     shinyWidgets,
+    shinyjs,
     testthat,
     zip
 LinkingTo: 
     Rcpp
+Config/roxygen2/version: 8.0.0
 Encoding: UTF-8
 Language: en-GB
-Roxygen: list(markdown = TRUE)
 LazyData: true
-Config/roxygen2/version: 8.0.0
+Roxygen: list(markdown = TRUE)

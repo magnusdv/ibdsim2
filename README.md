@@ -17,8 +17,15 @@ status](https://www.r-pkg.org/badges/version/ibdsim2)](https://CRAN.R-project.or
 here: [ibdsim2-shiny](https://magnusdv.shinyapps.io/ibdsim2-shiny/)
 </span>
 
-As of version 2.1.0, the Shiny app is integrated as part of the package.
-To run it locally, simply run the command
+As of version 2.1.0, the Shiny app is integrated into `ibdsim2`. The app
+depends on some packages that are not installed by default. To install
+everything needed by the app, use:
+
+``` r
+install.packages("ibdsim2", dependencies = TRUE)
+```
+
+The app can then be run from R with the command:
 
 ``` r
 ibdsim2::launchApp()
@@ -30,7 +37,7 @@ The purpose of **ibdsim2** is to simulate and analyse the gene flow in
 pedigrees. In particular, such simulations can be used to study
 distributions of chromosomal segments shared *identical-by-descent*
 (IBD) by pedigree members. In each meiosis, the recombination process is
-simulated using sex specific recombination rates in the human genome
+simulated using sex-specific recombination rates in the human genome
 ([Halldorsson et al., 2019](https://doi.org/10.1126/science.aau1043)),
 or with recombination maps provided by the user. Additional features
 include calculation of realised relatedness coefficients, distribution
@@ -64,8 +71,8 @@ remotes::install_github("magnusdv/ibdsim2")
 
 The most important function in **ibdsim2** is `ibdsim()`, which
 simulates the recombination process in a given pedigree. In this example
-we demonstrate this for in a family quartet, and show how to visualise
-the result.
+we demonstrate this in a family quartet, and show how to visualise the
+result.
 
 We start by loading **ibdsim2**.
 
@@ -119,7 +126,7 @@ an explanation of `pos` and other arguments.
 haploDraw(x, sim, pos = c(2, 4, 2, 4))
 ```
 
-<img src="man/figures/README-quartet-haplo-1.png" width="45%" style="display: block; margin: auto;" />
+<img src="man/figures/README-quartet-haplo-1.png" alt="" width="45%" style="display: block; margin: auto;" />
 
 ## Example 2: Distributions of IBD segments
 
@@ -135,15 +142,15 @@ Note that GR and HS have the same relatedness coefficients
 indistinguishable in the context of unlinked loci. In contrast, HU has
 `kappa = (3/4, 1/4, 0)`.
 
-For simplicity we create a pedigree containing all the three
-relationships we are interested in.
+For simplicity we create a pedigree containing all three relationships
+we are interested in.
 
 ``` r
 x = halfSibPed() |> addSon(5)
 plot(x)
 ```
 
-<img src="man/figures/README-ibdsim2-example-ped-1.png" width="40%" style="display: block; margin: auto;" />
+<img src="man/figures/README-ibdsim2-example-ped-1.png" alt="" width="40%" style="display: block; margin: auto;" />
 
 We store the ID labels of the three relationships in a list.
 
@@ -167,7 +174,7 @@ s = ibdsim(x, N = 500, map = "decode19", seed = 1234)
 #> Recomb model : chi
 #> Target indivs: 1-7
 #> Skip recomb  : -
-#> Total time used: 1.71 secs
+#> Total time used: 6.65 secs
 ```
 
 The `plotSegmentDistribution()` function, with the option
@@ -179,7 +186,7 @@ legend.
 plotSegmentDistribution(s, type = "ibd1", ids = ids, shape = 1:3)
 ```
 
-<img src="man/figures/README-ibdsim2-example-distplot-1.png" width="75%" style="display: block; margin: auto;" />
+<img src="man/figures/README-ibdsim2-example-distplot-1.png" alt="" width="75%" style="display: block; margin: auto;" />
 
 We conclude that the three distributions are almost completely disjoint.
 Hence the three relationships can typically be distinguished on the
