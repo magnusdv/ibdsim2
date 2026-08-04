@@ -136,36 +136,26 @@ findPattern = function(sims, pattern, merge = TRUE, cutoff = 0, unit = "mb") {
       eq2 = eq2 & (a2 == p | a2 == m)
     }
     
-    # Reduce sim matrix
-    s = s[eq1 | eq2, , drop = FALSE]
-    
-    # Noncarriers (TODO: can probably be optimised)
-    if(length(non)) {
-      keep = rep(TRUE, nrow(s))
-        
-      # Which rows used a1 vs a2
-      keep1 = eq1[eq1 | eq2]
-      keep2 = eq2[eq1 | eq2]
-      
-      s1 = s[keep1, , drop = FALSE]
-      s2 = s[keep2, , drop = FALSE]
+    # Keep rows with at least one candidate allele
+    keep = eq1 | eq2
+    s = s[keep, , drop = FALSE]
+    eq1 = eq1[keep]
+    eq2 = eq2[keep]
+    a1 = a1[keep]
+    a2 = a2[keep]
 
-      # shared alleles
-      a1 = pat(s1, id1)
-      a2 = mat(s2, id1)
-      
+    # Exclude candidate alleles found in noncarriers
+    if(length(non)) {
       for(id in non) {
-        p1 = pat(s1, id)
-        m1 = mat(s1, id)
-        p2 = pat(s2, id)
-        m2 = mat(s2, id)
-        
-        keep[keep1] = keep[keep1] & a1 != p1 & a1 != m1
-        keep[keep2] = keep[keep2] & a2 != p2 & a2 != m2
+        p = pat(s, id)
+        m = mat(s, id)
+
+        eq1 = eq1 & a1 != p & a1 != m
+        eq2 = eq2 & a2 != p & a2 != m
       }
-      
-      s = s[keep, , drop = FALSE]
     }
+
+    s = s[eq1 | eq2, , drop = FALSE]
     
     # Merge adjacent segments
     if(merge)
