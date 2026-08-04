@@ -1,3 +1,19 @@
+# ibdsim2 2.3.3
+
+## Package changes
+
+* Fixed and substantially sped up `profileSimIBD()`, particularly for dense marker panels. Seeded results may differ from earlier versions.
+* `ibdsim()` is more efficient in some cases, by skipping recombination in pedigree branches that cannot affect the output. (In such cases, seeded results may differ from earlier versions.)
+* `launchApp()` now checks all optional app dependencies.
+* Better input checks in `uniformMap()` and `convertPos()`.
+* `zeroIBD()` now merges adjacent IBD segments before applying length thresholds.
+* Fixed rare bug in `findPattern()`.
+
+## App changes
+
+* Improved checks of user input.
+* Fixed plotting bug when simulated values have no variation.
+
 
 # ibdsim2 2.3.2
 
