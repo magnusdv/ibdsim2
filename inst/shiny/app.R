@@ -251,7 +251,7 @@ server = function(input, output, session) {
   
   # Simulate!
   observeEvent(input$simulate1, {
-    chk = checkSimInput(ped1(), ids1(), input$analysis, input$nsims, input$seed1)
+    chk = checkSimInput(ped1(), ids1(), input$analysis, input$nsims, input$seed1, input$cutoff1)
     if(chk != "ok")
       return(errModal(chk))
     disable("simulate1")
@@ -261,7 +261,7 @@ server = function(input, output, session) {
   })
   
   observeEvent(input$simulate2, {
-    chk = checkSimInput(ped2(), ids2(), input$analysis, input$nsims, input$seed2)
+    chk = checkSimInput(ped2(), ids2(), input$analysis, input$nsims, input$seed2, input$cutoff2)
     if(chk != "ok")
       return(errModal(chk))
     disable("simulate2")
@@ -282,6 +282,8 @@ server = function(input, output, session) {
     lens = suppressWarnings(as.numeric(lenStr))
     if(anyNA(lens))
       return(errModal("Non-numeric segment length: ", lenStr[is.na(lens)]))
+    if(any(lens < 0))
+      return(errModal("Segment lengths must be nonnegative"))
     lens
   })
   
@@ -304,7 +306,16 @@ server = function(input, output, session) {
     total = input$`obs-total`
     if(is.na(nseg) || is.na(total))
       return(NULL)
-    list(nseg = nseg, total = total, mean = total/nseg, lengths = observedSegs())
+    if(!is.finite(nseg) || !is.finite(total) ||
+       nseg < 0 || nseg != floor(nseg) || total < 0)
+      return(errModal("Observed count and total must be nonnegative"))
+
+    if(nseg == 0 && total > 0)
+      return(errModal("Observed total must be 0 when the count is 0"))
+
+    list(nseg = nseg, total = total,
+         mean = if(nseg > 0) total/nseg else 0,
+         lengths = observedSegs())
   })
   
 # Plots ----------------------------------------------------------

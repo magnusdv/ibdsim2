@@ -46,17 +46,21 @@ loadPed = function(file) {
   as.ped(df[cls])
 }
 
-checkSimInput = function(ped, ids, analysis, N, seed) {
+checkSimInput = function(ped, ids, analysis, N, seed, cutoff) {
   if(is.null(ped)) 
     return("No pedigree indicated")
   if(length(ids) == 0) 
     return("No pedigree members indicated")
   if(anyNA(match(ids, labels(ped))))
-    return(paste("Unknown ID label:", toString(.mysetdiff(ids, labels(ped)))))
+    return(paste("Unknown ID label:", toString(setdiff(ids, labels(ped)))))
   if(analysis == "Sharing" && length(ids) == 1)
     return(paste("Sharing analysis is indicated, but only one individual:", toString(ids)))
-  if(analysis == "Autozygosity" && any((inbr <- inbreeding(ped, ids)) == 0))
-    return(paste("Autozygosity analysis indicated, but some individuals are not inbred: ", toString(names(inbr)[inbr == 0])))
+  if(analysis == "Autozygosity") {
+    inbr = inbreeding(ped, ids)
+    if(any(inbr == 0))
+      return(paste("Autozygosity analysis indicated, but some individuals are not inbred: ",
+                   toString(names(inbr)[inbr == 0])))
+  }
   if(!ibdsim2:::isCount(N))
     return("Number of simulations must be a positive integer")
   if(N < 5)
@@ -65,6 +69,9 @@ checkSimInput = function(ped, ids, analysis, N, seed) {
     return("Number of simulations is too high (max 5000)")
   if(!ibdsim2:::isCount(seed))
     return("The `seed` must be a positive integer")
+  if(!is.numeric(cutoff) || length(cutoff) != 1L ||
+     is.na(cutoff) || cutoff < 0)
+    return("Length cutoff must be a nonnegative number")
   
   "ok"
 }
