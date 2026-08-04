@@ -19,9 +19,6 @@
 
 #unit, #analysis {margin-bottom: 10px}
 
-#rcode1 {background: lightgoldenrodyellow; font-family:monospace; font-weight: bolder; padding:0px; 
-         width: 100%; margin-top: 10px; margin-bottom:0}
-
 .progress.shiny-file-input-progress { display: none !important;}
 
 .form-control {height: 30px; padding-left: 8px; padding-right: 4px; line-height:1em}
@@ -40,29 +37,12 @@
 #opt1, #opt2 {margin-bottom: 0}
 
 #paramHeading {
-        font-family: Arial, sans-serif;
-        font-weight: bold;
-        width: 100%;
-        font-size: 15px;
-        letter-spacing: 2px;
-        margin-top: 8px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  width: 100%;
+  font-size: 15px;
+  letter-spacing: 2px;
+  margin-top: 8px;
 }
 
-#banner {
- position: absolute;
- height: 80px;
- top: 8px;
- right: 10%;
- background-color: lightgreen;
- color: #333;  /* Dark text color */
- padding: 5px 20px;
- border-radius: 2px;
- font-size: 18px;
- text-align: center;
- box-shadow: 0 3px 6px rgba(0,0,0,0.1);  /* Subtle shadow for depth */
- z-index: 1000;
-}
 
-#banner p {margin: 0}
-#big-text { font-size: 30px; font-family: 'Lobster', cursive;}
-#small-text { font-size: 11px;}

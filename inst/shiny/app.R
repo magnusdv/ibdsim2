@@ -25,16 +25,6 @@ ui = fluidPage(
   useShinyjs(),
   useBusyIndicators(),
   
-  tags$head(tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css2?family=Lobster&display=swap")),
-  
-  # tags$div(id = "banner",
-  #       p(id="big-text", "Major app update!"),
-  #       p("Check out the ", mylink("NEWS", href="https://github.com/magnusdv/ibdsim2/blob/master/NEWS.md", 
-  #                                 style = "font-weight:bold;")),
-  #       #p(id="small-text", "The old version still available ", 
-  #       #  mylink("here", href="https://magnusdv.shinyapps.io/ibdsim2-14/"))
-  # ),
-
   # Application title
   h2(id = "title-h2", "IBD sharing by family members"),
   
