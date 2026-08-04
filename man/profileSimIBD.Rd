@@ -16,8 +16,7 @@ profileSimIBD(
 \arguments{
 \item{x}{A \code{ped} object.}
 
-\item{ibdpattern}{A \code{genomeSim()} object, typically created by \code{\link[=ibdsim]{ibdsim()}}.
-(See Examples).}
+\item{ibdpattern}{A \code{genomeSim} object, or a list of such objects.}
 
 \item{ids}{A vector of ID labels. If NULL, extracted from \code{ibdpattern}.}
 
@@ -28,17 +27,21 @@ profileSimIBD(
 \item{verbose}{A logical, by default TRUE.}
 }
 \value{
-A copy of \code{x} where marker genotypes have been simulated conditional
-on \code{ibdpattern}.
+A copy of \code{x} with simulated genotypes, or a list of such copies if
+\code{ibdpattern} is a list.
 }
 \description{
 This function simulates genotypes for a set of markers conditional on a
-specific underlying IBD pattern (typically produced with \code{\link[=ibdsim]{ibdsim()}}).
+specific underlying IBD pattern, typically produced with \code{\link[=ibdsim]{ibdsim()}}.
 }
 \details{
+Founder alleles are sampled independently at each marker, so linkage
+disequilibrium is ignored. Existing genotypes and mutation models are ignored.
+Individuals not included in \code{ids} have missing genotypes in the result.
+
 It should be noted that the only \emph{random} part of this function is the
-sampling of founder alleles for each marker. Given those, all other genotypes
-in the pedigree are determined by the underlying IBD pattern.
+sampling of founder alleles. Given those, all other genotypes in the pedigree
+are determined by the underlying IBD pattern and the marker positions.
 }
 \examples{
 
